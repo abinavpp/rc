@@ -1,0 +1,304 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+use feature qw(switch);
+use Data::Dumper;
+use Getopt::Long;
+
+sub in_array {
+	my ($arr, $search_for) = @_;
+	my %items = map {$_ => 1} @$arr;
+	return (exists($items{$search_for})) ? 1 : 0;
+}
+
+sub ls_except {
+	my ($dir, @paths_not) = @_;
+	my @ret;
+
+	opendir(DIR, $dir) or die $!;
+
+	while (my $file = readdir(DIR)) {
+		next if ($file =~ /^(\.){1,2}$/);
+		next if (in_array(\@paths_not, $file));
+		push(@ret, "$file");
+	}
+
+	closedir(DIR);
+
+	return @ret;
+}
+
+sub ftest_broken_symlink {
+	my ($file) = @_;
+
+	if (!system("test ! -L $file")) {
+		return 0;
+	}
+
+	return system("test ! -e $file") ? 0 : 1;
+}
+
+sub ftest_exist {
+	my ($file) = @_;
+
+	# broken symlink is a FILE!!!
+	if (!system("test -L $file")) {
+		return 1;
+	}
+
+	return system("test -e $file") ? 0 : 1;
+}
+
+sub foreach_system {
+	# \arr \cmd
+	my ($arr, $cmd) = @_;
+
+	foreach my $x (@$arr) {
+		system(@$cmd, $x);
+	}
+}
+
+my $cmd_memmnt = "memmnt";
+
+my $path_memmnt_mntpt = "/dev/shm/memmnt";
+
+# verifies, cleans, and warns if necessary
+sub memmnt_verify_target_hard {
+	my (@targets) = @_;
+	my $bad_flag = 0;
+
+	foreach my $target (@targets) {
+		if (ftest_broken_symlink($target)) {
+			system("rm", "-f", $target);
+			$bad_flag = 1;
+		} elsif (!ftest_exist($target)) {
+			$bad_flag = 1;
+		}
+	}
+	if ($bad_flag) {
+		print STDERR "Warning: Invalid target(s) @targets.\n" .
+		"Now everything's upto the profile's default behaviour\n";
+		return -1;
+	}
+	return 0;
+}
+
+sub memmnt_files {
+	my ($path_files, $opt) = @_;
+	if (!defined $opt) {
+		$opt = "";
+	}
+
+	if ($opt eq "-u") {
+		# discard memmnt_ifile but keep meta
+		foreach my $path_file (@$path_files) {
+			system($cmd_memmnt, "-d", $path_file);
+			# print($cmd_memmnt, "-d", $path_file);
+		}
+	} else {
+		foreach my $path_file (@$path_files) {
+			system($cmd_memmnt, $path_file);
+			# print($cmd_memmnt, $path_file);
+		}
+	}
+}
+
+
+sub memmnt_chrome {
+	my $path_config_chrome = "/home/abinav/.config/google-chrome";
+	my ($opt) = @_;
+	if (!defined $opt) {
+		$opt = "";
+	}
+
+	# mnt section
+	# -----------
+	if ($opt ne '-u') {
+		if (memmnt_verify_target_hard($path_config_chrome) == -1) {
+			system("mkdir", "-p", $path_config_chrome);
+		}
+		system($cmd_memmnt, $path_config_chrome);
+		return;
+	}
+
+
+	# umnt section
+	# ------------
+	my $path_config_chrome_Default = "$path_config_chrome/Default";
+	my $relapath_config_chrome_Default = "Default";
+
+	my @wl_syncbk_config_chrome = ('Local State', 'First Run');
+	my @wl_syncbk_config_chrome_Default = ('Bookmarks', 'Bookmarks.bak',
+		'Extensions', 'Extension Rules', 'Extension State',
+		'Preferences', 'Secure Preferences',
+		'Local App Settings', 'Local Extension Settings', 'Sync Extension Settings',
+		'Local Storage');
+
+	if (memmnt_verify_target_hard($path_config_chrome) == -1) {
+		return;
+	}
+	
+	my $memmnt_ifile = qx/readlink -f $path_config_chrome/;
+	chomp($memmnt_ifile);
+
+	if ($memmnt_ifile !~ /^$path_memmnt_mntpt.*$/) {
+		die("$memmnt_ifile not a memmnt ifile");
+	}
+
+	system("rm" , "-f" , $path_config_chrome);
+	system("mkdir", "-p", $path_config_chrome_Default);
+
+	# config_chrome section
+	chdir("$memmnt_ifile") || die($!);
+	foreach my $wl_syncbk (@wl_syncbk_config_chrome) {
+		system("mv", $wl_syncbk, $path_config_chrome);
+	}
+
+	# config_chrome_Default section
+	chdir("$memmnt_ifile/$relapath_config_chrome_Default") || die($!);
+	foreach my $wl_syncbk (@wl_syncbk_config_chrome_Default) {
+		system("mv", $wl_syncbk, $path_config_chrome_Default);
+	}
+
+	# cleanup section (don't memmnt -c! to keep other memmnt ifiles)
+	system("rm" , "-rf" , $memmnt_ifile);
+}
+
+sub memmnt_journal {
+	my $path_log_journal = "/var/log/journal";
+
+	if (memmnt_verify_target_hard($path_log_journal) == -1) {
+		system("mkdir", "-p", $path_log_journal);
+	}
+
+	memmnt_files [$path_log_journal], @_;
+}
+
+sub memmnt_xorg {
+	my $path_log_xorg = "$ENV{HOME}/.local/share/xorg";
+
+	if (memmnt_verify_target_hard($path_log_xorg) == -1) {
+		system("mkdir", "-p", $path_log_xorg);
+	}
+
+	memmnt_files [$path_log_xorg], @_;
+}
+
+sub memmnt_thumbnails {
+	my $path_thumbnails = "$ENV{HOME}/.thumbnails";
+	if (memmnt_verify_target_hard($path_thumbnails) == -1) {
+		system("mkdir", "-p", $path_thumbnails);
+	}
+
+	memmnt_files [$path_thumbnails], @_;
+}
+
+sub memmnt_pacman_cache {
+	my $path_pacman_cache = "/var/cache/pacman/pkg";
+	if (memmnt_verify_target_hard($path_pacman_cache) == -1) {
+		system("mkdir", "-p", $path_pacman_cache);
+	}
+
+	memmnt_files [$path_pacman_cache], @_;
+}
+
+
+sub memmnt_profile {
+	my ($profiles, $opt) = @_;
+	if (!defined $opt) {
+		$opt = "";
+	}
+
+	foreach my $profile (@$profiles) {
+		if ($profile eq "chrome") {
+			memmnt_chrome $opt;
+		} elsif ($profile eq "journal") {
+			memmnt_journal $opt;
+		} elsif ($profile eq "xorg") {
+			memmnt_xorg $opt;
+		} elsif ($profile eq "thumbnails") {
+			memmnt_thumbnails $opt;
+		} elsif ($profile eq "pacman_cache") {
+			memmnt_pacman_cache $opt;
+		}
+	}
+}
+
+sub usage {
+	print 
+	"mmrc [OPTIONS] <profile_1> <profile_2> ...
+	-u              umnt
+	-h, --help      view this help\n";
+}
+
+
+GetOptions(
+	"u" => \my $opt_umnt,
+	"help" => \my $opt_help) # -h or --help
+	or die "Error parsing cmdline";
+
+if ($opt_help) {
+	usage();
+	exit;
+}
+
+if (!defined($ARGV[0])) {
+	die "No profile(s) specified";
+}
+
+if ($opt_umnt) {
+	memmnt_profile \@ARGV, '-u';
+	exit;
+}
+
+memmnt_profile \@ARGV;
+exit;
+
+
+# print Dumper(@x);
+# exit;
+#
+# sub do_safe_chrome {
+# 	# \cmd
+# 	my ($cmd) = @_;
+
+
+# 	chdir($path_config_chrome);
+
+# 	# don't touch Default dir itself and PepperFlash
+# 	my @list = ls_except($path_config_chrome, 
+# 		"Default", "PepperFlash");
+
+# 	foreach_system(\@list, $cmd);
+
+# 	chdir($path_config_chrome_Default);
+# 	@list = ls_except($path_config_chrome_Default, );
+
+# 	foreach_system(\@list, $cmd);
+# }
+
+# sub memmnt_safe_chrome {
+# 	my @cmd = ($cmd_memmnt);
+# 	do_safe_chrome(\@cmd);
+# }
+
+# sub memumnt_safe_chrome {
+# 	# unmount/restore wl's 
+# 	my @cmd = ($cmd_memmnt, "-u");
+
+# 	chdir($path_config_chrome);
+# 	foreach_system(\@wl_syncbk_config_chrome, \@cmd);
+# 	chdir($path_config_chrome_Default);
+# 	foreach_system(\@wl_syncbk_config_chrome_Default, \@cmd);
+
+# 	# discard everything else
+# 	@cmd = ($cmd_memmnt, "-d");
+# 	do_safe_chrome(\@cmd);
+
+# 	# cleanup memdir, cleans leavings by chrome
+# 	system($cmd_memmnt, "-c");
+# }
+
+

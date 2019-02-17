@@ -1,0 +1,379 @@
+#! /bin/bash
+
+if [[ -z $LLVM_DEV ]]; then
+	echo "Set your \$LLVM_DEV and try again"
+	exit 1
+fi
+
+# distribution
+dist_clang="/bin/clang"
+dist_clangpp="/bin/clang++"
+dist_opt="/bin/opt"
+dist_llc="/bin/llc"
+
+# release build
+rel_clang="$HOME/bin/llvm_bin/clang"
+rel_clangpp="$HOME/bin/llvm_bin/clang++"
+rel_opt="$HOME/bin/llvm_bin/opt"
+rel_llc="$HOME/bin/llvm_bin/llc"
+
+# main development build
+main_clang="$LLVM_DEV/build/main/bin/clang"
+main_opt="$LLVM_DEV/build/main/bin/opt"
+main_llc="$LLVM_DEV/build/main/bin/llc"
+main_config="$LLVM_DEV/build/main/bin/llvm-config"
+main_libdir="$LLVM_DEV/build/main/lib/"
+# main_libdir=`$main_config --libdir`
+
+# lt development build
+lt_clang="$LLVM_DEV/build/lt/bin/clang"
+lt_opt="$LLVM_DEV/build/lt/bin/opt"
+lt_llc="$LLVM_DEV/build/lt/bin/llc"
+
+# defualt output files
+clang_out="clang.ll"
+opt_out="opt.ll"
+dot_out="dot.ll"
+ili_out="ili" ilm_out="ilm" stb_out="stb"
+
+# global "states"
+dbg=""
+buildprof="main"
+get_ll_clang="$rel_clang"
+
+function try_llvmgi() {
+	if [[ -n $dbg ]]; then
+		llvmgi $buildprof;
+		echo llvmgi $buildprof;
+	fi
+}
+
+function try_llvmb() {
+	llvmb $buildprof "$@" || exit 1;
+}
+
+function is_ll() {
+	if [[ ${1: -3} == ".ll" ]]; then # _space_ b/w : and -
+		return 0;
+	fi
+	return 1;
+}
+
+function get_ll() {
+	if is_ll $1; then
+		echo "$1";
+		return
+	fi
+
+	local extra_opts="";
+	if [[ "$1" =~ \.f90$ ]]; then
+		$main_flang1 "$1" || exit 1
+	elif [[ $get_ll_clang == $lt_clang ]]; then
+		$get_ll_clang -S -emit-llvm -o "$clang_out" "$1" \
+			|| exit 1
+	else
+		$get_ll_clang -S -emit-llvm -Xclang -disable-O0-optnone -o "$clang_out" "$1" \
+			|| exit 1
+	fi
+	
+	echo "$clang_out";
+}
+
+function get_ll_for_dot() {
+	local ll 
+	if is_ll $1; then
+		ll="$1";
+	else
+		get_ll "$1" &> /dev/null
+		$rel_opt -mem2reg -loop-simplify -instcombine -instnamer \
+			-indvars -S -o "$dot_out" "$clang_out" || exit 1;
+		ll="$dot_out"
+	fi
+	echo $ll;
+}
+
+# To view cfg, dom dot files and clean up whatever used:
+# do_llvmdot {func_name_fragment | *} <path>
+# do_llvmdot * /path/ works on all functions in /path/
+# 
+# To cleanup all llvm dot files
+# do_llvmdot -c
+function do_llvmdot {
+	if [[ $1 == "-c" ]]; then
+		rm $2/mf*.dot &> /dev/null
+		rm $2/cfg*.dot &> /dev/null
+		rm $2/dom*.dot &> /dev/null
+		return
+	fi
+
+	# the order here should match the output pdf
+	local dots=""
+	if ls $2/cfg*$1*.dot &> /dev/null; then
+		dots="$2/cfg*$1*.dot"
+	fi
+
+	if ls $2/mf*$1*.dot &> /dev/null; then
+		dots="$2/mf*$1*.dot"
+	fi
+
+	if ls $2/dom*$1*.dot &> /dev/null; then
+		dots="$dots $2/dom*$1*.dot "
+	fi
+
+	if [[ -n $dots ]]; then
+		vdot "$dots";
+	else
+		return 1;
+	fi
+
+	rm $dots;
+	return 0;
+}
+
+function do_mir {
+	ll=$(get_ll "$1") || exit 1
+	shift;
+
+	if [[ $# -eq 0 ]]; then
+		$dbg $main_llc "$ll" 2>&1
+		return
+	fi
+
+	if [[ $1 == "ab" || $1 == "ba" ]]; then
+		# llvmu mir foo.c ab/ba <pass>
+		vimdiff <($main_llc -print-before=$2 "$ll" 2>&1) \
+			<($main_llc -print-after=$2 "$ll" 2>&1)
+		return
+	fi
+
+	local first_print_cmd="" second_print_cmd=""
+	local first_stop_cmd=""
+
+	if [[ $1 == "b" ]]; then
+		first_print_cmd="-print-before=$2"
+		first_stop_cmd="-stop-before=$2"
+	elif [[ $1 == "a" ]]; then
+		first_print_cmd="-print-after=$2"
+		first_stop_cmd="-stop-after=$2"
+	elif [[ $1 == "all" ]]; then
+		# llvmu mir foo.c all
+		$dbg $main_llc -print-machineinstrs "$ll" 2>&1
+		return
+	fi
+	
+	if [[ $# -eq 2 ]]; then
+		# llvmu mir foo.c b/a <pass>
+		$dbg $main_llc $first_print_cmd "$ll" 2>&1
+		return
+	fi
+
+	if [[ $3 == "b" ]]; then
+		second_print_cmd="-print-before=$4"
+	elif [[ $3 == "a" ]]; then
+		second_print_cmd="-print-after=$4"
+	fi
+
+	# llvmu mir foo.c b/a <pass1> b/a <pass2>
+	vimdiff <($main_llc $first_print_cmd "$ll" 2>&1) \
+		<($main_llc $second_print_cmd "$ll" 2>&1)
+}
+
+
+function cleanup_flang() {
+	rm $ilm_out $ili_out $stb_out $clang_out a.out &> /dev/null
+}
+
+function do_flang() {
+	if [[ $1 == "cl" ]]; then
+		cleanup_flang
+		return
+	fi
+
+	local OLD_LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
+	local OLD_PATH="${PATH}"
+
+    FLANG_INSTALL_PREFIX="/home/abinav/Downloads/src/llvm_dev/install/flang-compiler"
+    buildprof="flang-compiler/flang"
+
+	export LD_LIBRARY_PATH="${FLANG_INSTALL_PREFIX}/lib"
+	export PATH="${FLANG_INSTALL_PREFIX}/bin:${PATH}"
+
+	try_llvmb install 1> /dev/null;
+	if [[ $1 == "dp" ]]; then
+		shift
+		flang "$@" -Hq,0,1 -Hq,1,1 -Hq,2,1
+
+	elif [[ $1 == "ilm" ]]; then
+		shift
+		cleanup_flang
+		$dbg flang1 -output $ilm_out -stbfile $stb_out "$@"
+
+	elif [[ $1 == "ili" ]]; then
+		shift
+		$dbg flang -Mq,0,1 -Mq,10,2 -Mq,10,1 "$1" 2> $ili_out
+
+    elif [[ $1 == "check-all" ]]; then
+        try_llvmb check-all
+
+    else
+		flang1 -output $ilm_out -stbfile $stb_out -src "$1"
+		flang2 -fn "$1" -stbfile $stb_out -asm "$clang_out" $ilm_out
+		flang -Mq,0,1 -Mq,10,2 -Mq,10,1 "$1" 2> $ili_out
+	fi
+
+
+	export LD_LIBRARY_PATH="${OLD_LD_LIBRARY_PATH}"
+	export PATH="${OLD_PATH}"
+}
+
+function dir_based_profile() {
+	run=$1; shift;
+
+	if [[ $run == "CFCSS" ]]; then
+		ll=$(get_ll "$1") || exit 1;
+		try_llvmb libLLVMScalarOpts.so; try_llvmgi;
+		$main_opt -load "${main_libdir}/LLVMExtra.so" -CFCSS -debug-only=CFCSS \
+			-S -o "$opt_out" "$ll";
+
+		# plant illegal branc inst
+		$main_opt -load "${main_libdir}/LLVMExtra.so" -CFCSSTest -debug-only=CFCSS \
+			-S -o "$opt_out" "$opt_out";
+
+		$rel_clang "$opt_out";
+		./a.out
+
+	elif [[ $run == "LoopSortAccess" ]]; then
+		ll=$(get_ll "$1") || exit 1;
+		try_llvmb libLLVMScalarOpts.so; try_llvmgi;
+		$main_opt -load "${main_libdir}/LLVMExtra.so" -mem2reg \
+			-loop-simplify -instcombine -instnamer -indvars -LoopSortAccess \
+			-S -o "$opt_out" "$ll";
+
+	elif [[ $run == "LoopFusion" ]]; then
+		pass="loop-fusion"
+		if [[ $1 == "ctt" ]]; then
+			pass="ctt-loop-fusion"; shift
+		fi
+
+		ll=$(get_ll "$1") || exit 1;
+		try_llvmb libLLVMScalarOpts.so; try_llvmgi;
+
+		debugonly="-debug-only=$pass"
+		if [[ -n $dbg ]]; then
+			debugonly="";
+		fi
+		debugonly="";
+
+		$dbg $main_opt -mem2reg \
+			-loop-simplify -instcombine -instnamer -indvars \
+			-$pass $debugonly -S -o "$opt_out" "$ll";
+	
+	elif [[ $run == "Eph" ]]; then
+		ll=$(get_ll "$1") || exit 1;
+		try_llvmb libLLVMScalarOpts.so; try_llvmgi;
+		$dbg $main_opt -eph -S -o "$opt_out" "$ll";
+
+	elif [[ $run == "X86BlockSign" ]]; then
+		ll=$(get_ll "$1") || exit 1;
+		try_llvmb libLLVMX86CodeGen.so; try_llvmgi;
+		$dbg $main_llc -x86-block-sign -debug-only=x86-block-sign $ll
+
+	elif [[ $run == "regalloc" || $run == "perlbench" || $run == "MachineEph" ]]; then
+		ll=$(get_ll "$1") || exit 1;
+		try_llvmb libLLVMCodeGen.so; try_llvmgi;
+		# $dbg $main_llc -debug-only=regalloc $ll 2>&1
+		$dbg $main_llc -filetype=obj -O3 -enable-machine-eph $ll 2>&1
+
+	elif [[ $run == "lt" ]]; then
+		buildprof="lt"
+		get_ll_clang="$lt_clang"
+
+        debugonly=-debug-only=
+        debugonly+=LoopPermute,
+        debugonly+=dep-graph,
+        debugonly+=loop-transform,
+        debugonly+=affine-transforms
+
+        # debugonly=
+
+		ll=$(get_ll "$1") || exit 1;
+		try_llvmb libLLVMScalarOpts.so; try_llvmgi;
+		$dbg $lt_opt -mem2reg \
+			-loop-simplify -instcombine -instnamer -indvars \
+            -loop-permute $debugonly \
+			-S -o "$opt_out" "$ll";
+	
+	elif [[ $run == "flang" ]]; then
+		do_flang "$@";
+
+	else
+		return 1;
+	fi
+
+	return 0;
+}
+
+if [[ $1 == "-d" ]]; then
+	dbg="gdb --args "
+	shift
+fi
+
+# try non-dir-based-profiles first where $1 is profile
+if [[ $1 == "dot" ]]; then
+	shift
+	if [[ $# -eq 0 ]]; then # try all fn in /tmp
+        do_llvmdot "*" "/tmp"
+		exit;
+	fi
+
+	if [[ ! -e $1 ]]; then # try $1 fn in /tmp
+        do_llvmdot "$1" "/tmp"
+        do_llvmdot -c "/tmp" # if there are other dots in /tmp
+		exit;
+	fi
+
+	# try in currdir
+	ll=$(get_ll_for_dot $1) || exit 1;
+	$rel_opt -dot-cfg $ll
+	$rel_opt -dot-dom $ll
+
+	if [[ $# -eq 2 ]]; then
+        do_llvmdot "$2" "."
+	else
+        do_llvmdot "*" "."
+	fi
+
+	# if we generated an ll then remove it.
+	if [[ $ll == $dot_out ]]; then
+		rm $ll
+	fi
+
+	# In case of
+	# llvmu dot foofunc has_foo_bar_zee_func.c
+    do_llvmdot -c "."
+
+elif [[ $1 == "scev" ]]; then
+	shift
+	ll=$(get_ll "$1") || exit 1;
+	$rel_opt -mem2reg -S -o "$clang_out" "$ll"
+	$rel_opt -analyze -scalar-evolution "$clang_out"
+
+elif [[ $1 == "mod" ]]; then
+	shift
+	$rel_clangpp `$main_config --cxxflags --ldflags --system-libs \
+		--libs core` $1
+
+elif [[ $1 == "ir" ]]; then
+	shift
+	get_ll "$1" &> /dev/null || exit 1;
+
+elif [[ $1 == "mir" ]]; then
+	shift;
+    do_mir "$@"
+
+else
+	if ! dir_based_profile "$@"; then
+		profile=$(basename $(dirname $(realpath "$1")))
+		dir_based_profile "$profile" "$@"
+	fi
+fi

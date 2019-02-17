@@ -1,0 +1,33 @@
+shopt -s expand_aliases
+
+function manvim() {
+	man $@ | vim -u ~/.manvimrc -
+}
+
+alias man='manvim'
+alias bri='cat /sys/class/backlight/acpi_video0/brightness'
+alias ls='ls -a --color=auto --group-directories-first'
+alias ll='ls -alih --color=auto --group-directories-first'
+alias pwr='cat /sys/class/power_supply/BAT1/uevent'
+alias bril='sudo tee /sys/class/backlight/acpi_video0/brightness <<< 0'
+alias brim='sudo tee /sys/class/backlight/acpi_video0/brightness <<< 9'
+alias brih='sudo tee /sys/class/backlight/acpi_video0/brightness <<< 15'
+alias mon='xrandr --output LVDS-1 --auto'
+alias moff!='xrandr --output LVDS-1 --off'
+alias moff='xset dpms force off'
+alias vim='vim -p'
+alias vimb='vim ~/.bashrc'
+alias vimv='vim ~/.vimrc'
+alias vims='vim ~/git/rc/shell'
+alias viml='vim ~/git/rc/linux_p'
+alias vimvv='vim ~/git/rc/vim'
+alias cl='clear'
+alias vimm='vim -u /etc/vimrc --cmd "set mouse=a"'
+alias rm='rm -rfv'
+alias cp='cp -vr'
+alias tree='tree -aC'
+alias psa='ps -eflj'
+alias jobs='jobs -l'
+alias lsblk='lsblk -o +FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC,MODEL,UUID'
+
+

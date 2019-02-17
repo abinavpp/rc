@@ -1,0 +1,33 @@
+#!/bin/bash
+
+i3sconf=/etc/i3status.conf
+
+if [[ -z "$CTMP1" || -z "$CTMP2" || -z "$GTMP1" ]]; then
+	exit
+fi
+
+if [[ ! -e "${i3sconf}" || ! -w "${i3sconf}" ]]; then
+	exit
+fi
+
+gawk -i inplace '
+BEGIN {
+	temp[0] = ENVIRON["CTMP1"]
+	temp[1] = ENVIRON["CTMP2"]
+	temp[2] = ENVIRON["GTMP1"]
+}
+
+/#startc/  {
+	seen = 1
+}
+
+seen && /path/ {
+	gsub(".*", "\t\tpath = "temp[i++]);
+	print $0;
+}
+
+!(seen) || (seen && !/path/ ){
+	print $0;
+}
+
+' $i3sconf

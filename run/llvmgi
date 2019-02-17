@@ -1,0 +1,55 @@
+#! /bin/bash
+
+function has_gdbidx() {
+	if [[ -L "$1" ]]; then
+		echo "Symlinks not allowed!"
+		exit 1;
+	fi
+
+	local elfout=$(readelf -S "$1" | egrep "\.gdb_index")
+
+	if [[ -n $elfout ]]; then
+		return 0;
+	fi
+	return 1;
+}
+
+function set_gdbidx() {
+	local arg preserve_ts
+	if [[ $1 == "-p" ]]; then
+		preserve_ts="true"
+		shift;
+	fi
+
+	for arg in "$@"; do
+		local orig_ts=$(stat -c %Y "$arg")
+
+		if has_gdbidx "$arg"; then
+			continue
+		fi
+
+		echo "Setting .gdb_index for $arg"
+		gdb-add-index "$arg"
+		if [[ $preserve_ts == "true" ]]; then
+			touch -m -d @${orig_ts} $arg
+		fi
+	done
+}
+
+function set_llvm_gdbidx() {
+	local builddir="$LLVM_DEV/build/$1"
+
+	# skip scripts
+	local bin_files=$(find "$builddir/bin/" -maxdepth 1 -type f \
+		! -name "llvm-lit" ! -name "llvm-cat" ! -name "scan-view" ! -name \
+			"scan-build")
+	local lib_files=$(find "$builddir/lib/" -maxdepth 1 -type f \
+		-regextype posix-egrep -regex '^.*\.so\.[0-9]+.*$')
+
+	set_gdbidx -p $bin_files
+	set_gdbidx -p $lib_files
+}
+
+if [[ $# -eq 1 ]]; then
+	set_llvm_gdbidx $1
+fi

@@ -1,0 +1,122 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+use Term::ANSIColor;
+use Getopt::Long;
+use feature qw(say);
+
+sub in_array {
+	my ($arr, $search_for) = @_;
+	my %items = map {$_ => 1} @$arr;
+	return (exists($items{$search_for})) ? 1 : 0;
+}
+
+sub pacbatch_get_filtered_list {
+	my ($path_pacbatch_db, @pacbatch_labels) = @_;
+	my @ret;
+
+	open(my $fh_pacbatch_db, "<", $path_pacbatch_db) || 
+		die("Can't open $path_pacbatch_db");
+	while (my $line = <$fh_pacbatch_db>) {
+		if ($line =~ /^#/ || $line =~ /^\s*$/) {
+			next;
+		}
+		$line =~ s/#.*//g;
+		$line =~ s/^\s.+//g;
+
+		my @words = split(/\s+/, $line);
+		if (in_array(\@pacbatch_labels, $words[0])) {
+			push(@ret, @words[1..$#words]);
+		}
+	}
+
+	return @ret;
+}
+
+sub pacman_is_in_repo {
+	my ($pkg) = @_;
+	my $is_pkg = `pacman -Si $pkg &> /dev/null; echo -n \$?`;
+	my $is_group = `pacman -Sg $pkg &> /dev/null; echo -n \$?`;
+
+	return !$is_pkg || !$is_group;
+}
+
+sub pacman_is_in_sys {
+	my ($pkg) = @_;
+	my $is_pkg = `pacman -Q $pkg &> /dev/null; echo -n \$?`;
+	my $is_group = `pacman -Qg $pkg &> /dev/null; echo -n \$?`;
+
+	return !$is_pkg || !$is_group;
+}
+
+sub pacbatch_list_verify_S {
+	my ($pacbatch_list) = @_;
+
+
+	# foreach my $pacbatch_pkg (@$pacbatch_list) {
+	for (my $i = 0; $i < scalar @$pacbatch_list; $i++) {
+		my $pacbatch_pkg = @$pacbatch_list[$i];
+		if (!pacman_is_in_repo($pacbatch_pkg)) {
+			die "$pacbatch_pkg NOT in arch repo\nTerminating...\n";
+		} else {
+			print "$pacbatch_pkg in arch repo ";
+			if (pacman_is_in_sys($pacbatch_pkg)) {
+				print color('red');
+				print "(in system, removing from batch)\n";
+				splice (@$pacbatch_list, $i--, 1); # arrghh, i--
+			} else {
+				print color('green');
+				print "(NOT in system, to be installed)\n";
+			}
+			print color('reset');
+		}
+	}
+}
+
+sub usage() {
+	say '
+	"o=s" => \my $path_pacbatch_out,
+	"d=s" => \$path_pacbatch_db,
+	"S" => \my $pacman_S,
+	"Q" => \my $pacman_Q,
+	"help" => \my $opt_help)
+	';
+}
+
+# sub confirm_silly () {
+# 	if (!defined $pacman_noconfirm) {
+# 		print "\n\nEnter to confirm "; my $x = <STDIN>;
+# 	}
+# }
+
+GetOptions(
+	"o=s" => \my $path_pacbatch_out,
+	"d=s" => \my $path_pacbatch_db,
+	"S" => \my $pacman_S,
+	"help" => \my $opt_help)
+
+	or die "Error parsing cmdline";
+
+if ($opt_help || !defined $path_pacbatch_db  || !defined $path_pacbatch_out) {
+	usage();
+	exit;
+}
+
+if (!defined $ARGV[0]) {
+	print STDERR "Error: label(s) not specified\n";
+	usage();
+	exit;
+}
+
+my @pacbatch_labels = @ARGV;
+
+my @pacbatch_filtered_list = pacbatch_get_filtered_list($path_pacbatch_db, @pacbatch_labels);
+
+if ($pacman_S) {
+	pacbatch_list_verify_S(\@pacbatch_filtered_list);
+}
+
+system("echo @pacbatch_filtered_list > $path_pacbatch_out");
+

@@ -1,0 +1,52 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+sub qemucl_sane_local_virtfs {
+	my ($paths) = (@_);
+	my $ret;
+
+	my $i = 0;
+	foreach my $path (@$paths) {
+		$ret .= " -virtfs local,path=$path,mount_tag=host$i,security_model" .
+			"=passthrough,id=host$i ";
+		$i++;
+	}
+	return $ret;
+}
+
+sub qemucl_sane_kvm {
+	return " -enable-kvm -cpu host -machine q35,accel=kvm ";
+}
+
+sub qemucl_sane_net {
+	return " -net nic,vlan=0,model=virtio -net user,vlan=0";
+}
+
+sub qemucl_drive {
+	my ($format, $file) = @_;
+	return " -drive format=$format,file=$file ";
+}
+
+sub qemucl_sane_gpu {
+	return " -vga std ";
+}
+
+if (scalar @ARGV != 2) {
+	die "Error: Invalid cmdline";
+}
+
+my $profile = $ARGV[0];
+my $path_vm = $ARGV[1];
+
+if ($profile eq "usual") {
+	my @virtfs_dirs = ("/home/abinav/Downloads/src/", 
+		"/home/abinav/documents/proj/kernel/",
+		"/home/abinav/documents/snp/kernel/");
+
+	system("qemu-system-x86_64 -smp 4 -m 1024 " . qemucl_sane_kvm . qemucl_sane_net .
+		qemucl_sane_gpu .
+		qemucl_sane_local_virtfs(\@virtfs_dirs) . qemucl_drive("raw", $path_vm));
+	exit;
+}

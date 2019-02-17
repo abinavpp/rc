@@ -1,0 +1,14 @@
+#! /bin/bash
+
+opt=$1
+path_config_chrome="/home/abinav/.config/google-chrome";
+path_config_chrome_Default="$path_config_chrome/Default";
+
+if [[ $1 == "0" ]]; then
+	sudo chown root:root "$path_config_chrome"
+	sudo chown root:root "$path_config_chrome_Default"
+else
+	sudo chown abinav:abinav "$path_config_chrome"
+	sudo chown abinav:abinav "$path_config_chrome_Default"
+fi
+

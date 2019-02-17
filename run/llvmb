@@ -1,0 +1,40 @@
+#! /bin/bash
+
+# usage: llvmb <profile> [the-part-after-ninja]
+function llvmb {
+	local builddir="$LLVM_DEV/build/$1"
+    local n_cores=$(nproc --all || getconf _NPROCESSORS_ONLN || echo 1)
+
+    if ! am_i_home; then
+        n_cores=$((n_cores / 2))
+    fi
+
+	if [[ ! -d "$builddir" || $# -eq 0 ]]; then
+		exit 1;
+	fi
+
+	shift;
+	cd "$builddir"
+
+	if [[ -e build.ninja ]]; then
+		ninja $@
+	elif [[ -e Makefile ]]; then
+		make -j ${n_cores} $@
+	fi
+
+	local ret=$?
+
+	# Below cp is the default unaliased /bin/cp, so it will copy
+	# libLLVMFoo.so.7, not the libLLVMFoo.so symlink even though the -v
+	# output "lies". F$@king coreutil nonsense!
+	# if [[ $ret -eq 0 && $1 =~ ^libLLVM.*\.so$ ]]; then
+		# if [[ "lib/$1" -nt "$LLVM_DEV/install/lib/$1" ]]; then
+			# cp "lib/$1" "$LLVM_DEV/install/lib/"
+		# fi
+	# fi
+
+	cd - 1> /dev/null
+	return $ret;
+}
+
+llvmb "$@"

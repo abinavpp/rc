@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Do not use this obfuscated script!
+
+#external prefix
+prefix_sys="/"
+prefix_home="$HOME/"
+
+#git prefix
+prefix_git="$HOME/rc/"
+
+files_home=(`find . -path "./.git" -prune -o -path "./jrnl" -prune -o \
+	-path "./run" -prune -o -path "./etc" -prune -o \
+	-type f -regextype posix-egrep ! -regex \
+   	"(\./README\.md|\./rcsync|\./\.gitignore|.*/[[:print:]]*.swp)" \
+  	-print | cut -c1,2 --complement`)
+
+files_sys=(`find ./etc/ -type f -print | cut -c1,2 --complement`)
+
+#rc_fn <home/sys> <sy/st>
+#ie. setup or sync home(files_home) or sys(files_sys)
+function rc_fn {
+	local inp f dirtree
+	local prefix_src prefix_dst prefix_ext
+	local files #array of files
+
+	#setting the external prefix (either ~/ or /) as per $1
+	if [[ "$1" == "home" ]]; then
+		prefix_ext=${prefix_home}
+		files=${files_home[@]}
+	else
+		prefix_ext=${prefix_sys}
+		files=${files_sys[@]}
+	fi
+
+	if [[ "$2" == "st" ]]; then #setting home/sys
+		echo "Setting the following :"
+		prefix_dst=${prefix_ext}; prefix_src=${prefix_git}
+
+	else #syncing git
+		echo "Syncing from the following to git :"
+		prefix_dst=${prefix_git}; prefix_src=${prefix_ext}
+	fi
+
+	for f in ${files[@]}
+	do
+		echo "${prefix_ext}${f}"
+	done
+
+	read -p "Confirm ? " inp;
+	[[ $inp = "y" ]] || exit 0
+
+
+	for f in ${files[@]}
+	do
+		dirtree=${f%/*}
+		if [[ `expr match "$dirtree" '[a-zA-Z0-9.*]*/'` -ne 0 ]]; then
+		#creates the whole dirtree till the file f in files[]
+			mkdir -p ${prefix_dst}${dirtree}
+		fi
+	done
+
+	for f in ${files[@]}
+	do
+		cp -v ${prefix_src}${f} ${prefix_dst}${f}
+	done
+}
+
+while getopts "sShH :" opt 
+do
+	case "$opt" in
+	h)	rc_fn home sy;;
+	H)	rc_fn home st;;
+	s)	rc_fn sys sy;;
+	S)  rc_fn sys st;;
+	?) 	echo "-s for git_sync of sys and -S for sys_setup"
+	 	echo "-h for git_sync of home and -H for home_setup"
+		exit 2
+		;;
+	esac
+done
