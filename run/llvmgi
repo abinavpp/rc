@@ -1,17 +1,20 @@
 #! /bin/bash
 
 function has_gdbidx() {
-	if [[ -L "$1" ]]; then
-		echo "Symlinks not allowed!"
-		exit 1;
-	fi
-
 	local elfout=$(readelf -S "$1" | egrep "\.gdb_index")
 
 	if [[ -n $elfout ]]; then
 		return 0;
 	fi
 	return 1;
+}
+
+function is_elf() {
+    if [[ $(file "$1") =~ ^.*ELF.*$ ]]; then
+        return 0;
+    fi
+
+    return 1;
 }
 
 function set_gdbidx() {
@@ -23,6 +26,10 @@ function set_gdbidx() {
 
 	for arg in "$@"; do
 		local orig_ts=$(stat -c %Y "$arg")
+
+        if test -L "$arg" || ! is_elf "$arg"; then
+           continue 
+        fi
 
 		if has_gdbidx "$arg"; then
 			continue
@@ -40,9 +47,9 @@ function set_llvm_gdbidx() {
 	local builddir="$LLVM_DEV/build/$1"
 
 	# skip scripts
-	local bin_files=$(find "$builddir/bin/" -maxdepth 1 -type f \
-		! -name "llvm-lit" ! -name "llvm-cat" ! -name "scan-view" ! -name \
-			"scan-build")
+    local bin_files=$(find "$builddir/bin/" -maxdepth 1 -type f)
+		# ! -name "llvm-lit" ! -name "llvm-cat" ! -name "scan-view" ! -name \
+			# "scan-build")
 	local lib_files=$(find "$builddir/lib/" -maxdepth 1 -type f \
 		-regextype posix-egrep -regex '^.*\.so\.[0-9]+.*$')
 
