@@ -46,10 +46,7 @@ function set_gdbidx() {
 function set_llvm_gdbidx() {
 	local builddir="$LLVM_DEV/build/$1"
 
-	# skip scripts
     local bin_files=$(find "$builddir/bin/" -maxdepth 1 -type f)
-		# ! -name "llvm-lit" ! -name "llvm-cat" ! -name "scan-view" ! -name \
-			# "scan-build")
 	local lib_files=$(find "$builddir/lib/" -maxdepth 1 -type f \
 		-regextype posix-egrep -regex '^.*\.so\.[0-9]+.*$')
 

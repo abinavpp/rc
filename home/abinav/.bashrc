@@ -5,45 +5,54 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-function is_in_path() {
-	declare -A path
-	local p
-	path=`echo $PATH | awk -F: '{for (i = 1; i <= NF; i++) print $i}' | tr '\n' ' '`
+function is_in_colonvar() {
+	declare -A fields
+	local field
+    local colonvar=$1 check=$2
+    fields=`echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}' | tr '\n' ' '`
 
-	for p in ${path[@]}; do
-		if [[ $1 == $p ]]; then
-			unset path
+	for field in ${fields[@]}; do
+		if [[ $check == $field ]]; then
+			unset fields
 			return 0
 		fi
 	done
-	unset path
+	unset fields
 	return 1
 }
 
-# -p to prepend your arg(s) to $PATH, else appends.
-function add_to_path() {
-	local arg mode="append" i
-	if [[ $1 == "-p" ]]; then
-		mode="prepend"
-		shift
-	fi
+function md_colonvar() {
+    local colonvar=$1 opt=$2; shift 2
+	local arg i
 
-	if [[ $mode == "prepend" ]]; then
-	# prepend $@'s in reverse
+    # prepend $@'s in reverse
+	if [[ $opt == "-p" ]]; then
 		for (( i=$#; i > 0; i-- )); do
 			arg="${!i}"
-			if ! is_in_path $arg; then
-				export PATH="$arg:${PATH}"
+			if ! is_in_colonvar $colonvar $arg; then
+				export $colonvar="$arg:${!colonvar}"
 			fi
 		done
+	fi
 
-	else
-	# appends $@'s as it is.
+    # appends $@'s as it is.
+    if [[ $opt == "-a" ]]; then
 		for arg in "$@"; do
-			export PATH="${PATH}:$arg"
+            if ! is_in_colonvar $colonvar $arg; then
+			    export $colonvar="${!colonvar}:$arg"
+            fi
 		done
 	fi
+
+    # resets colonvar to it's $RESET_XXX var
+    if [[ $opt == "-r" ]]; then
+        local reset_colonvar="RESET_$colonvar"
+        export $colonvar=${!reset_colonvar}
+    fi
 }
+
+function mdpath() { md_colonvar PATH $@; }
+function mdld() { md_colonvar LD_LIBRARY_PATH $@; }
 
 export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
 export EDITOR="$VISUAL" # use $EDITOR if "our" vim creates trouble
@@ -55,7 +64,9 @@ export EXTRA_RUN="/home/abinav/rc/run"
 export HOME_BIN="/home/abinav/bin"
 export LLVM_DEV="/home/abinav/llvm_dev"
 
-add_to_path -p "$EXTRA_RUN" "$HOME_BIN"
+mdpath -p "$EXTRA_RUN" "$HOME_BIN"
+RESET_PATH=$PATH
+RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
 source_before="/etc/bash.before"
 source_after="/etc/bash.after"

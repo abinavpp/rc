@@ -1,0 +1,12 @@
+#! /bin/bash
+
+bin_dir="$LLVM_DEV/bin/$1"
+
+if [[ ! -d "$bin_dir" || $# -eq 0 ]]; then
+        echo "profile doesn't exist"
+		exit 1
+fi
+
+shift;
+PATH="$bin_dir:$PATH"
+$@
