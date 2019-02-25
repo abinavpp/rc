@@ -49,6 +49,15 @@ function md_colonvar() {
         local reset_colonvar="RESET_$colonvar"
         export $colonvar=${!reset_colonvar}
     fi
+
+    # edit colonvar in vim with newlines as "temporary separators"
+    if [[ $opt == "-e" ]]; then
+        local temp=$(mktemp -t md_colonvar.XXXXXX)
+        echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}' > $temp
+        vim $temp
+        export $colonvar=$(cat $temp | tr '\n' ':' | sed 's/:$//g')
+        rm $temp
+    fi
 }
 
 function mdpath() { md_colonvar PATH $@; }

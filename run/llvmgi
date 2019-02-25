@@ -44,14 +44,15 @@ function set_gdbidx() {
 }
 
 function set_llvm_gdbidx() {
-	local builddir="$LLVM_DEV/build/$1"
+	# local builddir="$LLVM_DEV/build/$1"
+    # local bin_files=$(find "$builddir/bin/" -maxdepth 1 -type f)
+	# local lib_files=$(find "$builddir/lib/" -maxdepth 1 -type f \
+	# 	-regextype posix-egrep -regex '^.*\.so\.[0-9]+.*$')
+	# set_gdbidx -p $bin_files
+	# set_gdbidx -p $lib_files
 
-    local bin_files=$(find "$builddir/bin/" -maxdepth 1 -type f)
-	local lib_files=$(find "$builddir/lib/" -maxdepth 1 -type f \
-		-regextype posix-egrep -regex '^.*\.so\.[0-9]+.*$')
-
-	set_gdbidx -p $bin_files
-	set_gdbidx -p $lib_files
+    gdbi $LLVM_DEV/bin/$1/
+    gdbi $LLVM_DEV/lib/$1/ -maxdepth 1
 }
 
 if [[ $# -eq 1 ]]; then

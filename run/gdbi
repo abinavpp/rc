@@ -1,0 +1,27 @@
+#! /bin/bash
+
+function has_gdbidx() {
+	local elfout=$(readelf -S "$1" | egrep "\.gdb_index")
+
+	if [[ -n $elfout ]]; then
+		return 0;
+	fi
+	return 1;
+}
+
+function is_elf() {
+    if [[ $(file "$1") =~ ^.*ELF.*$ ]]; then
+        return 0;
+    fi
+
+    return 1;
+}
+
+files=$(find $@)
+
+for f in $files; do
+    if is_elf $f && ! has_gdbidx $f; then
+        echo "Setting .gdb_index for $f"
+        gdb-add-index "$f"
+    fi
+done

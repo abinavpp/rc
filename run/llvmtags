@@ -1,0 +1,16 @@
+#! /bin/bash
+ 
+dir=$(realpath .)
+ 
+find $dir \
+    -path "$dir/benchmarks*" -prune -o \
+    -path "$dir/bindings*" -prune -o \
+    -path "$dir/cmake*" -prune -o \
+    -path "$dir/examples*" -prune -o \
+    -path "$dir/tools*" -prune -o \
+    -path "$dir/test*" -prune -o \
+    -path "$dir/unittests*" -prune -o \
+    -path "$dir/docs*" -prune -o \
+    -name "*.[ch]" -print -o \
+    -name "*.cpp" -print \
+    -type f > cscope.files
