@@ -1,3 +1,5 @@
+" /[^\x00-\x7F] to find non-ascii, TODO: wrap this
+
 " variables
 " ---------
 let mapleader = " "
