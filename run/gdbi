@@ -12,7 +12,7 @@ function has_gdbidx() {
 function is_elf_with_gdb() {
     # file -b stops prepending file name (consider a text file called ELF)
     if [[ -f "$1" && $(file -b "$1") =~ ^.*ELF.*$ ]]; then
-        if [[ $(readelf --debug-dump=info "$1" | wc -l) != "0" ]]; then
+        if [[ $(readelf --debug-dump=info "$1" | head -n1 | wc -l) != "0" ]]; then
             return 0;
         fi
     fi
