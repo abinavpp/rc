@@ -25,6 +25,15 @@ function md_colonvar() {
     local colonvar=$1 opt=$2; shift 2
 	local arg i
 
+    # if colonvar is blank or not set
+    if [[ ! $(echo ${!colonvar}) =~ [[:print:]]+ ]]; then
+        if ! is_in_colonvar $colonvar $1; then
+            export $colonvar="$1"
+        fi
+        shift
+        opt="-a" # XXX: Faking the option to force appending
+    fi
+
     # prepend $@'s in reverse
 	if [[ $opt == "-p" ]]; then
 		for (( i=$#; i > 0; i-- )); do
@@ -62,6 +71,7 @@ function md_colonvar() {
 
 function mdpath() { md_colonvar PATH $@; }
 function mdld() { md_colonvar LD_LIBRARY_PATH $@; }
+function mdlb() { md_colonvar LIBRARY_PATH $@; }
 
 export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
 export EDITOR="$VISUAL" # use $EDITOR if "our" vim creates trouble
@@ -77,10 +87,8 @@ mdpath -p "$EXTRA_RUN" "$HOME_BIN"
 RESET_PATH=$PATH
 RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
-source_before="/etc/bash.before"
-source_after="/etc/bash.after"
-
-source $source_before &> /dev/null
+source /etc/bash.before &> /dev/null
+source ${HOME}/bash.before &> /dev/null
 
 sd=/usr/lib/systemd/system
 cd=/var/lib/systemd/coredump
@@ -537,7 +545,8 @@ else
     [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
 fi
 
-source $source_after &> /dev/null
+source /etc/bash.after &> /dev/null
+source ${HOME}/bash.after &> /dev/null
 
 alias ka='killall'
 alias grep='grep -P --color -n'

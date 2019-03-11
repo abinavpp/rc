@@ -1,5 +1,3 @@
-" /[^\x00-\x7F] to find non-ascii, TODO: wrap this
-
 " variables
 " ---------
 let mapleader = " "
@@ -20,7 +18,6 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_ignore_files = ["tex"]
 let g:syntastic_c_compiler_options = '-Wparentheses'
-" let g:syntastic_c_compiler_options .= ' -I /lib/modules/' . sys . '/build/include/'
 
 let g:tagbar_left = 1
 
@@ -35,11 +32,19 @@ let s:tags_file = ".vim_tags"
 let g:qrun_cflags = "-lpthread -lm"
 
 
+if filereadable($HOME . "/vimrc.before")
+    source $HOME/vimrc.before
+endif
 
 " functions
 " ---------
 function! Chomp(string)
 	return substitute(a:string, '\n\+$', '', '')
+endfunction
+
+function! Cleanme()
+    exec '%s/\v\ +$//g'
+    exec '%s/\v[^\x00-\x7F]+//g'
 endfunction
 
 function! Trailing_space_match()
@@ -358,9 +363,6 @@ syntax on
 call Cs_upd()
 filetype plugin indent on
 
-execute pathogen#infect()
-
-
 " autocmds
 " --------
 let g:src_root = system('realpath `srcerer`')
@@ -419,3 +421,9 @@ autocmd filetype ruby inoremap <F6> <C-o>:wa <bar>
 			\exec '!ruby '.shellescape('%')<CR>
 autocmd filetype php inoremap <F6> <C-o>:wa <bar>
 			\exec '!php '.shellescape('%')<CR>
+
+if filereadable($HOME . "/vimrc.after")
+    source $HOME/vimrc.after
+endif
+
+execute pathogen#infect()
