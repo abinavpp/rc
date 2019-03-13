@@ -28,7 +28,7 @@ function set_gdbidx() {
 		local orig_ts=$(stat -c %Y "$arg")
 
         if test -L "$arg" || ! is_elf "$arg"; then
-           continue 
+           continue
         fi
 
 		if has_gdbidx "$arg"; then
@@ -44,17 +44,25 @@ function set_gdbidx() {
 }
 
 function set_llvm_gdbidx() {
-	# local builddir="$LLVM_DEV/build/$1"
-    # local bin_files=$(find "$builddir/bin/" -maxdepth 1 -type f)
-	# local lib_files=$(find "$builddir/lib/" -maxdepth 1 -type f \
-	# 	-regextype posix-egrep -regex '^.*\.so\.[0-9]+.*$')
-	# set_gdbidx -p $bin_files
-	# set_gdbidx -p $lib_files
+    bin_dir="$LLVM_DEV/build"
+    lib_dir="$LLVM_DEV/build"
 
-    gdbi $LLVM_DEV/bin/$1/
-    gdbi $LLVM_DEV/lib/$1/ -maxdepth 1
+    if [[ $1 == "-i" ]]; then
+        shift
+	    bin_dir="$LLVM_DEV/install"
+        lib_dir="$LLVM_DEV/install"
+    fi
+
+    bin_dir="${bin_dir}/$1/bin"
+    lib_dir="${bin_dir}/$1/lib"
+
+    if [[ ! -d "$bin_dir" || ! -d "$lib_dir" ]]; then
+        echo "unknown project"
+        return
+    fi
+
+    gdbi bin_dir ! -name "*.o"
+    gdbi lib_dir -maxdepth 1 ! -name "*.o"
 }
 
-if [[ $# -eq 1 ]]; then
-	set_llvm_gdbidx $1
-fi
+set_llvm_gdbidx $@

@@ -25,7 +25,10 @@ files=$(find $@)
 
 for f in $files; do
     if is_elf_with_gdb $f && ! has_gdbidx $f; then
+        orig_ts=$(stat -c %Y "$f")
         echo "Setting .gdb_index for $f"
-        gdb-add-index "$f"
+        gdb-add-index "$f" &
+        touch -m -d @${orig_ts} "$f"
     fi
 done
+wait
