@@ -59,13 +59,19 @@ function md_colonvar() {
         export $colonvar=${!reset_colonvar}
     fi
 
-    # edit colonvar in vim with newlines as "temporary separators"
+    # edit colonvar in vim with newlines as "temporary separators". :wq to save
+    # changes, :q to discard changes
     if [[ $opt == "-e" ]]; then
         local temp=$(mktemp -t md_colonvar.XXXXXX)
         echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}' > $temp
         vim $temp
         export $colonvar=$(cat $temp | tr '\n' ':' | sed 's/:$//g')
         rm $temp
+    fi
+
+    # print the colonvar
+    if [[ $opt == "-o" ]]; then
+      echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}'
     fi
 }
 

@@ -31,6 +31,7 @@ let s:trailing_space_flag = 0
 let s:tags_file = ".vim_tags"
 let g:qrun_cflags = "-lpthread -lm"
 
+execute pathogen#infect()
 
 if filereadable($HOME . "/vimrc.before")
     source $HOME/vimrc.before
@@ -298,7 +299,6 @@ set wildcharm=<tab>
 cnoremap <C-@> <tab>
 
 
-
 " set
 " ---
 set ttimeoutlen=50
@@ -306,9 +306,9 @@ set textwidth=80
 set scrolloff=5
 set backspace=2
 set t_Co=256
-set tabstop=4
+set tabstop=2
+set shiftwidth=2
 set laststatus=2
-set shiftwidth=4
 set expandtab
 set previewheight=1
 set pastetoggle=<F2>
@@ -410,7 +410,6 @@ autocmd filetype tex inoremap <F6> <C-o>:wa <bar> exec
 			\'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
 autocmd filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
 
-autocmd filetype html,css,php,javascript set shiftwidth=2
 autocmd filetype sh inoremap <F6> <C-o>:wa <bar> exec
 			\'!./'.shellescape('%')<CR>
 autocmd filetype perl inoremap <F6> <C-o>:wa <bar>
@@ -422,8 +421,12 @@ autocmd filetype ruby inoremap <F6> <C-o>:wa <bar>
 autocmd filetype php inoremap <F6> <C-o>:wa <bar>
 			\exec '!php '.shellescape('%')<CR>
 
+" see https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
+" aug python
+    " ftype/python.vim overwrites this
+    " au FileType python setlocal ts=2 sts=2 sw=2 
+" aug end
+
 if filereadable($HOME . "/vimrc.after")
     source $HOME/vimrc.after
 endif
-
-execute pathogen#infect()

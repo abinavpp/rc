@@ -1,10 +1,20 @@
 #! /bin/bash
 
+function die_no_profile() {
+  echo "profile doesn't exist"
+  exit 1
+}
+
+if [[ $# -eq 0 ]]; then
+  die_no_profile
+fi
+
 bin_dir="$LLVM_DEV/bin/$1"
 
-if [[ ! -d "$bin_dir" || $# -eq 0 ]]; then
-        echo "profile doesn't exist"
-		exit 1
+test ! -d "$bin_dir" && bin_dir="$LLVM_DEV/build/$1/bin"
+
+if [[ ! -d "$bin_dir" ]]; then
+  die_no_profile
 fi
 
 shift;
