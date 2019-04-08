@@ -1,0 +1,9 @@
+#! /usr/bin/perl
+
+my @lines = <STDIN>;
+my $skip_head = 3;
+foreach my $line (@lines) {
+  print "$line";
+  if ($skip_head) { $skip_head--; next; }
+  print "\n";
+}

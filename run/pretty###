@@ -1,6 +1,0 @@
-#! /usr/bin/perl
-
-my @lines = <STDIN>;
-foreach my $line (@lines) {
-  print "$line\n\n"
-}
