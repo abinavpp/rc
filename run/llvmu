@@ -64,11 +64,12 @@ function get_ll_for_dot() {
 }
 
 # To view cfg, dom dot files and clean up whatever used:
-# do_llvmdot {func_name_fragment | *} <path>
-# do_llvmdot * /path/ works on all functions in /path/
+#
+# do_llvmdot func-name-fragment path/ views function in path/
+# do_llvmdot * path/ views all functions in path/
 # 
-# To cleanup all llvm dot files
-# do_llvmdot -c
+# To cleanup all llvm dot files in path/
+# do_llvmdot -c path/
 function do_llvmdot {
 	if [[ $1 == "-c" ]]; then
 		rm $2/mf*.dot &> /dev/null

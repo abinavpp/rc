@@ -56,8 +56,8 @@ define d
 	down
 end
 
-# skip -gfi /usr/lib64/gcc/x86_64-pc-linux-gnu/8.2.1/../../../../include/c++/8.2.1/bits/*.h
-skip -gfi /usr/include/c++/8.2.1/bits/*.h
+skip -gfi /usr/include/c++/*/bits/*.h
+# set follow-fork-mode child
 set confirm off
 tui enable
 foc cmd

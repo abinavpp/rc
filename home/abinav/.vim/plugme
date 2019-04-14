@@ -1,0 +1,55 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+my @plugins = (
+  "https://github.com/Raimondi/delimitMate.git",
+  "https://github.com/scrooloose/nerdtree.git",
+  "https://github.com/vim-syntastic/syntastic.git",
+  "https://github.com/majutsushi/tagbar.git",
+  "https://github.com/tpope/vim-commentary.git",
+  "https://github.com/tpope/vim-fugitive.git",
+  "https://github.com/google/vim-searchindex.git",
+  "https://github.com/tpope/vim-surround.git",
+  "https://github.com/tpope/vim-eunuch.git",
+  "https://github.com/gioele/vim-autoswap.git",
+  "https://github.com/yegappan/greplace.git"
+);
+
+sub setup_pathogen {
+  system("rm -rf autoload/ &> /dev/null");
+  system("mkdir autoload/");
+  system("wget -O autoload/pathogen.vim https://tpo.pe/pathogen.vim");
+}
+
+sub setup_plugins {
+  system("rm -rf bundle/ &> /dev/null");
+  system("mkdir bundle/");
+  chdir "bundle/";
+
+  foreach my $plugin(@plugins) {
+    system("git clone $plugin");
+  }
+
+  chdir "..";
+}
+
+chdir "$ENV{HOME}/.vim";
+setup_pathogen;
+setup_plugins;
+
+
+# post plugme
+# -----------
+# taglist [deprecated in favor of tagbar]
+# -------
+# comment out
+# .*map <buffer> for <Tab>
+# to enable <Ctrl-i> up naviagation
+
+# vim-surround
+# ------------
+# comment out :
+# imap      <C-G>s <Plug>Isurround
+# imap      <C-G>S <Plug>ISurround
