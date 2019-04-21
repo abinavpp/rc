@@ -1,0 +1,34 @@
+#! /bin/bash
+
+primary_output=$(xrandr | /bin/grep -w "connected primary"  | \
+  awk -F' +' '{print $1}')
+
+if [[ ! -n $primary_output ]]; then
+  echo "Unable to determine primary output"
+  exit 1
+fi
+
+run=$1
+shift
+
+if [[ $run == "hdmiproj" ]]; then
+  if [[ $1 == "on" ]]; then
+    xrandr --output HDMI1 --auto --same-as $primary_output
+  elif [[ $1 == "off" ]]; then
+    xrandr --output HDMI1 --auto --off
+  fi
+
+elif [[ $run == "primary" ]]; then
+  if [[ $1 == "on" ]]; then
+    xrandr --output $primary_output --auto
+  elif [[ $1 == "off" ]]; then
+    xrandr --output $primary_output --off
+  fi
+
+elif [[ $run == "res" ]]; then
+  xrandr --output $primary_output --mode $1 
+
+else
+  echo "Primary output is $primary_output"
+fi
+

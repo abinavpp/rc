@@ -89,7 +89,7 @@ export EXTRA_RUN="/home/abinav/rc/run"
 export HOME_BIN="/home/abinav/bin"
 export LLVM_DEV="/home/abinav/llvm_dev"
 
-mdpath -p "$EXTRA_RUN" "$HOME_BIN"
+mdpath -p "." "$EXTRA_RUN" "$HOME_BIN"
 RESET_PATH=$PATH
 RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
