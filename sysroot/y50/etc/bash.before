@@ -3,9 +3,9 @@
 # To be sourced initially in ~/.bashrc
 #
 
-if xset q &> /dev/null; then
+# if xset q &> /dev/null; then
 	# xgamma -quiet -rgamma 0.82 -ggamma 0.86 -bgamma 0.86
-fi
+# fi
 
 # coall's palette is system specific, hence keep it in /etc/profile
 declare -A t_bg_col t_fg_col
