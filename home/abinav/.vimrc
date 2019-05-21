@@ -175,6 +175,7 @@ func! CopyAsBreakpoint()
     call system("xclip", s:pos)
  endfunc
 
+command! DeleteTrailingWs :%s/\s\+$//
 
 
 " mappings
@@ -216,7 +217,7 @@ vnoremap <C-]> g<C-]>
 nnoremap <A-]> <C-w><C-]><C-w>T
 vnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
 " double escape forces command mode from <C-o> mode
-nnoremap gg <esc><esc>mxggi
+nnoremap gg <esc><esc>mxgg
 inoremap <F5> <C-o>:call Save()<CR>
 nnoremap <C-h> :noh<CR>
 nnoremap <C-y> :SyntasticToggleMode<CR>
@@ -343,14 +344,14 @@ set statusline +=[%{strlen(&fenc)?&fenc:'none'}] "file encoding
 set statusline +=\ %<%F            	"full path, '<' truncates the path
 set statusline +=%m              	"modified flag
 set statusline +=\ %r               "readonly flag
-set statusline +=\ %{fugitive#statusline()}	"current git branch
+silent! set statusline +=\ %{fugitive#statusline()}	"current git branch
 
 set statusline +=%=0x%B           	"character under cursor
 set statusline +=\ %l              	"current line
 set statusline +=/%L            	"total lines
 set statusline +=\ %v             	"virtual column number
 set statusline +=\ %P				"percentage
-set statusline +=%{SyntasticStatuslineFlag()}
+silent! set statusline +=%{SyntasticStatuslineFlag()}
 
 
 
@@ -423,6 +424,9 @@ autocmd filetype ruby inoremap <F6> <C-o>:wa <bar>
 autocmd filetype php inoremap <F6> <C-o>:wa <bar>
 			\exec '!php '.shellescape('%')<CR>
 
+au BufRead,BufNewFile *.ll set filetype=llvm
+au BufRead,BufNewFile lit.*cfg set filetype=python
+au BufRead,BufNewFile *.td set filetype=tablegen
 " see https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
 " aug python
     " ftype/python.vim overwrites this

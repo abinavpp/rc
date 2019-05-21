@@ -18,12 +18,14 @@ my @plugins = (
 );
 
 sub setup_pathogen {
+  chdir "$ENV{HOME}/.vim";
   system("rm -rf autoload/ &> /dev/null");
   system("mkdir autoload/");
   system("wget -O autoload/pathogen.vim https://tpo.pe/pathogen.vim");
 }
 
 sub setup_plugins {
+  chdir "$ENV{HOME}/.vim";
   system("rm -rf bundle/ &> /dev/null");
   system("mkdir bundle/");
   chdir "bundle/";
@@ -35,7 +37,17 @@ sub setup_plugins {
   chdir "..";
 }
 
-chdir "$ENV{HOME}/.vim";
+sub setup_llvm {
+  system("cp -r $ENV{HOME}/llvm_dev/main/utils/vim/syntax "
+    . "$ENV{HOME}/.vim &> /dev/null")
+}
+
+sub setup_vim {
+  system("mkdir $ENV{HOME}/.vim &> /dev/null");
+}
+
+setup_vim;
+setup_llvm;
 setup_pathogen;
 setup_plugins;
 
