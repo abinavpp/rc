@@ -575,6 +575,8 @@ alias perl1='perl -ne '
 alias tmux='tmux -u -2'
 alias qtmux='tmux kill-server'
 
+alias cmus='TERM=xterm-256color cmus'
+
 alias vimb="vim ~/.bashrc"
 alias vimv="vim ~/.vimrc"
 alias vimm="vim -u /etc/vimrc"

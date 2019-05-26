@@ -70,6 +70,8 @@ function! Qrun_c(cmdline)
 			let l:compiler = "gcc "
 		elseif ft == "cpp"
 			let l:compiler = "g++ "
+    elseif ft == "fortran"
+      let l:compiler = "gfortran "
 		else
 			return
 		endif
@@ -398,7 +400,7 @@ autocmd insertleave * exe 'hi! StatusLine ctermbg=220'
 autocmd TabEnter * NERDTreeClose
 autocmd TabLeave * if g:NERDTree.IsOpen() | wincmd p
 
-autocmd filetype c,cpp inoremap <F4> <C-o>:call Tags_buf_upd()<CR>
+autocmd filetype c,cpp,fortran inoremap <F4> <C-o>:call Tags_buf_upd()<CR>
 			\| inoremap <F6> <C-o>:wa <bar> call Qrun_c('')<CR>
 			\| inoremap <F7> <C-o>:wa <bar> call Qrun_c('gdb')<CR>
 			\| inoremap <F8> <C-o>:wa <bar> call Qrun_c('valgrind')<CR>
