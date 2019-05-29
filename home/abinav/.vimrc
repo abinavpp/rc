@@ -177,7 +177,7 @@ func! CopyAsBreakpoint()
     call system("xclip", s:pos)
  endfunc
 
-command! DeleteTrailingWs :%s/\s\+$//
+command! Dtw :%s/\s\+$//
 
 
 " mappings
@@ -200,15 +200,17 @@ nnoremap <Leader>l :set list!<CR>
 nnoremap <Leader>s :set spell!<CR>
 nnoremap <Leader>w :set wrap!<CR>
 nnoremap <Leader>t :call Trailing_space_match()<CR>
-nnoremap <Leader>n :call Nt_toggle()<CR>
-nnoremap <Leader>p :FZF 
+" nnoremap <Leader>n :call Nt_toggle()<CR>
+nnoremap <Leader>n :TagbarToggle<CR>
+nnoremap <Leader>m :SyntasticToggleMode<CR>
+nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
+nnoremap <Leader>p :FZF
 nnoremap <Leader>b :call CopyAsBreakpoint()<cr>
 nnoremap <Leader>c :call Cs_inv()<CR>
-nnoremap <Leader>r :so $MYVIMRC<CR>
+nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>z <C-z>
 
 " basic, plugins etc
-call Map_all('<A-z>', '<C-z>', '<C-o><C-z>', '<C-z>')
 call Map_all('<C-z>', 'u', '<C-o>u', '')
 inoremap <C-r> <C-o><C-r>
 " don't do anything
@@ -220,17 +222,14 @@ nnoremap <A-]> <C-w><C-]><C-w>T
 vnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
 " double escape forces command mode from <C-o> mode
 nnoremap gg <esc><esc>mxgg
-inoremap <F5> <C-o>:call Save()<CR>
-nnoremap <C-h> :noh<CR>
-nnoremap <C-y> :SyntasticToggleMode<CR>
 nnoremap / <esc><esc>/
-nnoremap t <C-t>
-imap <C-_> <esc>gcci
-inoremap <A-s> <esc>:SyntasticReset<CR>:pc!<CR>i<Right>
-inoremap <A-t> <esc>:TagbarToggle<CR>
-nnoremap <A-t> :TagbarToggle<CR>
 nnoremap <C-p> :FZF<CR>
+
 nnoremap zz :call Save()<CR>
+" nnoremap <C-h> :noh<CR>
+nnoremap hh :noh<CR>
+" call Map_all('<A-z>', '<C-z>', '<C-o><C-z>', '<C-z>')
+nnoremap Z <C-z>
 
 "cut/copy/select
 inoremap <C-p> <C-x>
