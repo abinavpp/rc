@@ -179,7 +179,6 @@ func! CopyAsBreakpoint()
 
 command! Dtw :%s/\s\+$//
 
-
 " mappings
 " --------
 " visual
@@ -200,8 +199,7 @@ nnoremap <Leader>l :set list!<CR>
 nnoremap <Leader>s :set spell!<CR>
 nnoremap <Leader>w :set wrap!<CR>
 nnoremap <Leader>t :call Trailing_space_match()<CR>
-" nnoremap <Leader>n :call Nt_toggle()<CR>
-nnoremap <Leader>n :TagbarToggle<CR>
+nnoremap <Leader>n :call Nt_toggle()<CR>
 nnoremap <Leader>m :SyntasticToggleMode<CR>
 nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
 nnoremap <Leader>p :FZF
@@ -209,6 +207,14 @@ nnoremap <Leader>b :call CopyAsBreakpoint()<cr>
 nnoremap <Leader>c :call Cs_inv()<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>z <C-z>
+
+" To understand the alt keybinding headache in vim, see:
+" https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
+" https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
+"
+" Stick to xterm! Moolenaar does I guess. Nevertheless, try to minimize dependency on
+" alt key-bindings
+
 
 " basic, plugins etc
 call Map_all('<C-z>', 'u', '<C-o>u', '')
@@ -219,17 +225,19 @@ nnoremap <C-o> <esc>
 nnoremap <C-]> g<C-]>
 vnoremap <C-]> g<C-]>
 nnoremap <A-]> <C-w><C-]><C-w>T
+" exec "nnoremap \e" . '] <C-w><C-]><C-w>T'
 vnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
+exec "vnoremap \e] <Esc>:tab tjump <C-r><C-w><CR>"
 " double escape forces command mode from <C-o> mode
 nnoremap gg <esc><esc>mxgg
 nnoremap / <esc><esc>/
 nnoremap <C-p> :FZF<CR>
+imap <C-_> <esc>gcci
 
 nnoremap zz :call Save()<CR>
-" nnoremap <C-h> :noh<CR>
 nnoremap hh :noh<CR>
-" call Map_all('<A-z>', '<C-z>', '<C-o><C-z>', '<C-z>')
 nnoremap Z <C-z>
+nnoremap tt :TagbarToggle<CR>
 
 "cut/copy/select
 inoremap <C-p> <C-x>
@@ -254,24 +262,37 @@ call Map_all('<C-l>', '<right>', '<right>', '<right>')
 
 " alternate cursor movement
 call Map_all('<A-i>', '{', '<C-o>{', '')
+call Map_all("\ei", '{', '<C-o>{', '')
 call Map_all('<A-k>', '}', '<C-o>}', '')
+call Map_all("\ek", '}', '<C-o>}', '')
 call Map_all('<A-j>', 'b', '<C-o>b', '<S-left>')
+call Map_all("\ej", 'b', '<C-o>b', '<S-left>')
 call Map_all('<A-l>', 'w', '<C-o>w', '<S-right>')
+call Map_all("\el", 'w', '<C-o>w', '<S-right>')
 
 " controlled alternate cursor movement
 call Map_all('<C-A-i>', '5k', '<C-o>5k', '')
+call Map_all("\e<C-i>", '5k', '<C-o>5k', '')
 call Map_all('<C-A-k>', '5j', '<C-o>5j', '')
+call Map_all("\e<C-k>", '5j', '<C-o>5j', '')
 call Map_all('<C-A-j>', '3b', '<C-o>3b', '')
+call Map_all("\e<C-j>", '3b', '<C-o>3b', '')
 call Map_all('<C-A-l>', '3w', '<C-o>3w', '')
+call Map_all("\e<C-l>", '3w', '<C-o>3w', '')
 
 " extra shift cursor binding
 call Map_all('<A-S-j>', '^', '<C-o>^', '')
+call Map_all("\eJ", '^', '<C-o>^', '')
 call Map_all('<A-S-l>', '$', '<C-o>$', '<Home>')
+call Map_all("\eL", '$', '<C-o>$', '<Home>')
 call Map_all('<A-S-k>', 'YP', '<C-o>Y<C-o>p', '<End>')
+call Map_all("\eK", 'YP', '<C-o>Y<C-o>p', '<End>')
 
 " tab
 call Map_all('<A-,>', ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
+call Map_all("\e,", ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
 call Map_all('<A-.>', ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
+call Map_all("\e.", ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 
 " split
 nnoremap <C-w><C-j> <C-w>h
@@ -283,7 +304,7 @@ nnoremap <C-w>L <C-w>L
 nnoremap <C-w>I <C-w>K
 nnoremap <C-w>K <C-w>J
 
-"coarse and fine scrolling (alt key)
+" coarse and fine scrolling (alt key)
 " nnoremap h <C-o>zh
 " nnoremap l <C-o>zl
 " nnoremap i <C-o><C-y>
@@ -431,7 +452,7 @@ au BufRead,BufNewFile *.td set filetype=tablegen
 " see https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
 " aug python
     " ftype/python.vim overwrites this
-    " au FileType python setlocal ts=2 sts=2 sw=2 
+    " au FileType python setlocal ts=2 sts=2 sw=2
 " aug end
 
 if filereadable($HOME . "/vimrc.after")
