@@ -24,7 +24,7 @@ function get_src_pair() {
 	local file=$(basename "$arg")
 	local extension="${arg##*.}"
 
-	if [[ "$extension" =~ ^(c|cpp)$ ]]; then
+	if [[ "$extension" =~ ^(c|cpp|cc)$ ]]; then
 		local header=$(basename "$file" .$extension).h
 		find_in_tree "$header"
 

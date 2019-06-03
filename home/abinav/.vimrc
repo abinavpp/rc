@@ -6,8 +6,8 @@ let sys = substitute(system('uname -r'), '\n\+$', '', '')
 
 let delimitMate_expand_cr = 1
 
-"this is defaulted to comment, below will enable delimitMate
-"within comments
+" this is defaulted to comment, below will enable delimitMate
+" within comments
 let delimitMate_excluded_regions = ""
 
 let NERDTreeShowHidden = 1
@@ -46,8 +46,8 @@ function! Chomp(string)
 endfunction
 
 function! Cleanme()
-    exec '%s/\v\ +$//g'
-    exec '%s/\v[^\x00-\x7F]+//g'
+    silent! exec '%s/\v\ +$//g'
+    silent! exec '%s/\v[^\x00-\x7F]+//g'
 endfunction
 
 function! Trailing_space_match()
@@ -131,21 +131,21 @@ function! Nt_toggle()
 	endif
 endfunction
 
-"updates ctags for this buffer only
+" updates ctags for this buffer only
 function! Tags_buf_upd()
 	let l:buf = bufname("%")
 	let l:bufd = ".vim_" . l:buf . ".d"
 	let l:tagl = ".vim_taglist"
 
-	"writes user def header files to l:bufd
+	" writes user def header files to l:bufd
 	call system("gcc -E -MM -o " . l:bufd . " " .
 				\l:buf)
 
-	"parses l:bufd for ctags -L
+	" parses l:bufd for ctags -L
 	call system("awk '{for (i=2; i<=NF; i++) print $i}' " .
 				\l:bufd . " > " . l:tagl)
 
-	"to add protoypes +p, (see ctags --list-kinds=c)
+	" to add protoypes +p, (see ctags --list-kinds=c)
 	call system("ctags --c-kinds=+p --fields=+S -f " . s:tags_file .
 				\" -L " . l:tagl)
 
@@ -177,7 +177,7 @@ func! CopyAsBreakpoint()
     call system("xclip", s:pos)
  endfunc
 
-command! Dtw :%s/\s\+$//
+command! Cl :call Cleanme()
 
 " mappings
 " --------
@@ -206,7 +206,6 @@ nnoremap <Leader>p :FZF
 nnoremap <Leader>b :call CopyAsBreakpoint()<cr>
 nnoremap <Leader>c :call Cs_inv()<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
-nnoremap <Leader>z <C-z>
 
 " To understand the alt keybinding headache in vim, see:
 " https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
@@ -217,7 +216,7 @@ nnoremap <Leader>z <C-z>
 
 
 " basic, plugins etc
-call Map_all('<C-z>', 'u', '<C-o>u', '')
+inoremap <C-z> <C-o>u
 inoremap <C-r> <C-o><C-r>
 " don't do anything
 nnoremap <C-o> <esc>
@@ -225,7 +224,7 @@ nnoremap <C-o> <esc>
 nnoremap <C-]> g<C-]>
 vnoremap <C-]> g<C-]>
 nnoremap <A-]> <C-w><C-]><C-w>T
-" exec "nnoremap \e" . '] <C-w><C-]><C-w>T'
+" exec "nnoremap \e] <C-w><C-]><C-w>T"
 vnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
 exec "vnoremap \e] <Esc>:tab tjump <C-r><C-w><CR>"
 " double escape forces command mode from <C-o> mode
@@ -236,10 +235,9 @@ imap <C-_> <esc>gcci
 
 nnoremap zz :call Save()<CR>
 nnoremap hh :noh<CR>
-nnoremap Z <C-z>
 nnoremap tt :TagbarToggle<CR>
 
-"cut/copy/select
+" cut/copy/select
 inoremap <C-p> <C-x>
 inoremap <C-w> <C-o>viw
 inoremap <C-c> <esc>^"*y$i
@@ -303,16 +301,6 @@ nnoremap <C-w>J <C-w>H
 nnoremap <C-w>L <C-w>L
 nnoremap <C-w>I <C-w>K
 nnoremap <C-w>K <C-w>J
-
-" coarse and fine scrolling (alt key)
-" nnoremap h <C-o>zh
-" nnoremap l <C-o>zl
-" nnoremap i <C-o><C-y>
-" nnoremap k <C-o><C-e>
-" nnoremap <A-h> <C-o>zH
-" nnoremap <A-l> <C-o>zL
-" nnoremap <A-i> <C-o><C-u>
-" nnoremap <A-k> <C-o><C-d>
 
 " The tab mess, arrrgghhh!
 "<C-i> = <Tab>, no rainbow without a little rain

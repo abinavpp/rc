@@ -8,8 +8,8 @@
 function is_in_colonvar() {
 	declare -A fields
 	local field
-    local colonvar=$1 check=$2
-    fields=`echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}' | tr '\n' ' '`
+  local colonvar=$1 check=$2
+  fields=`echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}' | tr '\n' ' '`
 
 	for field in ${fields[@]}; do
 		if [[ $check == $field ]]; then
@@ -22,57 +22,69 @@ function is_in_colonvar() {
 }
 
 function md_colonvar() {
-    local colonvar=$1 opt=$2; shift 2
-	local arg i
+  if [[ $# -lt 2 ]]; then
+    return
+  fi
 
-    # if colonvar is blank or not set
-    if [[ ! $(echo ${!colonvar}) =~ [[:print:]]+ ]]; then
-        if ! is_in_colonvar $colonvar $1; then
-            export $colonvar="$1"
-        fi
-        shift
-        opt="-a" # XXX: Faking the option to force appending
+  local colonvar=$1 opt=$2; shift 2
+  local arg i
+
+  # print the colonvar
+  if [[ $opt == "-o" ]]; then
+    echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}'
+    return
+  fi
+
+  # resets colonvar to it's $RESET_XXX var
+  if [[ $opt == "-r" ]]; then
+    local reset_colonvar="RESET_$colonvar"
+    export $colonvar=${!reset_colonvar}
+    return
+  fi
+
+  # edit colonvar in vim with newlines as "temporary separators". :wq to save
+  # changes, :q to discard changes
+  if [[ $opt == "-e" ]]; then
+    local temp=$(mktemp -t md_colonvar.XXXXXX)
+    echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}' > $temp
+    vim $temp
+    export $colonvar=$(cat $temp | tr '\n' ':' | sed 's/:$//g')
+    rm $temp
+    return
+  fi
+
+  # prepend/append needs atleast one argument
+  if [[ $# -lt 1 ]]; then
+    return
+  fi
+
+  # if colonvar is blank or not set
+  if [[ ! $(echo ${!colonvar}) =~ [[:print:]]+ ]]; then
+    if ! is_in_colonvar $colonvar $1; then
+      export $colonvar="$1"
     fi
+    shift
+    opt="-a" # XXX: Faking the option to force appending
+  fi
 
-    # prepend $@'s in reverse
-	if [[ $opt == "-p" ]]; then
-		for (( i=$#; i > 0; i-- )); do
-			arg="${!i}"
-			if ! is_in_colonvar $colonvar $arg; then
-				export $colonvar="$arg:${!colonvar}"
-			fi
-		done
-	fi
+  # prepend $@'s in reverse
+  if [[ $opt == "-p" ]]; then
+    for (( i=$#; i > 0; i-- )); do
+      arg="${!i}"
+      if ! is_in_colonvar $colonvar $arg; then
+        export $colonvar="$arg:${!colonvar}"
+      fi
+    done
+  fi
 
-    # appends $@'s as it is.
-    if [[ $opt == "-a" ]]; then
-		for arg in "$@"; do
-            if ! is_in_colonvar $colonvar $arg; then
-			    export $colonvar="${!colonvar}:$arg"
-            fi
-		done
-	fi
-
-    # resets colonvar to it's $RESET_XXX var
-    if [[ $opt == "-r" ]]; then
-        local reset_colonvar="RESET_$colonvar"
-        export $colonvar=${!reset_colonvar}
-    fi
-
-    # edit colonvar in vim with newlines as "temporary separators". :wq to save
-    # changes, :q to discard changes
-    if [[ $opt == "-e" ]]; then
-        local temp=$(mktemp -t md_colonvar.XXXXXX)
-        echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}' > $temp
-        vim $temp
-        export $colonvar=$(cat $temp | tr '\n' ':' | sed 's/:$//g')
-        rm $temp
-    fi
-
-    # print the colonvar
-    if [[ $opt == "-o" ]]; then
-      echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}'
-    fi
+  # appends $@'s as it is.
+  if [[ $opt == "-a" ]]; then
+    for arg in "$@"; do
+      if ! is_in_colonvar $colonvar $arg; then
+        export $colonvar="${!colonvar}:$arg"
+      fi
+    done
+  fi
 }
 
 function mdpath() { md_colonvar PATH $@; }
@@ -92,6 +104,7 @@ export LLVM_DEV="/home/abinav/llvm_dev"
 mdpath -p "." "$EXTRA_RUN" "$HOME_BIN"
 RESET_PATH=$PATH
 RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+RESET_LIBRARY_PATH=$LIBRARY_PATH
 
 source /etc/bash.before &> /dev/null
 source ${HOME}/bash.before &> /dev/null
@@ -478,14 +491,6 @@ function cdp {
 	cd /proc/$pid
 }
 
-function hdmiproj {
-	if [[ $1 == "on" ]]; then
-		xrandr --output HDMI1 --auto --same-as eDP1
-	elif [[ $1 == "off" ]]; then
-		xrandr --output HDMI1 --auto --off
-	fi
-}
-
 function clhome {
 	local f
 	for f in $@; do
@@ -508,12 +513,13 @@ function cltex {
 	rm missfont.log
 }
 
-function before_poweroff {
-	mmrc -u xorg thumbnails chrome &> /dev/null
-}
-
 if am_i_home; then
+    function before_poweroff {
+      mmrc -u xorg thumbnails chrome &> /dev/null
+    }
+
     function poweroff { before_poweroff; /bin/poweroff; }
+
     function reboot { before_poweroff; /bin/reboot; }
 fi
 
@@ -572,8 +578,8 @@ alias sudo='sudo '
 alias perlpi='perl -lpe '
 alias perl1='perl -ne '
 
-alias tmux='tmux -u -2'
 alias qtmux='tmux kill-server'
+alias tmux='qtmux; tmux -u -2'
 
 alias cmus='TERM=xterm-256color cmus'
 

@@ -11,16 +11,6 @@ opt_out="opt.ll"
 dot_out="dot.ll"
 ili_out="ili" ilm_out="ilm" stb_out="stb"
 
-# global "states"
-dbg=""
-
-function try_llvmgi() {
-    prof=$1
-	if [[ -n $dbg ]]; then
-		llvmgi $prof;
-	fi
-}
-
 function try_llvmb() {
     prof=$1; shift
 	llvmb $prof "$@" || exit 1;
@@ -108,7 +98,7 @@ function do_mir {
 	shift;
 
 	if [[ $# -eq 0 ]]; then
-		llvmr $prof $dbg llc "$ll" 2>&1
+		llvmr $prof llc "$ll" 2>&1
 		return
 	fi
 
@@ -130,13 +120,13 @@ function do_mir {
 		first_stop_cmd="-stop-after=$2"
 	elif [[ $1 == "all" ]]; then
 		# llvmu mir foo.c all
-        llvmr $prof $dbg llc -print-machineinstrs "$ll" 2>&1
+        llvmr $prof llc -print-machineinstrs "$ll" 2>&1
 		return
 	fi
 	
 	if [[ $# -eq 2 ]]; then
 		# llvmu mir foo.c b/a <pass>
-        llvmr $prof $dbg llc $first_print_cmd "$ll" 2>&1
+        llvmr $prof llc $first_print_cmd "$ll" 2>&1
 		return
 	fi
 
@@ -178,11 +168,11 @@ function do_flang() {
 	elif [[ $1 == "ilm" ]]; then
 		shift
 		cleanup_flang
-		$dbg flang1 -output $ilm_out -stbfile $stb_out "$@"
+		flang1 -output $ilm_out -stbfile $stb_out "$@"
 
 	elif [[ $1 == "ili" ]]; then
 		shift
-		$dbg flang -Mq,0,1 -Mq,10,2 -Mq,10,1 "$1" 2> $ili_out
+	  flang -Mq,0,1 -Mq,10,2 -Mq,10,1 "$1" 2> $ili_out
 
     elif [[ $1 == "check-all" ]]; then
         try_llvmb check-all
@@ -197,100 +187,6 @@ function do_flang() {
 	export LD_LIBRARY_PATH="${OLD_LD_LIBRARY_PATH}"
 	export PATH="${OLD_PATH}"
 }
-
-function dir_based_profile() {
-	run=$1; shift;
-
-	if [[ $run == "CFCSS" ]]; then
-        prof="main"
-		ll=$(get_ll $prof "$1") || exit 1;
-		try_llvmb $prof libLLVMScalarOpts.so; try_llvmgi $prof;
-		llvmr $prof opt -load "${main_libdir}/LLVMExtra.so" -CFCSS -debug-only=CFCSS \
-			-S -o "$opt_out" "$ll";
-
-		# plant illegal branc inst
-		llvmr $prof opt -load "${main_libdir}/LLVMExtra.so" -CFCSSTest -debug-only=CFCSS \
-			-S -o "$opt_out" "$opt_out";
-
-
-	elif [[ $run == "LoopSortAccess" ]]; then
-        prof="main"
-		ll=$(get_ll $prof "$1") || exit 1;
-		try_llvmb $prof libLLVMScalarOpts.so; try_llvmgi $prof;
-		llvmr $prof $dbg opt -load "${main_libdir}/LLVMExtra.so" -mem2reg \
-			-loop-simplify -instcombine -instnamer -indvars -LoopSortAccess \
-			-S -o "$opt_out" "$ll";
-
-	elif [[ $run == "LoopFusion" ]]; then
-        prof="main"
-		pass="loop-fusion"
-		if [[ $1 == "ctt" ]]; then
-			pass="ctt-loop-fusion"; shift
-		fi
-
-		ll=$(get_ll $prof "$1") || exit 1;
-		try_llvmb $prof libLLVMScalarOpts.so; try_llvmgi $prof;
-
-		debugonly="-debug-only=$pass"
-		if [[ -n $dbg ]]; then
-			debugonly="";
-		fi
-		debugonly="";
-
-		llvmr $prof $dbg $opt -mem2reg \
-			-loop-simplify -instcombine -instnamer -indvars \
-			-$pass $debugonly -S -o "$opt_out" "$ll";
-	
-	elif [[ $run == "Eph" ]]; then
-        prof="main"
-		ll=$(get_ll $prof "$1") || exit 1;
-		try_llvmb $prof libLLVMScalarOpts.so; try_llvmgi $prof;
-		llvmr $prof $dbg opt -eph -S -o "$opt_out" "$ll";
-
-	elif [[ $run == "X86BlockSign" ]]; then
-        prof="main"
-		ll=$(get_ll $prof "$1") || exit 1;
-		try_llvmb $prof libLLVMX86CodeGen.so; try_llvmgi $prof;
-		llvmr $prof $dbg llc -x86-block-sign -debug-only=x86-block-sign $ll
-
-	elif [[ $run == "regalloc" || $run == "perlbench" || $run == "MachineEph" ]]; then
-        prof="main"
-		ll=$(get_ll $prof "$1") || exit 1;
-		try_llvmb $prof libLLVMCodeGen.so; try_llvmgi $prof
-		llvmr $prof $dbg llc -filetype=obj -O3 -enable-machine-eph $ll 2>&1
-
-	elif [[ $run == "lt" ]]; then
-		prof="lt"
-
-        debugonly=-debug-only=
-        debugonly+=LoopPermute,
-        debugonly+=dep-graph,
-        debugonly+=loop-transform,
-        debugonly+=affine-transforms
-
-        # debugonly=
-
-		ll=$(get_ll $prof "$1") || exit 1;
-		try_llvmb $prof libLLVMScalarOpts.so; try_llvmgi $prof;
-		llvmr $prof $dbg opt -mem2reg \
-			-loop-simplify -instcombine -instnamer -indvars \
-            -loop-permute $debugonly \
-			-S -o "$opt_out" "$ll";
-	
-	elif [[ $run == "flang" ]]; then
-		do_flang "$@";
-
-	else
-		return 1;
-	fi
-
-	return 0;
-}
-
-if [[ $1 == "-d" ]]; then
-	dbg="gdb --args "
-	shift
-fi
 
 # try non-dir-based-profiles first where $1 is profile
 if [[ $1 == "dot" ]]; then
@@ -338,7 +234,7 @@ elif [[ $1 == "scev" ]]; then
 elif [[ $1 == "mod" ]]; then
   prof="main"
 	shift
-	llvmr $prof clang++ `$main_config --cxxflags --ldflags --system-libs \
+	llvmr $prof clang++ `llvmr $prof llvm-config --cxxflags --ldflags --system-libs \
 		--libs core` $1
 
 elif [[ $1 == "ir" ]]; then
@@ -352,8 +248,5 @@ elif [[ $1 == "mir" ]]; then
   do_mir $prof "$@"
 
 else
-	if ! dir_based_profile "$@"; then
-		profile=$(basename $(dirname $(realpath "$1")))
-		dir_based_profile "$profile" "$@"
-	fi
+  exit 1
 fi

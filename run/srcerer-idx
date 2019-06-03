@@ -1,0 +1,37 @@
+#! /bin/bash
+
+mode=$1
+
+if [[ $mode == "llvm" ]]; then
+  find $PWD -type f -a \
+    \( \
+    -path "$PWD/lib*" -o \
+    -path "$PWD/include*" -o \
+    -path "$PWD/tools/clang/lib*" -o \
+    -path "$PWD/tools/clang/include*" \
+    \) \
+    -a \
+    \( \
+    -name '*.[ch]' -o \
+    -name '*.cpp' -o \
+    -name '*.cc' \
+    \) \
+    > cscope.files
+
+elif [[ $mode == "c" ]]; then
+  find $PWD -type f \
+    -name '*.[ch]' -o \
+    -name '*.cpp' -o \
+    -name '*.cc' \
+    > cscope.files
+
+else
+  find $PWD -type f > cscope.files
+fi
+
+cscope -b -i cscope.files
+
+ctags --c++-kinds=+p --fields=+iaS --extras=+q --language-force=C++ -L \
+  cscope.files || \
+ctags --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -L \
+  cscope.files
