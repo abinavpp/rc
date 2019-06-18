@@ -14,7 +14,8 @@ my @plugins = (
   "https://github.com/tpope/vim-surround.git",
   "https://github.com/tpope/vim-eunuch.git",
   "https://github.com/gioele/vim-autoswap.git",
-  "https://github.com/yegappan/greplace.git"
+  "https://github.com/yegappan/greplace.git",
+  "https://github.com/xavierd/clang_complete"
 );
 
 sub setup_pathogen {

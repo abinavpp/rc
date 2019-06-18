@@ -33,6 +33,9 @@ let s:trailing_space_flag = 0
 let s:tags_file = ".vim_tags"
 let g:qrun_cflags = "-lpthread -lm"
 
+let g:clang_library_path = '/usr/lib/libclang.so'
+let g:clang_complete_auto = 0
+
 execute pathogen#infect()
 
 if filereadable($HOME . "/vimrc.before")
@@ -325,6 +328,7 @@ set laststatus=2
 set expandtab
 set previewheight=1
 set pastetoggle=<F2>
+set completeopt-=preview
 
 exe "set tags+=" . s:tags_file
 set clipboard=unnamed
