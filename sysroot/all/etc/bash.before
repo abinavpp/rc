@@ -4,9 +4,19 @@
 #
 
 declare -A t_bg_col t_fg_col
+# VT100 color palette
+# t_bg_col[bl]="\e[48;5;0m"
+# t_bg_col[wh]="\e[48;5;15m"
+# t_bg_col[mg]="\e[48;5;89m"
+# t_fg_col[bl]="\e[38;5;0m"
+# t_fg_col[wh]="\e[38;5;15m"
+# t_fg_col[rd]="\e[38;5;160m"
+# t_fg_col[gr]="\e[38;5;76m"
 
+# Xterm OSC color palette
+# \e or \033 is ESC, ']' for OSC(xterm code) \007 is bell
 t_bg_col[bl]="\e]11;#000000\007"
-t_bg_col[dk]="\e]11;#222222\007"
+t_bg_col[dk]="\e]11;#3a3a3a\007"
 t_bg_col[wh]="\e]11;#ffffff\007"
 t_bg_col[mg]="\e]11;#520348\007"
 t_bg_col[gr]="\e]11;#08150f\007"
