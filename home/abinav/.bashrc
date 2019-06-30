@@ -513,6 +513,12 @@ function cltex {
 	rm missfont.log
 }
 
+function harakiri {
+  echo "sudo pkill -u ${USER} ?"
+  read
+  sudo pkill -u ${USER}
+}
+
 if am_i_home; then
     function before_poweroff {
       mmrc -u xorg thumbnails chrome &> /dev/null
