@@ -217,10 +217,21 @@ function in_array {
 }
 
 function mkexec {
-	if [[ ! -e "$1" ]]; then
-		touch "$1"; echo "#! /bin/bash" > "$1";
+  file="$1"
+  extension="${file##*.}"
+
+	if [[ ! -e "$file" ]]; then
+		touch "$file"
+
+    if [[ $extension == "py" ]]; then
+      true
+    elif [[ $extension == "pl" ]]; then
+      echo "#! /usr/bin/perl" > "$file" 
+    else
+      echo "#! /bin/bash" > "$file";
+    fi
 	fi
-	chmod ugo+x $1;
+	chmod ugo+x $file;
 }
 
 function vim {
