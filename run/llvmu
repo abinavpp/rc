@@ -234,7 +234,7 @@ elif [[ $1 == "scev" ]]; then
 elif [[ $1 == "mod" ]]; then
   prof="main"
 	shift
-	/bin/clang++ -g `llvmr $prof llvm-config --cxxflags --ldflags --system-libs \
+	/usr/bin/clang++ -g `llvmr $prof llvm-config --cxxflags --ldflags --system-libs \
 		--libs core mc x86` $1
   if [[ $? == 0 ]]; then
     a.out &> clang.ll
