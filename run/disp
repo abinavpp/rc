@@ -26,7 +26,11 @@ elif [[ $run == "primary" ]]; then
   fi
 
 elif [[ $run == "res" ]]; then
-  xrandr --output $primary_output --mode $1 
+  xrandr --output $primary_output --mode $1
+
+# sometimes switching xrandr --output screws up the font, try this then.
+elif [[ $run == "fixfont" ]]; then
+  xrandr --dpi 96
 
 else
   echo "Primary output is $primary_output"
