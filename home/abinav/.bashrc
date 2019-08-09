@@ -87,9 +87,20 @@ function md_colonvar() {
   fi
 }
 
-function mdpath() { md_colonvar PATH $@; }
-function mdld() { md_colonvar LD_LIBRARY_PATH $@; }
-function mdlb() { md_colonvar LIBRARY_PATH $@; }
+function mdpath() {
+  local opt=$1; shift;
+  md_colonvar PATH $opt $(realpath $@ 2> /dev/null);
+}
+
+function mdld() {
+  local opt=$1; shift;
+  md_colonvar LD_LIBRARY_PATH $opt $(realpath $@ 2> /dev/null);
+}
+
+function mdlb() {
+  local opt=$1; shift;
+  md_colonvar LIBRARY_PATH $opt $(realpath $@ 2> /dev/null);
+}
 
 export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
 export EDITOR="$VISUAL" # use $EDITOR if "our" vim creates trouble
@@ -101,7 +112,8 @@ export EXTRA_RUN="/home/abinav/rc/run"
 export HOME_BIN="/home/abinav/bin"
 export LLVM_DEV="/home/abinav/llvm_dev"
 
-mdpath -p "." "$EXTRA_RUN" "$HOME_BIN"
+mdpath -p "$EXTRA_RUN" "$HOME_BIN"
+md_colonvar PATH -p "."
 RESET_PATH=$PATH
 RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 RESET_LIBRARY_PATH=$LIBRARY_PATH
@@ -237,37 +249,57 @@ function mkexec {
 function vim {
     # we must hardcode /usr/bin/vim else we recurse!
 
-    local srv=$(tty)
-    local cmd="/usr/bin/vim -i NONE -p --servername $srv"
-    if [[ $# -eq 0 ]]; then
-        $cmd
-        return
-    fi
-
+    local srv_name=$(tty)
+    local cmd="/usr/bin/vim -i NONE -p --servername $srv_name"
     if [[ $1 == "-" ]]; then
         /usr/bin/vim -i NONE -
         return
     fi
 
-    local path=$(realpath $@)
-
-    local bg_ps=$(ps -ef | grep -P "\s+$cmd")
-    local bg_srv=/dev/$(echo $bg_ps | awk '{print $6}')
+    local bg_ps=$(ps -ef | /bin/grep -P "\s+$cmd")
+    local bg_srv_name=/dev/$(echo $bg_ps | awk '{print $6}')
     local bg_pid=$(echo $bg_ps | awk '{print $2}')
 
+    local args="" arg=""
     if [[ $bg_pid ]]; then # ie. bg_vim exists
-        local bg_pwd=$(pwdx $bg_pid | awk '{print $2}')/
-        # if path is under bg_pwd, then access it relative (so that tab heading
-        # won't look ugly)
-        path=${path##$bg_pwd}
+      local bg_pwd=$(pwdx $bg_pid | awk '{print $2}')/
+      for arg in $@; do
+        if [[ -e $arg ]]; then
+          arg="$(realpath $arg)"
+
+          # if path is under bg_pwd, then access it relative (so that tab heading
+          # won't look ugly)
+          $cmd --remote-send "<esc>:tabnew ${arg##$bg_pwd} <CR>"
+        else
+          echo "bg vim running, sorry. FIXME!"
+          return 1
+        fi
+      done
+      fg $(pid2jid $bg_pid)
+      return
+
+    else
+      $cmd $@
+    fi
+}
+
+function sgrep {
+  local exclude=""
+  if git status &> /dev/null; then
+    exclude+="--exclude-dir=.git "
+    if test -f tags && file tags | grep "Ctags tag file" &> /dev/null; then
+      exclude+="--exclude=tags "
     fi
 
-    if [[ $bg_srv == $srv ]]; then
-        $cmd --remote-send "<esc>:tabnew $path<CR>"
-        fg $(pid2jid $bg_pid)
-    else
-        $cmd $path
+    if test -f cscope.out && file cscope.out | \
+      grep "cscope reference data" &> /dev/null; then
+      exclude+="--exclude=cscope.out --exclude=cscope.files "
     fi
+
+    /bin/grep -P --color -n $exclude $@
+  else
+    /bin/grep -P --color -n $@
+  fi
 }
 
 if am_i_home; then
@@ -375,7 +407,7 @@ function pacdry2 {
 
 function pid2jid {
 	jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
-		grep -oE "[[:digit:]]+"
+		/bin/grep -oE "[[:digit:]]+"
 }
 
 function nt {
@@ -525,9 +557,9 @@ function cltex {
 }
 
 function harakiri {
-  echo "sudo pkill -u ${USER} ?"
+  echo "pkill -u ${USER} ?"
   read
-  sudo pkill -u ${USER}
+  pkill -u ${USER}
 }
 
 if am_i_home; then
@@ -567,7 +599,7 @@ else
 	# print_batstat;
 fi
 
-if am_i_home ; then
+if am_i_home; then
     source /usr/share/fzf/key-bindings.bash &> /dev/null
     source /usr/share/fzf/completion.bash &> /dev/null
 else
@@ -577,8 +609,8 @@ fi
 source /etc/bash.after &> /dev/null
 source ${HOME}/bash.after &> /dev/null
 
-alias ka='killall'
 alias grep='grep -P --color -n'
+alias ka='killall'
 alias srb='. ~/.bashrc'
 alias ls='ls -a --color=auto --group-directories-first'
 alias ll='ls -alih --color=auto --group-directories-first'
