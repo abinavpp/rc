@@ -247,9 +247,9 @@ function mkexec {
 }
 
 function vim {
-    # we must hardcode /usr/bin/vim else we recurse!
-
     local srv_name=$(tty)
+
+    # we must hardcode /usr/bin/vim else we recurse!
     local cmd="/usr/bin/vim -i NONE -p --servername $srv_name"
     if [[ $1 == "-" ]]; then
         /usr/bin/vim -i NONE -
@@ -261,19 +261,24 @@ function vim {
     local bg_pid=$(echo $bg_ps | awk '{print $2}')
 
     local args="" arg=""
+
+    # if we have a non file arg and we have a bg_vim then run a new vim.
+    for arg in $@; do
+      if [[ ! -e $arg  && $bg_pid ]]; then
+        /usr/bin/vim $@
+        return
+      fi
+    done
+
     if [[ $bg_pid ]]; then # ie. bg_vim exists
       local bg_pwd=$(pwdx $bg_pid | awk '{print $2}')/
+      # All arg should be file(s) here.
       for arg in $@; do
-        if [[ -e $arg ]]; then
-          arg="$(realpath $arg)"
+        arg="$(realpath $arg)"
 
-          # if path is under bg_pwd, then access it relative (so that tab heading
-          # won't look ugly)
-          $cmd --remote-send "<esc>:tabnew ${arg##$bg_pwd} <CR>"
-        else
-          echo "bg vim running, sorry. FIXME!"
-          return 1
-        fi
+        # if path is under bg_pwd, then access it relative (so that tab heading
+        # won't look ugly)
+        $cmd --remote-send "<esc>:tabnew ${arg##$bg_pwd} <CR>"
       done
       fg $(pid2jid $bg_pid)
       return

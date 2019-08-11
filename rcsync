@@ -9,17 +9,17 @@ function print_usage {
 
 cat <<EOL
 You should be using wrcs wrapper unless you know what you're doing.
-Usage : rcsync [EXTRA_OPTIONS] -s <skeleton> -f <from> -t <to>
+Usage : rcsync [EXTRA_OPTIONS] -s <tree> -f <from> -t <to>
 
 Options :
--s : skeleton directory
+-s : tree-directory
 -f : syncing from directory
 -t : syncing to directory
 -d : dry run (Always do this first!)
 -c : view diff (this too!)
 
 Brief:
-The skeleton dir forms the list of files + their directory which would be
+The tree-dir forms the hierarchy of files which would be
 the "tree" for synchronization from "from" to "to"
 Example : 
 To "sync in" your home	:	rcsync -s home/ -f /home/abinav -t to/repo/home
@@ -43,24 +43,24 @@ function sanitize_path_string {
 	echo -n $dir | sed 's:/$::' # remove the trailing /
 }
 
-function rc_skel_sync {
+function rc_tree_sync {
 	if [[ $# -ne 3 ]]; then
 		print_usage; exit
 	fi	   
-	dir_skel=`sanitize_path_string $1`
+	dir_tree=`sanitize_path_string $1`
 	dir_from=`sanitize_path_string $2`
 	dir_to=`sanitize_path_string $3`
 
-	if [[ ! -d $dir_skel || ! -d $dir_from || ! -d $dir_to ]]; then
+	if [[ ! -d $dir_tree || ! -d $dir_from || ! -d $dir_to ]]; then
 		print_usage; exit
 	fi
 
-	skel_root_len=`echo -n "$dir_skel" | wc -c`
+	tree_root_len=`echo -n "$dir_tree" | wc -c`
 
-	files_skel=(`$g_prefix_run find $dir_skel -type f -print |	\
-		cut -c1-$(($skel_root_len + 1)) --complement `)
+	files_tree=(`$g_prefix_run find $dir_tree -type f -print |	\
+		cut -c1-$(($tree_root_len + 1)) --complement `)
 
-	for f in ${files_skel[@]}; do
+	for f in ${files_tree[@]}; do
 		if [[ $g_run_mode == "dry" ]]; then
 			echo "$g_prefix_run mkdir -p `dirname ${dir_to}/$f`"
 			echo "$g_prefix_run cp -v ${dir_from}/$f `dirname ${dir_to}/$f`"
@@ -85,7 +85,7 @@ do
 	d) g_run_mode="dry";;
 	h)	print_usage
 		exit;;
-	s) skel=$OPTARG;;
+	s) tree=$OPTARG;;
 	f) from=$OPTARG;;
 	t) to=$OPTARG;;
 	?) 	print_usage
@@ -93,6 +93,6 @@ do
 	esac
 done
 
-echo; echo "Running($g_prefix_run$g_run_mode by UID:$UID) : rc_skel_sync $skel $from $to"
+echo; echo "Running($g_prefix_run$g_run_mode by UID:$UID) : rc_tree_sync $tree $from $to"
 echo;
-rc_skel_sync $skel $from $to
+rc_tree_sync $tree $from $to

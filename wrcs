@@ -12,13 +12,13 @@ Options:
 
 Note: -S inclues sysroot/all as well. (sudoes all relevant execs)
 
-In means this repo
-Out means the system
-
 <run>:
 diff	: diff in with out
 sin 	: Sync in with out 
 sout	: Sync out with in
+
+where, in means this repo and
+       out means the system
 
 wrcs or wrapper for rcsync is a high level script for rcsync.
 See rcsync -h and the examples below. The option and arg sets the profile

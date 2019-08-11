@@ -206,6 +206,7 @@ nnoremap <Leader>p :FZF
 nnoremap <Leader>b :call CopyAsBreakpoint()<cr>
 nnoremap <Leader>c :call Cs_inv()<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
+nnoremap <Leader>x :set textwidth=
 
 " To understand the alt keybinding headache in vim, see:
 " https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
