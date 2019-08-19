@@ -1,0 +1,20 @@
+#! /bin/bash
+
+this=`basename $0`
+
+if [[ $this == "cluda" ]]; then
+  clang --cuda-gpu-arch=sm_50 -L /opt/cuda/lib64 -lcudart $@
+  exit $?
+fi
+
+run=$1 
+omp_common="-fopenmp -I /home/abinav/llvm_dev/build/main/projects/openmp/runtime/src"
+
+if [[ $run == "nv" ]]; then
+  shift
+  clang $omp_common -fopenmp-targets=nvptx64-nvidia-cuda -Xopenmp-target \
+    -march=sm_50 $@
+else
+  clang $omp_common -fopenmp-targets=x86_64-pc-linux-gnu $@
+fi
+

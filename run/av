@@ -11,6 +11,7 @@ sub is_max_volume_normal {
 	system('ffmpeg -af "volumedetect" -vn -sn -dn -f null /dev/null ' .
 		"-i \"$file\" |& grep max_volume");
 }
+
 sub process_file {
 	is_max_volume_normal($File::Find::name);
 }

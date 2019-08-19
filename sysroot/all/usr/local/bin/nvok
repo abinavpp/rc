@@ -1,0 +1,13 @@
+#! /bin/bash
+
+if ! systemctl status bumblebeed.service; then
+  if ! systemctl start bumblebeed.service; then
+    return 1
+  fi
+fi
+
+if type optirun &> /dev/null; then
+  return 0
+else
+  return 1
+fi

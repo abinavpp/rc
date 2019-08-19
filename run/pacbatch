@@ -54,7 +54,6 @@ sub pacman_is_in_sys {
 sub pacbatch_list_verify_S {
 	my ($pacbatch_list) = @_;
 
-
 	# foreach my $pacbatch_pkg (@$pacbatch_list) {
 	for (my $i = 0; $i < scalar @$pacbatch_list; $i++) {
 		my $pacbatch_pkg = @$pacbatch_list[$i];
@@ -80,7 +79,6 @@ sub usage() {
 	"o=s" => \my $path_pacbatch_out,
 	"d=s" => \$path_pacbatch_db,
 	"S" => \my $pacman_S,
-	"Q" => \my $pacman_Q,
 	"help" => \my $opt_help)
 	';
 }

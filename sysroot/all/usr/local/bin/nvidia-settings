@@ -1,0 +1,7 @@
+#! /bin/bash
+
+if nvok; then
+  optirun /usr/bin/nvidia-settings -c :8 &
+else
+  /usr/bin/nvidia-settings -c :8 &
+fi

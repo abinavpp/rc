@@ -1,4 +1,8 @@
 #! /bin/bash
 
 mmrc chrome
-/bin/google-chrome-stable &
+if nvok; then
+  optirun /usr/bin/google-chrome-stable &
+else
+  /usr/bin/google-chrome-stable
+fi

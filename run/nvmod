@@ -1,0 +1,13 @@
+#! /bin/bash
+
+run=$1
+
+stash=~/documents/eph
+mkdir -p "$stash"
+
+if [[ $run == "on" ]]; then
+  sudo mv "$stash/nvidia-modprobe" /usr/bin &> /dev/null
+else
+  sudo mv /usr/bin/nvidia-modprobe "$stash" &> /dev/null
+fi
+  
