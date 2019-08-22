@@ -89,17 +89,17 @@ function md_colonvar() {
 
 function mdpath() {
   local opt=$1; shift;
-  md_colonvar PATH $opt $(realpath $@ 2> /dev/null);
+  md_colonvar PATH $opt $(realpath "$@" 2> /dev/null);
 }
 
 function mdld() {
   local opt=$1; shift;
-  md_colonvar LD_LIBRARY_PATH $opt $(realpath $@ 2> /dev/null);
+  md_colonvar LD_LIBRARY_PATH $opt $(realpath "$@" 2> /dev/null);
 }
 
 function mdlb() {
   local opt=$1; shift;
-  md_colonvar LIBRARY_PATH $opt $(realpath $@ 2> /dev/null);
+  md_colonvar LIBRARY_PATH $opt $(realpath "$@" 2> /dev/null);
 }
 
 export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
@@ -263,9 +263,9 @@ function vim {
     local args="" arg=""
 
     # if we have a non file arg and we have a bg_vim then run a new vim.
-    for arg in $@; do
+    for arg in "$@"; do
       if [[ ! -e $arg  && $bg_pid ]]; then
-        /usr/bin/vim $@
+        /usr/bin/vim "$@"
         return
       fi
     done
@@ -273,8 +273,8 @@ function vim {
     if [[ $bg_pid ]]; then # ie. bg_vim exists
       local bg_pwd=$(pwdx $bg_pid | awk '{print $2}')/
       # All arg should be file(s) here.
-      for arg in $@; do
-        arg="$(realpath $arg)"
+      for arg in "$@"; do
+        arg=$(realpath "$arg")
 
         # if path is under bg_pwd, then access it relative (so that tab heading
         # won't look ugly)
@@ -284,7 +284,7 @@ function vim {
       return
 
     else
-      $cmd $@
+      $cmd "$@"
     fi
 }
 
@@ -301,9 +301,9 @@ function sgrep {
       exclude+="--exclude=cscope.out --exclude=cscope.files "
     fi
 
-    /bin/grep -P --color -n $exclude $@
+    /bin/grep -P --color -n $exclude "$@"
   else
-    /bin/grep -P --color -n $@
+    /bin/grep -P --color -n "$@"
   fi
 }
 
@@ -369,12 +369,12 @@ function cd {
 }
 
 function pacdry {
-	local pkg_infos=$(pacman -p --print-format "%n" $@ | xargs pacman -Si)
+	local pkg_infos=$(pacman -p --print-format "%n" "$@" | xargs pacman -Si)
 
 	SAVEIFS=$IFS
 	IFS=$'\n' # for filling arrays below
 
-	local pkg_names=($(pacman -p --print-format "%n" $@))
+	local pkg_names=($(pacman -p --print-format "%n" "$@"))
 
 	# can't use +ve look-behinds here since we need "var-length look-behind"!
 	local pkg_download_szs=($(echo "$pkg_infos" | grep -P -o \
@@ -402,12 +402,12 @@ function pacdry_fresh {
 	fi
 
 	sudo pacman -Sy --dbpath "$path_tmpdb" --logfile /dev/null 1>&2 && \
-		pacdry --dbpath "$path_tmpdb" $@
+		pacdry --dbpath "$path_tmpdb" "$@"
 	sudo rm -rf "$path_tmpdb" &> /dev/null
 }
 
 function pacdry2 {
-	sudo pacman --logfile /dev/null $@
+	sudo pacman --logfile /dev/null "$@"
 }
 
 function pid2jid {
@@ -541,7 +541,7 @@ function cdp {
 
 function clhome {
 	local f
-	for f in $@; do
+	for f in "$@"; do
 		[[ -n `ls ~/$f 2> /dev/null` ]] && rm ~/$f
 	done
 }
