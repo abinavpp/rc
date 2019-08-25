@@ -1,9 +1,8 @@
 #! /usr/bin/perl
 
 my @lines = <STDIN>;
-my $skip_head = 3;
 foreach my $line (@lines) {
+  if ($line !~ /^(\ \").+$/) { next; }
   print "$line";
-  if ($skip_head) { $skip_head--; next; }
   print "\n";
 }
