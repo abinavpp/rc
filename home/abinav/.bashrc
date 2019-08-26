@@ -114,9 +114,9 @@ export LLVM_DEV="/home/abinav/llvm_dev"
 
 mdpath -p "$EXTRA_RUN" "$HOME_BIN"
 md_colonvar PATH -p "."
-RESET_PATH=$PATH
-RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-RESET_LIBRARY_PATH=$LIBRARY_PATH
+export RESET_PATH=$PATH
+export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export RESET_LIBRARY_PATH=$LIBRARY_PATH
 
 source /etc/bash.before &> /dev/null
 source ${HOME}/bash.before &> /dev/null
