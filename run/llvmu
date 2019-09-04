@@ -5,14 +5,13 @@ if [[ -z $LLVM_DEV ]]; then
 	exit 1
 fi
 
-# defualt output files
+# default output files
 clang_out="clang.ll"
 opt_out="opt.ll"
 dot_out="dot.ll"
-ili_out="ili" ilm_out="ilm" stb_out="stb"
 
 function try_llvmb() {
-    prof=$1; shift
+  prof=$1; shift
 	llvmb $prof "$@" || exit 1;
 }
 
@@ -24,28 +23,24 @@ function is_ll() {
 }
 
 function get_ll() {
-    prof=$1 file="$2"
+  prof=$1 file="$2"
 	if is_ll $file; then
 		echo "$file";
 		return
 	fi
 
-	if [[ "$file" =~ \.f90$ ]]; then
-		llvmr $prof flang1 "$file" || exit 1
-	else
-        llvmr $prof clang -S -emit-llvm -Xclang -disable-O0-optnone -o \
-            "$clang_out" "$file" || exit 1
-	fi
+  llvmr $prof clang -S -emit-llvm -Xclang -disable-O0-optnone -o \
+    "$clang_out" "$file" || exit 1
 	
 	echo "$clang_out";
 }
 
 function get_ll_for_dot() {
-    prof="rel" ll=""
-	if is_ll $1; then
-		ll="$1";
+  prof=$1 file="$2"
+	if is_ll $file; then
+		ll="$file";
 	else
-		get_ll $prof "$1" &> /dev/null
+		get_ll $prof "$file" &> /dev/null
 		llvmr $prof opt -mem2reg -loop-simplify -instcombine -instnamer \
 			-indvars -S -o "$dot_out" "$clang_out" || exit 1;
 		ll="$dot_out"
@@ -71,15 +66,15 @@ function do_llvmdot {
 	# the order here should match the output pdf
 	local dots=""
 	if ls $2/cfg*$1*.dot &> /dev/null; then
-		dots="$2/cfg*$1*.dot"
+		dots="$2/cfg*$1*.dot "
 	fi
 
 	if ls $2/mf*$1*.dot &> /dev/null; then
-		dots="$2/mf*$1*.dot"
+		dots+="$2/mf*$1*.dot "
 	fi
 
 	if ls $2/dom*$1*.dot &> /dev/null; then
-		dots="$dots $2/dom*$1*.dot "
+		dots+="$2/dom*$1*.dot "
 	fi
 
 	if [[ -n $dots ]]; then
@@ -141,53 +136,6 @@ function do_mir {
         <(llvmr $prof llc $second_print_cmd "$ll" 2>&1)
 }
 
-
-function cleanup_flang() {
-	rm $ilm_out $ili_out $stb_out $clang_out a.out &> /dev/null
-}
-
-function do_flang() {
-	if [[ $1 == "cl" ]]; then
-		cleanup_flang
-		return
-	fi
-
-	local OLD_LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
-	local OLD_PATH="${PATH}"
-
-    FLANG_INSTALL_PREFIX="/home/abinav/Downloads/src/llvm_dev/install/flang-compiler"
-
-	export LD_LIBRARY_PATH="${FLANG_INSTALL_PREFIX}/lib"
-	export PATH="${FLANG_INSTALL_PREFIX}/bin:${PATH}"
-
-	try_llvmb install 1> /dev/null;
-	if [[ $1 == "dp" ]]; then
-		shift
-		flang "$@" -Hq,0,1 -Hq,1,1 -Hq,2,1
-
-	elif [[ $1 == "ilm" ]]; then
-		shift
-		cleanup_flang
-		flang1 -output $ilm_out -stbfile $stb_out "$@"
-
-	elif [[ $1 == "ili" ]]; then
-		shift
-	  flang -Mq,0,1 -Mq,10,2 -Mq,10,1 "$1" 2> $ili_out
-
-    elif [[ $1 == "check-all" ]]; then
-        try_llvmb check-all
-
-    else
-		flang1 -output $ilm_out -stbfile $stb_out -src "$1"
-		flang2 -fn "$1" -stbfile $stb_out -asm "$clang_out" $ilm_out
-		flang -Mq,0,1 -Mq,10,2 -Mq,10,1 "$1" 2> $ili_out
-	fi
-
-
-	export LD_LIBRARY_PATH="${OLD_LD_LIBRARY_PATH}"
-	export PATH="${OLD_PATH}"
-}
-
 # try non-dir-based-profiles first where $1 is profile
 if [[ $1 == "dot" ]]; then
   prof="main"
@@ -204,9 +152,9 @@ if [[ $1 == "dot" ]]; then
 	fi
 
 	# try in currdir
-	ll=$(get_ll_for_dot $1) || exit 1;
+	ll=$(get_ll_for_dot $prof $1) || exit 1;
   # we need to prefix the cfg from llvm >= 8 to conform with llvm <= 7 std.
-  llvmr $prof opt -dot-cfg  -cfg-dot-filename-prefix="cfg" $ll
+  llvmr $prof opt -dot-cfg -cfg-dot-filename-prefix="cfg" $ll
 	llvmr $prof opt -dot-dom $ll
 
 	if [[ $# -eq 2 ]]; then
@@ -222,7 +170,7 @@ if [[ $1 == "dot" ]]; then
 
 	# In case of
 	# llvmu dot foofunc has_foo_bar_zee_func.c
-    do_llvmdot -c "."
+  do_llvmdot -c "."
 
 elif [[ $1 == "scev" ]]; then
   prof="main"
@@ -237,13 +185,16 @@ elif [[ $1 == "mod" ]]; then
 	/usr/bin/clang++ -g `llvmr $prof llvm-config --cxxflags --ldflags --system-libs \
 		--libs core mc x86` $1
   if [[ $? == 0 ]]; then
-    a.out &> clang.ll
+    llvmr $prof a.out &> clang.ll
   fi
 
 elif [[ $1 == "ir" ]]; then
   prof="main"
 	shift
 	get_ll $prof "$1" &> /dev/null || exit 1;
+  llvmr $prof opt -mem2reg -loop-simplify -instcombine -instnamer \
+    -indvars -S -o "$clang_out" "$clang_out" || exit 1;
+
 
 elif [[ $1 == "mir" ]]; then
   prof="main"

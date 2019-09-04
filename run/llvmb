@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# usage: llvmb <profile> [the-part-after-ninja/make]
+# usage: llvmb <project> [the-part-after-ninja/make]
 
 orig_path="$PATH"
 orig_ldlp="$LD_LIBRARY_PATH"
@@ -19,7 +19,7 @@ if ! am_i_home; then
 fi
 
 if [[ ! -d "$build_dir" || $# -eq 0 ]]; then
-    echo "profile doesn't exist"
+    echo "project doesn't exist"
     exit 1
 fi
 
@@ -33,15 +33,6 @@ elif [[ -e Makefile ]]; then
 fi
 
 ret=$?
-
-# Below cp is the default unaliased /bin/cp, so it will copy
-# libLLVMFoo.so.7, not the libLLVMFoo.so symlink even though the -v
-# output "lies". F$@king coreutil nonsense!
-# if [[ $ret -eq 0 && $1 =~ ^libLLVM.*\.so$ ]]; then
-    # if [[ "lib/$1" -nt "$LLVM_DEV/install/lib/$1" ]]; then
-        # cp "lib/$1" "$LLVM_DEV/install/lib/"
-    # fi
-# fi
 
 cd - 1> /dev/null
 exit $ret

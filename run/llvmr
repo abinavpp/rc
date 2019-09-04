@@ -1,23 +1,28 @@
 #! /bin/bash
 
-function die_no_profile() {
-  echo "profile doesn't exist"
+function die_no_project() {
+  echo "project doesn't exist"
   exit 1
 }
 
 if [[ $# -eq 0 ]]; then
-  die_no_profile
+  die_no_project
 fi
 
-bin_dir="$LLVM_DEV/bin/$1"
 
-test ! -d "$bin_dir" && bin_dir="$LLVM_DEV/install/$1/bin"
-test ! -d "$bin_dir" && bin_dir="$LLVM_DEV/build/$1/bin"
+proj=$1
+bin_dir="$LLVM_DEV/install/$proj/bin"
+test ! -d "$bin_dir" && bin_dir="$LLVM_DEV/build/$proj/bin"
+
+lib_dir="$LLVM_DEV/install/$proj/lib"
+test ! -d "$lib_dir" && lib_dir="$LLVM_DEV/build/$proj/lib"
 
 if [[ ! -d "$bin_dir" ]]; then
-  die_no_profile
+  die_no_project
 fi
 
-shift;
 PATH="$bin_dir:$PATH"
+LD_LIBRARY_PATH="$lib_dir:$LD_LIBRARY_PATH"
+
+shift
 $@
