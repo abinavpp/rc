@@ -50,6 +50,7 @@ elif [[ $mode == "c" ]]; then
     -name '*.[ch]' -o \
     -name '*.cpp' -o \
     -name '*.cc' \
+    -name '*.cu' \
     > cscope.files
 
 
