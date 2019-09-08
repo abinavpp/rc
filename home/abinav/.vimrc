@@ -439,6 +439,8 @@ autocmd filetype php inoremap <F6> <C-o>:wa <bar>
 au BufRead,BufNewFile *.ll set filetype=llvm
 au BufRead,BufNewFile lit.*cfg set filetype=python
 au BufRead,BufNewFile *.td set filetype=tablegen
+
+au FileType llvm setlocal commentstring=;\ %s
 " see https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
 " aug python
     " ftype/python.vim overwrites this
