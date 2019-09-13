@@ -43,6 +43,9 @@ EOT
 
 function unbundle_x86_ir() {
   local inp="$1"
+
+  # Remember that --targets=... for clang-offload-bundler --unbundle are
+  # derived from:  __CLANG_OFFLOAD_BUNDLE____START/END__ <target>
   clang-offload-bundler --unbundle --type ll \
     --inputs="$inp" \
     --outputs=${unbundle_dev_ir},${unbundle_host_ir} \
