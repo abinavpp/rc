@@ -95,12 +95,10 @@ sub memmnt_files {
 		# discard memmnt_ifile but keep meta
 		foreach my $path_file (@$path_files) {
 			system($cmd_memmnt, "-d", $path_file);
-			# print($cmd_memmnt, "-d", $path_file);
 		}
 	} else {
 		foreach my $path_file (@$path_files) {
 			system($cmd_memmnt, $path_file);
-			# print($cmd_memmnt, $path_file);
 		}
 	}
 }
@@ -255,50 +253,3 @@ if ($opt_umnt) {
 
 memmnt_profile \@ARGV;
 exit;
-
-
-# print Dumper(@x);
-# exit;
-#
-# sub do_safe_chrome {
-# 	# \cmd
-# 	my ($cmd) = @_;
-
-
-# 	chdir($path_config_chrome);
-
-# 	# don't touch Default dir itself and PepperFlash
-# 	my @list = ls_except($path_config_chrome, 
-# 		"Default", "PepperFlash");
-
-# 	foreach_system(\@list, $cmd);
-
-# 	chdir($path_config_chrome_Default);
-# 	@list = ls_except($path_config_chrome_Default, );
-
-# 	foreach_system(\@list, $cmd);
-# }
-
-# sub memmnt_safe_chrome {
-# 	my @cmd = ($cmd_memmnt);
-# 	do_safe_chrome(\@cmd);
-# }
-
-# sub memumnt_safe_chrome {
-# 	# unmount/restore wl's 
-# 	my @cmd = ($cmd_memmnt, "-u");
-
-# 	chdir($path_config_chrome);
-# 	foreach_system(\@wl_syncbk_config_chrome, \@cmd);
-# 	chdir($path_config_chrome_Default);
-# 	foreach_system(\@wl_syncbk_config_chrome_Default, \@cmd);
-
-# 	# discard everything else
-# 	@cmd = ($cmd_memmnt, "-d");
-# 	do_safe_chrome(\@cmd);
-
-# 	# cleanup memdir, cleans leavings by chrome
-# 	system($cmd_memmnt, "-c");
-# }
-
-

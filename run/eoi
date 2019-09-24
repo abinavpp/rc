@@ -1,0 +1,23 @@
+#! /usr/bin/perl
+
+my $eoi_path = qr/^
+  (PATH | LD_LIBRARY_PATH | LIBRARY_PATH)
+  $/x;
+
+my $eoi_extra = qr/^
+  (LIBOMP.* | KMP.*)
+  $/x;
+
+
+sub match_env {
+  my ($eoi_regex) = @_;
+
+  foreach my $var (sort keys(%ENV)) {
+    if ($var =~ $eoi_regex) {
+      print "$var = $ENV{$var}\n";
+    }
+  }
+}
+
+match_env($eoi_path); print "\n";
+match_env($eoi_extra)
