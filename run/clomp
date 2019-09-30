@@ -5,6 +5,7 @@ unbundle_host_ir="host.ll"
 unbundle_dev_ir="dev.ll"
 dev_lk="dev.lk"
 dev_obj="dev.o"
+linked_dev_obj="linked_dev.o"
 host_obj="host.o"
 
 run=$1 
@@ -55,9 +56,18 @@ function unbundle_x86_ir() {
 function exec_bundled_x86_ir() {
   local ir="$1"
   unbundle_x86_ir "$ir"
-  clang $unbundle_dev_ir -c -o $dev_obj
+
+  # device object
+  clang -cc1 -emit-obj -fopenmp -fopenmp-is-device \
+    -fopenmp-host-ir-file-path $unbundle_host_ir \
+    -x ir $unbundle_dev_ir -o $dev_obj
+  clang -shared -lomp $dev_obj -o $linked_dev_obj
+
+  # host object
   clang $unbundle_host_ir -c -o $host_obj
-  dump_x86_dev_lk $dev_obj
+
+  # final linking
+  dump_x86_dev_lk $linked_dev_obj
 
   # Frustratingly, the below command doesn't put -T as the last ld option, so it won't work
   # clang $host_obj $omp_common -lomp -lomptarget -Wl,-T,$dev_lk -v
