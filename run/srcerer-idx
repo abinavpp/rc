@@ -60,7 +60,7 @@ else
 fi
 
 
-
+rm cscope.out &> /dev/null
 cscope -b -i cscope.files
 
 ctags --c++-kinds=+p --fields=+iaS --extras=+q --language-force=C++ -L \

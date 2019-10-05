@@ -5,10 +5,10 @@ unbundle_host_ir="host.ll"
 unbundle_dev_ir="dev.ll"
 dev_lk="dev.lk"
 dev_obj="dev.o"
-linked_dev_obj="linked_dev.o"
+linked_dev_obj="dev_linked.o"
 host_obj="host.o"
 
-run=$1 
+run=$1
 omp_common="-fopenmp -I /home/abinav/llvm_dev/build/main/projects/openmp/runtime/src"
 
 function dump_x86_dev_lk() {
@@ -42,19 +42,31 @@ INSERT BEFORE .data
 EOT
 }
 
-function unbundle_x86_ir() {
-  local inp="$1"
-
-  # Remember that --targets=... for clang-offload-bundler --unbundle are
-  # derived from:  __CLANG_OFFLOAD_BUNDLE____START/END__ <target>
-  clang-offload-bundler --unbundle --type ll \
-    --inputs="$inp" \
-    --outputs=${unbundle_dev_ir},${unbundle_host_ir} \
-    -targets=openmp-x86_64-pc-linux-gnu,host-x86_64-unknown-linux-gnu
+function get_unbundle_targets() {
+  local ir="$1"
+  local targets=$(cat "$ir" | grep "__CLANG_OFFLOAD_BUNDLE____START__" | \
+    tr -s ' ' | cut -d ' ' -f 3)
+  echo $targets | tr ' ' ','
 }
 
-function exec_bundled_x86_ir() {
+function unbundle_x86_ir() {
   local ir="$1"
+
+  # FIXME: We are relying on an unreliable fact the dev-ir comes before host-ir
+  # in the bundled-ir.
+  clang-offload-bundler --unbundle --type ll \
+    --inputs="$ir" \
+    --outputs=${unbundle_dev_ir},${unbundle_host_ir} \
+    -targets=$(get_unbundle_targets $ir)
+}
+
+function compile_bundled_x86_ir() {
+  local final_ld="clang"
+  if [[ $# -eq 2 ]]; then
+    final_ld=$1; shift
+  fi
+  local ir="$1"
+
   unbundle_x86_ir "$ir"
 
   # device object
@@ -72,9 +84,14 @@ function exec_bundled_x86_ir() {
   # Frustratingly, the below command doesn't put -T as the last ld option, so it won't work
   # clang $host_obj $omp_common -lomp -lomptarget -Wl,-T,$dev_lk -v
 
-  local final_ld=$(clang $host_obj $omp_common -lomp -lomptarget -v |& "llvm###")
-  # see our snp/misc to see this and more other bash headaches. 
-  bash -c "$final_ld -T $dev_lk"
+  local final_ld_cmd=$($final_ld $host_obj $omp_common -lomp -lomptarget -v |& "llvm###")
+  # see our snp/misc to see this and more other bash headaches.
+  bash -c "$final_ld_cmd -T $dev_lk"
+}
+
+function clean_iromp_leftovers() {
+  rm $unbundle_host_ir $unbundle_dev_ir $host_obj $dev_obj\
+    $linked_dev_obj $dev_lk &> /dev/null
 }
 
 if [[ $this == "cluda" ]]; then
@@ -85,8 +102,10 @@ if [[ $this == "cluda" ]]; then
   # Why --cuda-gpu-arch=sm_xx is an unused option ?
   clang++  -L ${cuda_path}/lib64 -I ${cuda_path}/include -lcuda $@
   exit $?
+
 elif [[ $this == "iromp" ]]; then
-  exec_bundled_x86_ir $1
+  compile_bundled_x86_ir $@
+  clean_iromp_leftovers
   exit $?
 fi
 
