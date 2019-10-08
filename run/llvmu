@@ -183,7 +183,7 @@ elif [[ $1 == "mod" ]]; then
   project="main"
 	shift
 	/usr/bin/clang++ -g `llvmr $project llvm-config --cxxflags --ldflags --system-libs \
-		--libs core mc x86` $1
+		--libs core mc x86` $@
   if [[ $? == 0 ]]; then
     llvmr $project a.out &> clang.ll
   fi
