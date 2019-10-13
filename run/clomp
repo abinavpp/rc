@@ -1,12 +1,17 @@
 #! /bin/bash
 
 this=`basename $0`
+
 unbundle_host_ir="host.ll"
 unbundle_dev_ir="dev.ll"
+
 dev_lk="dev.lk"
+
 dev_obj="dev.o"
 linked_dev_obj="dev_linked.o"
 host_obj="host.o"
+
+offload_wrapper_bitcode="offload_wrapper.bc"
 
 run=$1
 omp_common="-fopenmp -I /home/abinav/llvm_dev/build/main/projects/openmp/runtime/src"
@@ -42,6 +47,9 @@ INSERT BEFORE .data
 EOT
 }
 
+# FIXME: We are relying on an unreliable fact the dev-ir comes first
+# in the bundled-ir in most of the following APIs.
+
 function get_unbundle_targets() {
   local ir="$1"
   local targets=$(cat "$ir" | grep "__CLANG_OFFLOAD_BUNDLE____START__" | \
@@ -49,15 +57,34 @@ function get_unbundle_targets() {
   echo $targets | tr ' ' ','
 }
 
+function get_unbundle_dev_target() {
+  local ir="$1"
+  local targets
+
+  IFS=',' read -r -a targets <<< $(get_unbundle_targets $ir)
+  echo ${targets[0]:7} # :7 strips off the leading openmp-
+}
+
+function get_unbundle_host_target() {
+  local ir="$1"
+  local targets
+
+  IFS=',' read -r -a targets <<< $(get_unbundle_targets $ir)
+  echo ${targets[1]:5} # :5 strips off the leading host-
+}
+
 function unbundle_x86_ir() {
   local ir="$1"
 
-  # FIXME: We are relying on an unreliable fact the dev-ir comes before host-ir
-  # in the bundled-ir.
   clang-offload-bundler --unbundle --type ll \
     --inputs="$ir" \
     --outputs=${unbundle_dev_ir},${unbundle_host_ir} \
     -targets=$(get_unbundle_targets $ir)
+}
+
+function get_clang_version() {
+  clang --version | grep "clang version" | grep -o '\ [0-9]*\.' | \
+    grep -o '[0-9]*'
 }
 
 function compile_bundled_x86_ir() {
@@ -69,20 +96,32 @@ function compile_bundled_x86_ir() {
 
   unbundle_x86_ir "$ir"
 
+  # host object
+  clang $unbundle_host_ir -c -o $host_obj
+
   # device object
   clang -cc1 -emit-obj -fopenmp -fopenmp-is-device \
     -fopenmp-host-ir-file-path $unbundle_host_ir \
     -x ir $unbundle_dev_ir -o $dev_obj
   clang -shared -lomp $dev_obj -o $linked_dev_obj
 
-  # host object
-  clang $unbundle_host_ir -c -o $host_obj
+  if [[ $(get_clang_version) -gt "9" ]]; then
+    clang-offload-wrapper -target $(get_unbundle_host_target $ir) \
+      -offload-targets=$(get_unbundle_dev_target $ir) -o $offload_wrapper_bitcode \
+      $linked_dev_obj
+
+    clang $offload_wrapper_bitcode -c -o $linked_dev_obj
+
+    # final linking
+    $final_ld $host_obj $linked_dev_obj $omp_common -lomp -lomptarget
+    return
+  fi
 
   # final linking
   dump_x86_dev_lk $linked_dev_obj
 
   # Frustratingly, the below command doesn't put -T as the last ld option, so it won't work
-  # clang $host_obj $omp_common -lomp -lomptarget -Wl,-T,$dev_lk -v
+  clang $host_obj $omp_common -lomp -lomptarget -Wl,-T,$dev_lk -v
 
   local final_ld_cmd=$($final_ld $host_obj $omp_common -lomp -lomptarget -v |& "llvm###")
   # see our snp/misc to see this and more other bash headaches.
@@ -91,7 +130,7 @@ function compile_bundled_x86_ir() {
 
 function clean_iromp_leftovers() {
   rm $unbundle_host_ir $unbundle_dev_ir $host_obj $dev_obj\
-    $linked_dev_obj $dev_lk &> /dev/null
+    $linked_dev_obj $dev_lk $offload_wrapper_bitcode &> /dev/null
 }
 
 if [[ $this == "cluda" ]]; then

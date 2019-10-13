@@ -13,11 +13,6 @@ export LIBRARY_PATH="$RESET_LIBRARY_PATH"
 build_dir="$LLVM_DEV/build/$1"
 n_cores=$(nproc --all || getconf _NPROCESSORS_ONLN || echo 1)
 
-# be nice to your colleague
-if ! am_i_home; then
-    n_cores=$((n_cores / 1))
-fi
-
 if [[ ! -d "$build_dir" || $# -eq 0 ]]; then
     echo "project doesn't exist"
     exit 1
@@ -29,7 +24,7 @@ cd "$build_dir"
 if [[ -e build.ninja ]]; then
     ninja $@
 elif [[ -e Makefile ]]; then
-    make -j ${n_cores} $@
+    make $@
 fi
 
 ret=$?
