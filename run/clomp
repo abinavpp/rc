@@ -57,20 +57,20 @@ function get_unbundle_targets() {
   echo $targets | tr ' ' ','
 }
 
-function get_unbundle_dev_target() {
+function get_dev_target() {
   local ir="$1"
   local targets
 
-  IFS=',' read -r -a targets <<< $(get_unbundle_targets $ir)
-  echo ${targets[0]:7} # :7 strips off the leading openmp-
+  grep -P '^target triple\s*=\s*".+"' "$ir" | grep -P -o '".+"' | \
+    grep -P -o '[^"]+' | head -n1
 }
 
-function get_unbundle_host_target() {
+function get_host_target() {
   local ir="$1"
   local targets
 
-  IFS=',' read -r -a targets <<< $(get_unbundle_targets $ir)
-  echo ${targets[1]:5} # :5 strips off the leading host-
+  grep -P '^target triple\s*=\s*".+"' "$ir" | grep -P -o '".+"' | \
+    grep -P -o '[^"]+' | tail -n1
 }
 
 function unbundle_x86_ir() {
@@ -106,8 +106,8 @@ function compile_bundled_x86_ir() {
   clang -shared -lomp $dev_obj -o $linked_dev_obj
 
   if [[ $(get_clang_version) -gt "9" ]]; then
-    clang-offload-wrapper -target $(get_unbundle_host_target $ir) \
-      -offload-targets=$(get_unbundle_dev_target $ir) -o $offload_wrapper_bitcode \
+    clang-offload-wrapper -target $(get_host_target $ir) \
+      -offload-targets=$(get_dev_target $ir) -o $offload_wrapper_bitcode \
       $linked_dev_obj
 
     clang $offload_wrapper_bitcode -c -o $linked_dev_obj
@@ -143,8 +143,12 @@ if [[ $this == "cluda" ]]; then
   exit $?
 
 elif [[ $this == "iromp" ]]; then
-  compile_bundled_x86_ir $@
-  clean_iromp_leftovers
+  if [[ $1 == "ub" ]]; then
+    shift; unbundle_x86_ir $1
+  else
+    compile_bundled_x86_ir $@
+    clean_iromp_leftovers
+  fi
   exit $?
 fi
 

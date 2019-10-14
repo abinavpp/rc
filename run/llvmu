@@ -10,11 +10,6 @@ clang_out="clang.ll"
 opt_out="opt.ll"
 dot_out="dot.ll"
 
-function try_llvmb() {
-  project=$1; shift
-	llvmb $project "$@" || exit 1;
-}
-
 function is_ll() {
 	if [[ ${1: -3} == ".ll" ]]; then # _space_ b/w : and -
 		return 0;
@@ -31,7 +26,7 @@ function get_ll() {
 
   llvmr $project clang -S -emit-llvm -Xclang -disable-O0-optnone -o \
     "$clang_out" "$file" || exit 1
-	
+
 	echo "$clang_out";
 }
 
@@ -46,45 +41,6 @@ function get_ll_for_dot() {
 		ll="$dot_out"
 	fi
 	echo $ll;
-}
-
-# To view cfg, dom dot files and clean up whatever used:
-#
-# do_llvmdot func-name-fragment path/ views function in path/
-# do_llvmdot * path/ views all functions in path/
-# 
-# To cleanup all llvm dot files in path/
-# do_llvmdot -c path/
-function do_llvmdot {
-	if [[ $1 == "-c" ]]; then
-		rm $2/mf*.dot &> /dev/null
-		rm $2/cfg*.dot &> /dev/null
-		rm $2/dom*.dot &> /dev/null
-		return
-	fi
-
-	# the order here should match the output pdf
-	local dots=""
-	if ls $2/cfg*$1*.dot &> /dev/null; then
-		dots="$2/cfg*$1*.dot "
-	fi
-
-	if ls $2/mf*$1*.dot &> /dev/null; then
-		dots+="$2/mf*$1*.dot "
-	fi
-
-	if ls $2/dom*$1*.dot &> /dev/null; then
-		dots+="$2/dom*$1*.dot "
-	fi
-
-	if [[ -n $dots ]]; then
-		vdot "$dots";
-	else
-		return 1;
-	fi
-
-	rm $dots;
-	return 0;
 }
 
 function do_mir {
@@ -114,14 +70,14 @@ function do_mir {
 		first_print_cmd="-print-after=$2"
 		first_stop_cmd="-stop-after=$2"
 	elif [[ $1 == "all" ]]; then
-		# llvmu mir foo.c all
-        llvmr $project llc -print-machineinstrs "$ll" 2>&1
+    # cmdline: llvmu mir foo.c all
+    llvmr $project llc -print-machineinstrs "$ll" 2>&1
 		return
 	fi
-	
+
 	if [[ $# -eq 2 ]]; then
-		# llvmu mir foo.c b/a <pass>
-        llvmr $project llc $first_print_cmd "$ll" 2>&1
+    # cmdline: llvmu mir foo.c b/a <pass>
+    llvmr $project llc $first_print_cmd "$ll" 2>&1
 		return
 	fi
 
@@ -131,46 +87,28 @@ function do_mir {
 		second_print_cmd="-print-after=$4"
 	fi
 
-	# llvmu mir foo.c b/a <pass1> b/a <pass2>
-    vimdiff <(llvmr $project llc $first_print_cmd "$ll" 2>&1) \
-        <(llvmr $project llc $second_print_cmd "$ll" 2>&1)
+  # cmdline: llvmu mir foo.c b/a <pass1> b/a <pass2>
+  vimdiff <(llvmr $project llc $first_print_cmd "$ll" 2>&1) \
+      <(llvmr $project llc $second_print_cmd "$ll" 2>&1)
 }
 
-# try non-dir-based-projectiles first where $1 is projectile
 if [[ $1 == "dot" ]]; then
-  project="main"
-	shift
-	if [[ $# -eq 0 ]]; then # try all fn in /tmp
-        do_llvmdot "*" "/tmp"
-		exit;
-	fi
+  project="main"; shift
 
-	if [[ ! -e $1 ]]; then # try $1 fn in /tmp
-        do_llvmdot "$1" "/tmp"
-        do_llvmdot -c "/tmp" # if there are other dots in /tmp
-		exit;
-	fi
-
-	# try in currdir
 	ll=$(get_ll_for_dot $project $1) || exit 1;
-  # we need to prefix the cfg from llvm >= 8 to conform with llvm <= 7 std.
-  llvmr $project opt -dot-cfg -cfg-dot-filename-prefix="cfg" $ll
-	llvmr $project opt -dot-dom $ll
+  # we need to prefix the cfg for llvm >= 8 to conform with llvm <= 7 std.
+  llvmr $project opt -dot-cfg -cfg-dot-filename-prefix="cfg" -dot-dom \
+    -dot-callgraph --disable-output $ll
 
-	if [[ $# -eq 2 ]]; then
-        do_llvmdot "$2" "."
-	else
-        do_llvmdot "*" "."
-	fi
+  # if we generated an ll then remove it.
+  [[ $ll == $dot_out ]] && rm $ll
 
-	# if we generated an ll then remove it.
-	if [[ $ll == $dot_out ]]; then
-		rm $ll
-	fi
+  func="*"
+  [[ $# -eq 2 ]] && func="$2"
 
-	# In case of
-	# llvmu dot foofunc has_foo_bar_zee_func.c
-  do_llvmdot -c "."
+  dots="./cfg*$func*.dot ./mf*$func*.dot ./dom*$func*.dot"
+  vdot "$dots"
+  rm ./mf*.dot ./cfg*.dot ./dom*.dot callgraph.dot &> /dev/null
 
 elif [[ $1 == "scev" ]]; then
   project="main"
