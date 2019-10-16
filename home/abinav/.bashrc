@@ -631,6 +631,7 @@ alias mkfs.ntfs='mkfs.ntfs -Q'
 alias sudo='sudo '
 alias perlpi='perl -lpe '
 alias perl1='perl -ne '
+alias readelf='readelf --wide'
 
 alias qtmux='tmux kill-server'
 alias tmux='qtmux; tmux -u -2'

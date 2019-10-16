@@ -57,7 +57,7 @@ define d
 end
 
 skip -gfi /usr/include/c++/*/bits/*.h
-# set follow-fork-mode child
+set follow-fork-mode child
 set confirm off
 tui enable
 foc cmd
