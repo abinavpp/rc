@@ -632,6 +632,7 @@ alias sudo='sudo '
 alias perlpi='perl -lpe '
 alias perl1='perl -ne '
 alias readelf='readelf --wide'
+alias prettyll='prettyll -simvar'
 
 alias qtmux='tmux kill-server'
 alias tmux='qtmux; tmux -u -2'

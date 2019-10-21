@@ -107,7 +107,7 @@ function compile_bundled_x86_ir() {
 
   if [[ $(get_clang_version) -gt "9" ]]; then
     clang-offload-wrapper -target $(get_host_target $ir) \
-      -offload-targets=$(get_dev_target $ir) -o $offload_wrapper_bitcode \
+       -o $offload_wrapper_bitcode \
       $linked_dev_obj
 
     clang $offload_wrapper_bitcode -c -o $linked_dev_obj
