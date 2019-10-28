@@ -19,7 +19,6 @@ if [[ $mode == "llvm" ]]; then
     \) \
     > cscope.files
 
-
 # linux
 elif [[ $mode == "linux" ]]; then
   find $PWD \
@@ -43,7 +42,6 @@ elif [[ $mode == "linux" ]]; then
     -not -name '*.mod.c' \
     -name "*.[chsS]" -print >> cscopes.files
 
-
 # C/C++ projects
 elif [[ $mode == "c" ]]; then
   find $PWD -type f \
@@ -53,14 +51,12 @@ elif [[ $mode == "c" ]]; then
     -name '*.cu' \
     > cscope.files
 
-
-
 else
   find $PWD -type f > cscope.files
 fi
 
+rm tags cscope.files cscope.out &> /dev/null
 
-rm cscope.out &> /dev/null
 cscope -b -i cscope.files
 
 ctags --c++-kinds=+p --fields=+iaS --extras=+q --language-force=C++ -L \
