@@ -437,6 +437,7 @@ autocmd filetype php inoremap <F6> <C-o>:wa <bar>
 			\exec '!php '.shellescape('%')<CR>
 
 au BufRead,BufNewFile *.ll set filetype=llvm
+au BufRead,BufNewFile *.mlir set filetype=mlir
 au BufRead,BufNewFile lit.*cfg set filetype=python
 au BufRead,BufNewFile *.td set filetype=tablegen
 

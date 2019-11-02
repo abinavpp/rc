@@ -40,7 +40,9 @@ sub setup_plugins {
 
 sub setup_llvm {
   system("cp -r $ENV{HOME}/llvm_dev/main/utils/vim/syntax "
-    . "$ENV{HOME}/.vim &> /dev/null")
+    . "$ENV{HOME}/.vim &> /dev/null");
+  system("cp -r $ENV{HOME}/llvm_dev/main/projects/mlir/"
+    . "utils/vim/syntax $ENV{HOME}/.vim &> /dev/null");
 }
 
 sub setup_vim {
@@ -59,7 +61,7 @@ setup_plugins;
 # -------
 # comment out
 # .*map <buffer> for <Tab>
-# to enable <Ctrl-i> up naviagation
+# to enable <Ctrl-i> up navigation
 
 # vim-surround
 # ------------

@@ -2,6 +2,8 @@
 
 mode=$1
 
+rm tags cscope.files cscope.out &> /dev/null
+
 # llvm
 if [[ $mode == "llvm" ]]; then
   find $PWD -type f -a \
@@ -54,8 +56,6 @@ elif [[ $mode == "c" ]]; then
 else
   find $PWD -type f > cscope.files
 fi
-
-rm tags cscope.files cscope.out &> /dev/null
 
 cscope -b -i cscope.files
 
