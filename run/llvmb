@@ -7,10 +7,11 @@ orig_ldlp="$LD_LIBRARY_PATH"
 orig_lp="$LIBRARY_PATH"
 
 if [[ $1 != "-e" ]]; then
-  shift;
   export PATH="$RESET_PATH"
   export LD_LIBRARY_PATH="$RESET_LD_LIBRARY_PATH"
   export LIBRARY_PATH="$RESET_LIBRARY_PATH"
+else
+  shift;
 fi
 
 build_dir="$LLVM_DEV/build/$1"
