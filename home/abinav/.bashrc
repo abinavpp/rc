@@ -301,9 +301,9 @@ function sgrep {
       exclude+="--exclude=cscope.out --exclude=cscope.files "
     fi
 
-    /bin/grep -P --color -n $exclude "$@"
+    /bin/grep -P --color -n -I $exclude "$@"
   else
-    /bin/grep -P --color -n "$@"
+    /bin/grep -P --color -n -I "$@"
   fi
 }
 
