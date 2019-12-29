@@ -1,3 +1,4 @@
+execute pathogen#infect()
 " variables
 " ---------
 let mapleader = " "
@@ -21,6 +22,12 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_ignore_files = ["tex"]
 let g:syntastic_c_compiler_options = '-Wparentheses'
 
+" let g:lsp_log_verbose = 0
+" let g:lsp_log_file = expand('~/vim-lsp.log')
+" let g:asyncomplete_log_file = expand('~/asyncomplete.log')
+let g:lsp_diagnostics_enabled = 0
+let g:lsp_preview_autoclose = 0
+
 let g:tagbar_left = 1
 
 let fortran_free_source = 1
@@ -32,8 +39,6 @@ let fortran_do_enddo = 1
 let s:trailing_space_flag = 0
 let s:tags_file = ".vim_tags"
 let g:qrun_cflags = "-lpthread -lm"
-
-execute pathogen#infect()
 
 if filereadable($HOME . "/vimrc.before")
     source $HOME/vimrc.before
@@ -223,6 +228,12 @@ inoremap <C-r> <C-o><C-r>
 nnoremap <C-o> <esc>
 " sometimes C-] is not enough (TODO why?)
 nnoremap <C-]> g<C-]>
+
+nmap <C-\>d :LspDefinition<CR>
+nmap <C-\><S-d> :tab split<CR>:LspDefinition<CR>
+nmap <C-\>r :LspReference<CR>
+nmap <C-\>h :LspHover<CR>
+
 vnoremap <C-]> g<C-]>
 nnoremap <A-]> <C-w><C-]><C-w>T
 " exec "nnoremap \e] <C-w><C-]><C-w>T"
@@ -345,7 +356,6 @@ set splitright
 set ignorecase
 set smartcase
 set noshowmode
-set autoread
 set rtp+=~/.fzf
 
 set statusline =
@@ -364,7 +374,6 @@ set statusline +=/%L            	"total lines
 set statusline +=\ %v             	"virtual column number
 set statusline +=\ %P				"percentage
 silent! set statusline +=%{SyntasticStatuslineFlag()}
-
 
 
 " run
@@ -435,6 +444,21 @@ autocmd filetype ruby inoremap <F6> <C-o>:wa <bar>
 			\exec '!ruby '.shellescape('%')<CR>
 autocmd filetype php inoremap <F6> <C-o>:wa <bar>
 			\exec '!php '.shellescape('%')<CR>
+
+if executable('clangd')
+  augroup lsp_clangd
+    autocmd!
+    autocmd User lsp_setup call lsp#register_server({
+          \ 'name': 'clangd',
+          \ 'cmd': {server_info->['clangd']},
+          \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+          \ })
+    autocmd FileType c setlocal omnifunc=lsp#complete
+    autocmd FileType cpp setlocal omnifunc=lsp#complete
+    autocmd FileType objc setlocal omnifunc=lsp#complete
+    autocmd FileType objcpp setlocal omnifunc=lsp#complete
+  augroup end
+endif
 
 au BufRead,BufNewFile *.ll set filetype=llvm
 au BufRead,BufNewFile *.mlir set filetype=mlir

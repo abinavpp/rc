@@ -499,7 +499,7 @@ function vimj {
 		${EDITOR} -c "set filetype=messages" - "+normal G"
 }
 
-function ntcry {
+function crynt {
 	local cry_dir="/home/abinav/documents/eph/_x/"
 	local gpg="gpg --batch --yes"
 	if [[ $# -ne 1 || ! -d $cry_dir ]]; then
@@ -633,6 +633,8 @@ alias perlpi='perl -lpe '
 alias perl1='perl -ne '
 alias readelf='readelf --wide'
 alias prettyll='prettyll -simvar'
+alias dmesg='dmesg -T'
+alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'
 
 alias qtmux='tmux kill-server'
 alias tmux='qtmux; tmux -u -2'
