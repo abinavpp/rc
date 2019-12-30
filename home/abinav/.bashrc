@@ -248,11 +248,12 @@ function mkexec {
 
 function vim {
     local srv_name=$(tty)
-
     # we must hardcode /usr/bin/vim else we recurse!
-    local cmd="/usr/bin/vim -i NONE -p --servername $srv_name"
+    local vim_bin="/usr/bin/vim"
+
+    local cmd="$vim_bin -i NONE -p --servername $srv_name"
     if [[ $1 == "-" ]]; then
-        /usr/bin/vim -i NONE -
+        $vim_bin -i NONE -
         return
     fi
 
@@ -265,7 +266,7 @@ function vim {
     # if we have a non file arg and we have a bg_vim then run a new vim.
     for arg in "$@"; do
       if [[ ! -e $arg  && $bg_pid ]]; then
-        /usr/bin/vim "$@"
+        $vim_bin "$@"
         return
       fi
     done
