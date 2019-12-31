@@ -230,6 +230,7 @@ nnoremap <C-o> <esc>
 nnoremap <C-]> g<C-]>
 
 nmap <C-\>d :LspDefinition<CR>
+nmap <C-\>s :LspDeclaration<CR>
 nmap <C-\><S-d> :tab split<CR>:LspDefinition<CR>
 nmap <C-\>r :LspReference<CR>
 nmap <C-\>h :LspHover<CR>
@@ -337,12 +338,11 @@ set laststatus=2
 set expandtab
 set previewheight=1
 set pastetoggle=<F2>
-set completeopt-=preview
+set completeopt=noselect,menuone,preview
 
 exe "set tags+=" . s:tags_file
 set clipboard=unnamed
 set mouse=a
-set completeopt+=menuone
 
 set notitle
 set nowrap
@@ -464,6 +464,8 @@ au BufRead,BufNewFile *.ll set filetype=llvm
 au BufRead,BufNewFile *.mlir set filetype=mlir
 au BufRead,BufNewFile lit.*cfg set filetype=python
 au BufRead,BufNewFile *.td set filetype=tablegen
+au BufRead,BufNewFile *.cpp.inc set filetype=cpp
+au BufRead,BufNewFile *.h.inc set filetype=cpp
 
 au FileType llvm setlocal commentstring=;\ %s
 au FileType mlir setlocal commentstring=//\ %s

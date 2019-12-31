@@ -251,6 +251,8 @@ function vim {
     # we must hardcode /usr/bin/vim else we recurse!
     local vim_bin="/usr/bin/vim"
 
+    [[ -x $HOME_BIN/vim ]] && vim_bin="$HOME_BIN/vim"
+
     local cmd="$vim_bin -i NONE -p --servername $srv_name"
     if [[ $1 == "-" ]]; then
         $vim_bin -i NONE -
