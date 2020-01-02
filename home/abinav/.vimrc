@@ -346,6 +346,7 @@ set expandtab
 set previewheight=1
 set pastetoggle=<F2>
 set completeopt=noselect,menuone,preview
+set autoread
 
 exe "set tags+=" . s:tags_file
 set clipboard=unnamed

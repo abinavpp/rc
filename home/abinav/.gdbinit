@@ -58,11 +58,9 @@ end
 
 skip -gfi /usr/include/c++/*/bits/*.h
 set follow-fork-mode child
-set confirm off
-tui enable
-foc cmd
-
-set follow-fork-mode child
 set detach-on-fork off
 source /usr/share/gdb/python/gdb/command/pretty_printers.py
 source ~/llvm_dev/main/llvm/utils/gdb-scripts/prettyprinters.py
+set confirm off
+tui enable
+foc cmd

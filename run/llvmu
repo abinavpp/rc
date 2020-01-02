@@ -139,6 +139,12 @@ elif [[ $1 == "mir" ]]; then
 	shift;
   do_mir $project "$@"
 
+elif [[ $1 == "dis" ]]; then
+  shift
+  tmpir=$(mktemp /tmp/$1.XXXXXX)
+  llvm-dis $1 -o $tmpir
+  vim -c "set filetype=llvm" $tmpir
+  trap 'rm -f $tmpir' EXIT
 else
   exit 1
 fi
