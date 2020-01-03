@@ -168,6 +168,7 @@ func! CopyAsBreakpoint()
 endfunc
 
 command! Cl :call Cleanme()
+command! Cdb :lcd %:p:h
 
 " mappings
 " --------
@@ -177,11 +178,6 @@ vnoremap <C-x> d
 vnoremap <C-c> y
 vnoremap d "_d
 vnoremap / y/<C-R>"<CR>
-
-" command line alias
-cnoremap hl vert help
-cnoremap cdb lcd %:p:h
-cnoremap cds call Cds()
 
 " follow the leader
 nnoremap <Leader>f :set filetype
@@ -204,7 +200,6 @@ nnoremap <Leader>x :set textwidth=
 "
 " Stick to xterm! Moolenaar does I guess. Nevertheless, try to minimize dependency on
 " alt key-bindings
-
 
 " basic, plugins etc
 inoremap <C-z> <C-o>u
@@ -331,6 +326,7 @@ set pastetoggle=<F2>
 set completeopt=noselect,menuone,preview
 set autoread
 set cursorline
+set diffopt+=vertical
 
 set clipboard=unnamed
 set mouse=a
