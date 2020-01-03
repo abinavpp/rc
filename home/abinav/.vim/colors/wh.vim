@@ -12,12 +12,12 @@ let g:colors_name = "wh"
 " Palette:
 let s:yellow		= "#ffff00" "Incsearch
 let s:cheddar		= "#d75f00" "Tabline
-let s:red			= "#d70000" "Number/Error
+let s:red			  = "#d70000" "Number/Error
 let s:pink			= "#d700af" "Include/Exception
 let s:orange		= "#d75f00" "String/Identifier
 
 let s:green			= "#00af00" "Type
-let s:darkgreen		= "#00875f" "Nontext/Matchparen
+let s:darkgreen	= "#00875f" "Nontext/Matchparen
 let s:teal			= "#005f5f" "Selection/Inactive
 
 let s:aqua			= "#0087ff" "Keyword/Macro cond
@@ -27,8 +27,8 @@ let s:violet		= "#870087" "Difftext
 
 let s:white			= "#ffffff"
 let s:black			= "#000000"
-let s:lightgrey		= "#949494"	"Window div etc
-let s:darkgrey		= "#626262" "Comment
+let s:lightgrey	= "#949494"	"Window div etc
+let s:darkgrey	= "#626262" "Comment
 
 
 " Basic:
@@ -181,8 +181,9 @@ call <SID>X("Folded", s:white, s:green, "none")
 " call <SID>X("FoldColumn", "", s:background, "none")
 call <SID>X("Cursor", s:black, s:pink, "none")
 call <SID>X("CursorIM", s:black, s:aqua, "none")
-call <SID>X("CursorLine", s:black, s:lightgrey, "none")
-call <SID>X("CursorColumn", "", s:lightgrey, "none")
+call <SID>X("CursorLine", "", "", "none")
+call <SID>X("CursorLineNR", s:yellow, "", "none")
+call <SID>X("CursorColumn", "", "", "none")
 call <SID>X("ColorColumn", "", s:red, "none")
 call <SID>X("DiffText", s:white, s:violet, "none")
 call <SID>X("DiffAdd", s:foreground, s:darkgreen, "none")
@@ -193,6 +194,7 @@ call <SID>X("PMenu", s:white, s:black, "none")
 call <SID>X("PMenuSel", s:white, s:teal, "none")
 call <SID>X("PMenuSBar", "", s:teal, "none")
 call <SID>X("PMenuThumb", s:black, "", "none")
+call <SID>X("lspReference", s:background, s:darkgrey, "none")
 
 " Standard Group Highlighting:
 call <SID>X("Boolean", s:blue, "", "none")

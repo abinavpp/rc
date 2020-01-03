@@ -24,7 +24,7 @@ let g:syntastic_mode_map = {
       \ "passive_filetypes": ["c", "cpp", "tex"] }
 let g:syntastic_c_compiler_options = '-Wparentheses'
 
-" let g:lsp_log_verbose = 0
+" let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 " let g:asyncomplete_log_file = expand('~/asyncomplete.log')
 let g:lsp_preview_autoclose = 0
@@ -32,7 +32,9 @@ let g:lsp_signature_help_enabled = 0
 let g:lsp_signs_enabled = 0
 let g:lsp_highlights_enabled = 0 " for neovim
 let g:lsp_textprop_enabled = 0
+let g:lsp_highlight_references_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_peek_alignment = "center"
 
 let g:tagbar_left = 1
 
@@ -43,8 +45,7 @@ let fortran_do_enddo = 1
 
 " for functions in this file
 let s:trailing_space_flag = 0
-let s:tags_file = ".vim_tags"
-let g:qrun_cflags = "-lpthread -lm"
+let g:qcomprun_cflags = "-lpthread -lm"
 
 if filereadable($HOME . "/vimrc.before")
     source $HOME/vimrc.before
@@ -53,140 +54,118 @@ endif
 " functions
 " ---------
 function! Chomp(string)
-	return substitute(a:string, '\n\+$', '', '')
+  return substitute(a:string, '\n\+$', '', '')
 endfunction
 
 function! Cleanme()
-    silent! exec '%s/\v\ +$//g'
-    silent! exec '%s/\v[^\x00-\x7F]+//g'
+  silent! exec '%s/\v\ +$//g'
+  silent! exec '%s/\v[^\x00-\x7F]+//g'
 endfunction
 
 function! Trailing_space_match()
-	if s:trailing_space_flag == 0
-		let s:trailing_space_flag = 1
-		match trailing_space /\s\+\%#\@<!$/
-	else
-		let s:trailing_space_flag = 0
-		match none
-	endif
+  if s:trailing_space_flag == 0
+    let s:trailing_space_flag = 1
+    match trailing_space /\s\+\%#\@<!$/
+  else
+    let s:trailing_space_flag = 0
+    match none
+  endif
 endfunction
 
-function! Qrun_c(cmdline)
-	if filereadable("Makefile")
-		exec '!make &&
-			\ find . -maxdepth 1 -type f -perm /0100 -exec ' . a:cmdline . ' {} \;'
-	else
-		let l:ft = &filetype
-		if ft == "c"
-			let l:compiler = "gcc "
-		elseif ft == "cpp"
-			let l:compiler = "g++ "
+function! Qcomprun(cmdline)
+  if filereadable("Makefile")
+    exec '!make &&
+          \ find . -maxdepth 1 -type f -perm /0100 -exec ' . a:cmdline . ' {} \;'
+  else
+    let l:ft = &filetype
+    if ft == "c"
+      let l:compiler = "gcc "
+    elseif ft == "cpp"
+      let l:compiler = "g++ "
     elseif ft == "fortran"
       let l:compiler = "gfortran "
-		else
-			return
-		endif
+    else
+      return
+    endif
 
-		exec '!' . l:compiler . g:qrun_cflags . ' -g ' . shellescape('%') . ';' .
-			\a:cmdline . " ./a.out"
-	endif
+    exec '!' . l:compiler . g:qcomprun_cflags . ' -g ' . shellescape('%') . ';' .
+          \a:cmdline . " ./a.out"
+  endif
 endfunction
 
 function! C_pair()
-	let l:buf = bufname('%')
-	let l:pair = system('srcerer ' . l:buf)
-	if l:pair != ""
-		exec 'vsp ' . l:pair
-	endif
-	return
+  let l:buf = bufname('%')
+  let l:pair = system('srcerer ' . l:buf)
+  if l:pair != ""
+    exec 'vsp ' . l:pair
+  endif
+  return
 
-	let l:ft = &filetype
-	if ft == "c"
-		let l:header = l:buf[:-2] . 'h'
-	else
-		let l:header = l:buf[:-4] . 'h'
-	endif
-	exe 'vsp ' . l:header
+  let l:ft = &filetype
+  if ft == "c"
+    let l:header = l:buf[:-2] . 'h'
+  else
+    let l:header = l:buf[:-4] . 'h'
+  endif
+  exe 'vsp ' . l:header
 endfunction
 
 function! Cds()
-	let l:root = system('srcerer')
-	if l:root != ""
-		exec 'cd ' . l:root
-	endif
+  let l:root = system('srcerer')
+  if l:root != ""
+    exec 'cd ' . l:root
+  endif
 endfunction
 
 function! Cs_inv()
-	if g:colors_name == "wh"
-		colo bl
-	else
-		colo wh
-	endif
+  if g:colors_name == "wh"
+    colo bl
+  else
+    colo wh
+  endif
 endfunction
 
 function! Cs_upd()
-	for l:line in readfile("/home/abinav/.t_col", '', 2)
-		if line =~ 'wh'
-			colo wh
-		else
-			colo bl
-		endif
-	endfor
+  for l:line in readfile("/home/abinav/.t_col", '', 2)
+    if line =~ 'wh'
+      colo wh
+    else
+      colo bl
+    endif
+  endfor
 endfunction
 
 function! Nt_toggle()
-	if ! g:NERDTree.IsOpen()
-		NERDTreeCWD
-	else
-		NERDTreeClose
-	endif
-endfunction
-
-" updates ctags for this buffer only
-function! Tags_buf_upd()
-	let l:buf = bufname("%")
-	let l:bufd = ".vim_" . l:buf . ".d"
-	let l:tagl = ".vim_taglist"
-
-	" writes user def header files to l:bufd
-	call system("gcc -E -MM -o " . l:bufd . " " .
-				\l:buf)
-
-	" parses l:bufd for ctags -L
-	call system("awk '{for (i=2; i<=NF; i++) print $i}' " .
-				\l:bufd . " > " . l:tagl)
-
-	" to add protoypes +p, (see ctags --list-kinds=c)
-	call system("ctags --c-kinds=+p --fields=+S -f " . s:tags_file .
-				\" -L " . l:tagl)
-
-	call system("rm " . l:bufd)
-	call system("rm " . l:tagl)
+  if ! g:NERDTree.IsOpen()
+    NERDTreeCWD
+  else
+    NERDTreeClose
+  endif
 endfunction
 
 function! Map_all(keys, nrhs, irhs, crhs)
-	execute 'nnoremap' a:keys a:nrhs
-	execute 'vnoremap' a:keys a:nrhs
-	execute 'inoremap' a:keys a:irhs
+  execute 'nnoremap' a:keys a:nrhs
+  execute 'vnoremap' a:keys a:nrhs
+  execute 'inoremap' a:keys a:irhs
 
-	if a:crhs != ""
-		execute 'cnoremap' a:keys a:crhs
-	endif
+  if a:crhs != ""
+    execute 'cnoremap' a:keys a:crhs
+  endif
 endfunction
 
 function! Save()
-	" writable or non-existent file
-	if filewritable(bufname('%')) || empty(glob(bufname('%')))
-		exe 'w'
-	else
-		exe 'w !sudo tee > /dev/null %'
-	endif
+  " writable or non-existent file
+  if filewritable(bufname('%')) || empty(glob(bufname('%')))
+    exe 'w'
+  else
+    exe 'w !sudo tee > /dev/null %'
+  endif
 endfunction
 
 func! CopyAsBreakpoint()
-    let s:pos=expand('%:p') . ':' . line('.')
-    call system("xclip", s:pos)
- endfunc
+  let s:pos=expand('%:p') . ':' . line('.')
+  call system("xclip", s:pos)
+endfunc
 
 command! Cl :call Cleanme()
 
@@ -241,6 +220,10 @@ nmap <C-\>s :LspDeclaration<CR>i
 nmap <C-\>r :LspReference<CR>i
 nmap <C-\>h :LspHover<CR>i
 nmap <C-\>e :LspNextError<CR>i
+nmap <C-\>l :LspNextReference<CR><Right>i
+nmap <C-\><S-l> :LspPreviousReference<CR><Right>i
+nmap <C-\>p :LspPeekDefinition<CR>i
+nmap <C-\>P :LspPeekDeclaration<CR>i
 
 vnoremap <C-]> g<C-]>
 nnoremap <A-]> <C-w><C-]><C-w>T
@@ -347,8 +330,8 @@ set previewheight=1
 set pastetoggle=<F2>
 set completeopt=noselect,menuone,preview
 set autoread
+set cursorline
 
-exe "set tags+=" . s:tags_file
 set clipboard=unnamed
 set mouse=a
 
@@ -367,21 +350,24 @@ set noshowmode
 set rtp+=~/.fzf
 
 set statusline =
-set statusline +=\ %{mode()}		"mode
-set statusline +=\ %{&ff}           "file format
-set statusline +=%y               	"file type
-set statusline +=[%{strlen(&fenc)?&fenc:'none'}] "file encoding
-set statusline +=\ %<%F            	"full path, '<' truncates the path
-set statusline +=%m              	"modified flag
-set statusline +=\ %r               "readonly flag
-silent! set statusline +=\ %{fugitive#statusline()}	"current git branch
+set statusline +=\ %{mode()}
+" set statusline +=\ %<%t " full path, '<' truncates the path
+set statusline +=\ %{expand('%:p:h:t')}/%t " short path
+set statusline +=\ %{tagbar#currenttag('%s','','%f')}
+set statusline +=%m " modified flag
+set statusline +=\ %r " readonly flag
 
-set statusline +=%=0x%B           	"character under cursor
-set statusline +=\ %l              	"current line
-set statusline +=/%L            	"total lines
-set statusline +=\ %v             	"virtual column number
-set statusline +=\ %P				"percentage
-silent! set statusline +=%{SyntasticStatuslineFlag()}
+" set statusline +=0x%B "character under cursor
+set statusline +=%=
+silent! set statusline +=\ %{fugitive#statusline()}	" current git branch
+set statusline +=\ %{&ff} " file format
+set statusline +=%y " file type
+set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " file encoding
+set statusline +=\ %v " column number
+set statusline +=\ %l " current line
+set statusline +=/%L " total lines
+" set statusline +=\ %P " percentage
+" silent! set statusline +=%{SyntasticStatuslineFlag()}
 
 
 " run
@@ -397,70 +383,46 @@ filetype plugin indent on
 
 " autocmds
 " --------
-let g:src_root = system('realpath `srcerer`')
-let g:llvm_dev = system('realpath $LLVM_DEV/llvm')
-
-if g:src_root == g:llvm_dev
-	command! Mbb tabnew include/llvm/CodeGen/MachineBasicBlock.h
-	command! Mf tabnew include/llvm/CodeGen/MachineFunction.h
-	command! Mi tabnew include/llvm/CodeGen/MachineInstr.h
-	command! Mo tabnew include/llvm/CodeGen/MachineOperand.h
-	command! Mri tabnew include/llvm/CodeGen/MachineRegisterInfo.h
-
-	command! Tri tabnew include/llvm/CodeGen/TargetRegisterInfo.h
-	command! Trc tabnew include/llvm/CodeGen/TargetRegisterInfo.h
-
-	command! Mcri tabnew include/llvm/MC/MCRegisterInfo.h
-	command! Mcrc tabnew include/llvm/MC/MCRegisterInfo.h
-
-	command! Rab tabnew lib/CodeGen/RegAllocBase.h
-	command! Rag tabnew lib/CodeGen/RegAllocGreedy.cpp
-	command! Lrm tabnew include/llvm/CodeGen/LiveRegMatrix.h
-	command! Vrm tabnew include/llvm/CodeGen/VirtRegMap.h
-endif
-
 autocmd vimenter * call Cs_upd() | call setreg('a', "")
-			\| highlight trailing_space ctermbg=red guibg=red
-autocmd vimleave * call system("rm " . s:tags_file)
+  \| highlight trailing_space ctermbg=red guibg=red
 autocmd insertenter * exe 'hi! StatusLine ctermbg=047'
 autocmd insertleave * exe 'hi! StatusLine ctermbg=220'
 autocmd TabEnter * NERDTreeClose
 autocmd TabLeave * if g:NERDTree.IsOpen() | wincmd p
 
-autocmd filetype c,cpp,fortran inoremap <F4> <C-o>:call Tags_buf_upd()<CR>
-			\| inoremap <F6> <C-o>:wa <bar> call Qrun_c('')<CR>
-			\| inoremap <F7> <C-o>:wa <bar> call Qrun_c('gdb')<CR>
-			\| inoremap <F8> <C-o>:wa <bar> call Qrun_c('valgrind')<CR>
-			\| nnoremap qf :let g:qrun_cflags .= ''<Left>
-            \| nnoremap <Leader>h :call C_pair()<CR>
-			\| inoremap <C-n> #include <><Left>
-			\| set softtabstop=2 | set shiftwidth=2
+autocmd filetype c,cpp,fortran
+  \| inoremap <F6> <C-o>:wa <bar> call Qcomprun('')<CR>
+  \| inoremap <F7> <C-o>:wa <bar> call Qcomprun('gdb')<CR>
+  \| inoremap <F8> <C-o>:wa <bar> call Qcomprun('valgrind')<CR>
+  \| nnoremap <Leader>h :call C_pair()<CR>
+  \| inoremap <C-n> #include <><Left>
+  \| set softtabstop=2 | set shiftwidth=2
 
 autocmd filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
-			\'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
+  \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
 autocmd filetype tex inoremap <F6> <C-o>:wa <bar> exec
-			\'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
+  \'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
 autocmd filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
 
 autocmd filetype sh inoremap <F6> <C-o>:wa <bar> exec
-			\'!./'.shellescape('%')<CR>
+  \'!./'.shellescape('%')<CR>
 autocmd filetype perl inoremap <F6> <C-o>:wa <bar>
-			\exec '!perl '.shellescape('%')<CR>
+  \exec '!perl '.shellescape('%')<CR>
 autocmd filetype python inoremap <F6> <C-o>:wa <bar>
-			\exec '!python '.shellescape('%')<CR>
+  \exec '!python '.shellescape('%')<CR>
 autocmd filetype ruby inoremap <F6> <C-o>:wa <bar>
-			\exec '!ruby '.shellescape('%')<CR>
+  \exec '!ruby '.shellescape('%')<CR>
 autocmd filetype php inoremap <F6> <C-o>:wa <bar>
-			\exec '!php '.shellescape('%')<CR>
+  \exec '!php '.shellescape('%')<CR>
 
 if executable('clangd')
   augroup lsp_clangd
     autocmd!
     autocmd User lsp_setup call lsp#register_server({
-          \ 'name': 'clangd',
-          \ 'cmd': {server_info->['clangd']},
-          \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
-          \ })
+      \ 'name': 'clangd',
+      \ 'cmd': {server_info->['clangd']},
+      \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+      \ })
     autocmd FileType c setlocal omnifunc=lsp#complete
     autocmd FileType cpp setlocal omnifunc=lsp#complete
     autocmd FileType objc setlocal omnifunc=lsp#complete
@@ -485,5 +447,5 @@ au FileType cpp setlocal commentstring=//\ %s
 " aug end
 
 if filereadable($HOME . "/vimrc.after")
-    source $HOME/vimrc.after
+  source $HOME/vimrc.after
 endif
