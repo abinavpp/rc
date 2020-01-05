@@ -46,5 +46,5 @@ set ignorecase
 set smartcase
 set noswapfile
 set scrolloff=44
-so ~/.vim/bundle/vim-searchindex/plugin/searchindex.vim
+so ~/.vim/plugged/vim-searchindex/plugin/searchindex.vim
 map <silent> c :call cursor(22,0)<CR>

@@ -10,25 +10,29 @@ endif
 let g:colors_name = "wh"
 
 " Palette:
-let s:yellow		= "#ffff00" "Incsearch
-let s:cheddar		= "#d75f00" "Tabline
-let s:red			  = "#d70000" "Number/Error
-let s:pink			= "#d700af" "Include/Exception
-let s:orange		= "#d75f00" "String/Identifier
+let s:yellow      = "#ffff00" " Incsearch
+let s:cheddar     = "#d75f00" " Tabline
+let s:red         = "#d70000" " Number/Error
+let s:darkred     = "#5f0000" " DiffDelete
+let s:pink        = "#d700af" " Include/Exception
+let s:orange      = "#d75f00" " String/Identifier
 
-let s:green			= "#00af00" "Type
-let s:darkgreen	= "#00875f" "Nontext/Matchparen
-let s:teal			= "#005f5f" "Selection/Inactive
+let s:green       = "#00af00" " Type
+let s:leafgreen   = "#005f00" " DiffAdd
+let s:darkgreen   = "#00875f" " Nontext/Matchparen
+let s:teal        = "#005f5f" " Selection/Inactive
 
-let s:aqua			= "#0087ff" "Keyword/Macro cond
-let s:blue			= "#0000d7" "Operator/Delimiter/Const
-let s:purple		= "#af00d7" "Repeat/Conditional
-let s:violet		= "#870087" "Difftext
+let s:aqua        = "#0087ff" " Keyword/Macro cond
+let s:blue        = "#0000d7" " Operator/Delimiter/Const
+let s:purple      = "#af00d7" " Repeat/Conditional
+let s:violet      = "#870087" " Difftext
 
-let s:white			= "#ffffff"
-let s:black			= "#000000"
-let s:lightgrey	= "#949494"	"Window div etc
-let s:darkgrey	= "#626262" "Comment
+let s:white       = "#ffffff"
+let s:black       = "#000000"
+let s:lightgrey   = "#949494"	" Window div etc
+let s:darkgrey    = "#626262" " Comment
+let s:darkergrey  = "#3a3a3a"
+let s:darkestgrey = "#1a1a1a"
 
 
 " Basic:
@@ -170,14 +174,14 @@ call <SID>X("TabLineSel", s:white, s:cheddar, "none")
 call <SID>X("StatusLine", s:black, s:cheddar, "none")
 call <SID>X("StatusLineNC", s:black, s:teal, "none")
 call <SID>X("VertSplit", s:black, s:teal, "none")
-call <SID>X("Visual", s:white, s:teal, "none")
+call <SID>X("Visual", "", s:teal, "none")
 call <SID>X("Directory", s:aqua, "", "none")
 call <SID>X("ModeMsg", s:orange, "", "none")
 call <SID>X("MoreMsg", s:orange, "", "none")
 call <SID>X("Question", s:orange, "", "none")
 call <SID>X("WarningMsg", s:green, "", "none")
 call <SID>X("MatchParen", s:black, s:darkgreen, "none")
-call <SID>X("Folded", s:white, s:green, "none")
+call <SID>X("Folded", s:white, s:purple, "none")
 " call <SID>X("FoldColumn", "", s:background, "none")
 call <SID>X("Cursor", s:black, s:pink, "none")
 call <SID>X("CursorIM", s:black, s:aqua, "none")
@@ -185,16 +189,16 @@ call <SID>X("CursorLine", "", "", "none")
 call <SID>X("CursorLineNR", s:yellow, "", "none")
 call <SID>X("CursorColumn", "", "", "none")
 call <SID>X("ColorColumn", "", s:red, "none")
-call <SID>X("DiffText", s:white, s:violet, "none")
-call <SID>X("DiffAdd", s:foreground, s:darkgreen, "none")
-call <SID>X("DiffDelete", s:red, s:red, "none")
-call <SID>X("DiffChange", s:black, s:lightgrey, "none")
+call <SID>X("DiffText", s:violet, s:darkestgrey, "underline")
+call <SID>X("DiffAdd", s:foreground, s:leafgreen, "none")
+call <SID>X("DiffDelete", s:darkred, s:darkred, "none")
+call <SID>X("DiffChange", "", s:darkestgrey, "none")
 call <SID>X("SignColumn", "", s:background, "none")
 call <SID>X("PMenu", s:white, s:black, "none")
 call <SID>X("PMenuSel", s:white, s:teal, "none")
 call <SID>X("PMenuSBar", "", s:teal, "none")
 call <SID>X("PMenuThumb", s:black, "", "none")
-call <SID>X("lspReference", s:background, s:darkgrey, "none")
+call <SID>X("lspReference", s:white, s:darkergrey, "none")
 
 " Standard Group Highlighting:
 call <SID>X("Boolean", s:blue, "", "none")
@@ -205,7 +209,7 @@ call <SID>X("Constant", s:red, "", "none")
 call <SID>X("Debug", s:red, "", "none")
 call <SID>X("Define", s:aqua, "", "none")
 call <SID>X("Delimiter",s:blue, "", "none")
-call <SID>X("Error", s:foreground, s:red, "none")
+call <SID>X("Error", s:red, s:background, "none")
 call <SID>X("Exception", s:pink, "", "none")
 call <SID>X("Float", s:red, "", "none")
 call <SID>X("Function", s:foreground, "", "none")
@@ -232,7 +236,7 @@ call <SID>X("SpecialChar", s:foreground, "", "none")
 call <SID>X("StorageClass", s:orange, "", "none")
 call <SID>X("Structure", s:aqua, "", "none")
 call <SID>X("SpecialComment", s:darkgrey, "", "none")
-call <SID>X("SpellBad", s:foreground, s:red, "bold")
+call <SID>X("SpellBad", s:red, s:background, "underline")
 
 " C Highlighting
 call <SID>X("cType", s:green, "", "none")

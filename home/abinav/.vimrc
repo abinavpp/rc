@@ -35,8 +35,8 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_mode_map = {
-      \ "mode": "active",
-      \ "passive_filetypes": ["c", "cpp", "tex"] }
+  \ "mode": "active",
+  \ "passive_filetypes": ["c", "cpp", "tex"] }
 let g:syntastic_c_compiler_options = '-Wparentheses'
 
 " let g:lsp_log_verbose = 1
@@ -64,7 +64,7 @@ let s:trailing_space_flag = 0
 let g:qcomprun_cflags = "-lpthread -lm"
 
 if filereadable($HOME . "/vimrc.before")
-    source $HOME/vimrc.before
+  source $HOME/vimrc.before
 endif
 
 " functions
@@ -81,7 +81,7 @@ endfunction
 function! Trailing_space_match()
   if s:trailing_space_flag == 0
     let s:trailing_space_flag = 1
-    match trailing_space /\s\+\%#\@<!$/
+    match trailingSpace /\s\+\%#\@<!$/
   else
     let s:trailing_space_flag = 0
     match none
@@ -337,7 +337,8 @@ call Cs_upd()
 " autocmds
 " --------
 autocmd vimenter * call Cs_upd() | call setreg('a', "")
-  \| highlight trailing_space ctermbg=red guibg=red
+  \| highlight trailingSpace ctermbg=red guibg=red
+  \| match trailingSpace /\s\+\%#\@<!$/
 autocmd insertenter * exe 'hi! StatusLine ctermbg=047'
 autocmd insertleave * exe 'hi! StatusLine ctermbg=220'
 autocmd TabEnter * NERDTreeClose
