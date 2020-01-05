@@ -1,0 +1,32 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+my $invocation_file = "CMakeInvocation";
+system ("mkexec $invocation_file");
+
+open(my $fh, '>', $invocation_file) or
+  die "Could not open file '$invocation_file' $!";
+
+print $fh "# export PATH=$ENV{'PATH'}\n";
+if (defined $ENV{'LD_LIBRARY_PATH'}) {
+  print $fh "# export LD_LIBRARY_PATH=$ENV{'LD_LIBRARY_PATH'}\n";
+}
+
+if (defined $ENV{'LIBRARY_PATH'}) {
+  print $fh "# export LIBRARY_PATH=$ENV{'LIBRARY_PATH'}\n";
+}
+
+print $fh "\n/usr/bin/cmake \\\n";
+foreach my $i (0 .. $#ARGV) {
+  print $fh "  \"$ARGV[$i]\"";
+  if ($i == $#ARGV) {
+    print $fh "\n"
+  } else {
+    print $fh " \\\n"
+  }
+}
+
+splice @ARGV, 0, 0, '-DCMAKE_EXPORT_COMPILE_COMMANDS=1';
+system("/usr/bin/cmake", @ARGV);

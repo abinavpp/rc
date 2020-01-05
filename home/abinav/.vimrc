@@ -1,4 +1,19 @@
-execute pathogen#infect()
+call plug#begin('~/.vim/plugged')
+Plug 'https://github.com/Raimondi/delimitMate.git'
+Plug 'https://github.com/scrooloose/nerdtree.git'
+Plug 'https://github.com/vim-syntastic/syntastic.git'
+Plug 'https://github.com/tpope/vim-commentary.git'
+Plug 'https://github.com/tpope/vim-fugitive.git'
+Plug 'https://github.com/tpope/vim-surround.git'
+Plug 'https://github.com/tpope/vim-eunuch.git'
+Plug 'https://github.com/yegappan/greplace.git'
+Plug 'https://github.com/google/vim-searchindex.git'
+Plug 'https://github.com/gioele/vim-autoswap.git'
+Plug 'https://github.com/majutsushi/tagbar.git'
+Plug 'https://github.com/prabirshrestha/vim-lsp.git'
+Plug 'https://github.com/prabirshrestha/async.vim'
+call plug#end()
+
 " variables
 " ---------
 let mapleader = " "
@@ -27,14 +42,15 @@ let g:syntastic_c_compiler_options = '-Wparentheses'
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 " let g:asyncomplete_log_file = expand('~/asyncomplete.log')
-let g:lsp_preview_autoclose = 0
 let g:lsp_signature_help_enabled = 0
 let g:lsp_signs_enabled = 0
 let g:lsp_highlights_enabled = 0 " for neovim
 let g:lsp_textprop_enabled = 0
 let g:lsp_highlight_references_enabled = 1
+" let g:lsp_diagnostics_enabled = 0
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_peek_alignment = "center"
+let g:lsp_preview_keep_focus = 0
 
 let g:tagbar_left = 1
 
@@ -213,7 +229,7 @@ nmap <C-\>d :LspDefinition<CR>i
 nmap <C-\><S-d> :tab split<CR>:LspDefinition<CR>i
 nmap <C-\>s :LspDeclaration<CR>i
 nmap <C-\>r :LspReference<CR>i
-nmap <C-\>h :LspHover<CR>i
+nmap <C-\>i :LspHover<CR>i
 nmap <C-\>e :LspNextError<CR>i
 nmap <C-\>l :LspNextReference<CR><Right>i
 nmap <C-\><S-l> :LspPreviousReference<CR><Right>i
@@ -229,6 +245,8 @@ exec "vnoremap \e] <Esc>:tab tjump <C-r><C-w><CR>"
 nnoremap gg <esc><esc>mxgg
 nnoremap / <esc><esc>/
 nnoremap <C-p> :FZF<CR>
+nnoremap <C-n> :on<CR>
+nnoremap <C-x> :q<CR>
 imap <C-_> <esc>gcci
 
 nnoremap zz :call Save()<CR>
@@ -309,73 +327,12 @@ inoremap <C-@> <tab>
 set wildcharm=<tab>
 cnoremap <C-@> <tab>
 
-
-" set
-" ---
-set ttimeoutlen=50
-set textwidth=80
-set scrolloff=5
-set backspace=2
-set t_Co=256
-set tabstop=2
-set shiftwidth=2
-set laststatus=2
-set expandtab
-set previewheight=1
-set pastetoggle=<F2>
-set completeopt=noselect,menuone,preview
-set autoread
-set cursorline
-set diffopt+=vertical
-
-set clipboard=unnamed
-set mouse=a
-
-set notitle
-set nowrap
-set number
-set hlsearch
-set incsearch
-set ruler
-set smartindent
-set smarttab
-set splitright
-set ignorecase
-set smartcase
-set noshowmode
-set rtp+=~/.fzf
-
-set statusline =
-set statusline +=\ %{mode()}
-" set statusline +=\ %<%t " full path, '<' truncates the path
-set statusline +=\ %{expand('%:p:h:t')}/%t " short path
-set statusline +=\ %{tagbar#currenttag('%s','','%f')}
-set statusline +=%m " modified flag
-set statusline +=\ %r " readonly flag
-
-" set statusline +=0x%B "character under cursor
-set statusline +=%=
-silent! set statusline +=\ %{fugitive#statusline()}	" current git branch
-set statusline +=\ %{&ff} " file format
-set statusline +=%y " file type
-set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " file encoding
-set statusline +=\ %v " column number
-set statusline +=\ %l " current line
-set statusline +=/%L " total lines
-" set statusline +=\ %P " percentage
-" silent! set statusline +=%{SyntasticStatuslineFlag()}
-
-
-" run
-" ---
-abbr mian main
-abbr itn int
-abbr tin int
-abbr fucntion function
-
-syntax on
+" The following is done by vim-plug, uncomment if using another
+" plugin-manager that doesn't do so.
+" syntax on
+" filetype plugin indent on
 call Cs_upd()
-filetype plugin indent on
+
 
 " autocmds
 " --------
@@ -441,6 +398,67 @@ au FileType cpp setlocal commentstring=//\ %s
     " ftype/python.vim overwrites this
     " au FileType python setlocal ts=2 sts=2 sw=2
 " aug end
+
+" run
+" ---
+abbr mian main
+abbr itn int
+abbr tin int
+abbr fucntion function
+
+" set
+" ---
+set ttimeoutlen=50
+set textwidth=80
+set scrolloff=5
+set backspace=2
+set t_Co=256
+set tabstop=2
+set shiftwidth=2
+set laststatus=2
+set expandtab
+set pastetoggle=<F2>
+set completeopt=noselect,menuone,preview
+set autoread
+set cursorline
+set diffopt+=vertical
+
+set clipboard=unnamed
+set mouse=a
+
+set notitle
+set nowrap
+set number
+set hlsearch
+set incsearch
+set ruler
+set smartindent
+set smarttab
+set splitright
+set ignorecase
+set smartcase
+set noshowmode
+set rtp+=~/.fzf
+
+set statusline =
+set statusline +=\ %{mode()}
+" set statusline +=\ %<%t " full path, '<' truncates the path
+set statusline +=\ %{expand('%:p:h:t')}/%t " short path
+set statusline +=\ %{tagbar#currenttag('%s','','%f')}
+set statusline +=%m " modified flag
+set statusline +=\ %r " readonly flag
+
+" set statusline +=0x%B "character under cursor
+set statusline +=%=
+silent! set statusline +=\ %{fugitive#statusline()}	" current git branch
+set statusline +=\ %{&ff} " file format
+set statusline +=%y " file type
+set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " file encoding
+set statusline +=\ %v " column number
+set statusline +=\ %l " current line
+set statusline +=/%L " total lines
+" set statusline +=\ %P " percentage
+" silent! set statusline +=%{SyntasticStatuslineFlag()}
 
 if filereadable($HOME . "/vimrc.after")
   source $HOME/vimrc.after

@@ -228,24 +228,6 @@ function in_array {
 	return 1
 }
 
-function mkexec {
-  file="$1"
-  extension="${file##*.}"
-
-	if [[ ! -e "$file" ]]; then
-		touch "$file"
-
-    if [[ $extension == "py" ]]; then
-      true
-    elif [[ $extension == "pl" ]]; then
-      echo "#! /usr/bin/perl" > "$file" 
-    else
-      echo "#! /bin/bash" > "$file";
-    fi
-	fi
-	chmod ugo+x $file;
-}
-
 function vim {
     local srv_name=$(tty)
     # we must hardcode /usr/bin/vim else we recurse!
@@ -637,7 +619,6 @@ alias perl1='perl -ne '
 alias readelf='readelf --wide'
 alias prettyll='prettyll -simvar'
 alias dmesg='dmesg -T'
-alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'
 
 alias qtmux='tmux kill-server'
 alias tmux='qtmux; tmux -u -2'
