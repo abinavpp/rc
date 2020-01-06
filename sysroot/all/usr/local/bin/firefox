@@ -1,0 +1,7 @@
+#! /bin/bash
+
+if nvok; then
+  optirun /usr/bin/firefox
+else
+  /usr/bin/firefox
+fi

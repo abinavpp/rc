@@ -60,7 +60,7 @@ let fortran_more_precise = 1
 let fortran_do_enddo = 1
 
 " for functions in this file
-let s:trailing_space_flag = 0
+let s:trailing_space_flag = 1
 let g:qcomprun_cflags = "-lpthread -lm"
 
 if filereadable($HOME . "/vimrc.before")
@@ -73,12 +73,12 @@ function! Chomp(string)
   return substitute(a:string, '\n\+$', '', '')
 endfunction
 
-function! Cleanme()
+function! CleanMe()
   silent! exec '%s/\v\ +$//g'
   silent! exec '%s/\v[^\x00-\x7F]+//g'
 endfunction
 
-function! Trailing_space_match()
+function! TrailingSpaceMatch()
   if s:trailing_space_flag == 0
     let s:trailing_space_flag = 1
     match trailingSpace /\s\+\%#\@<!$/
@@ -88,7 +88,7 @@ function! Trailing_space_match()
   endif
 endfunction
 
-function! Qcomprun(cmdline)
+function! QCompRun(cmdline)
   if filereadable("Makefile")
     exec '!make &&
           \ find . -maxdepth 1 -type f -perm /0100 -exec ' . a:cmdline . ' {} \;'
@@ -109,7 +109,7 @@ function! Qcomprun(cmdline)
   endif
 endfunction
 
-function! C_pair()
+function! CPair()
   let l:buf = bufname('%')
   let l:pair = system('srcerer ' . l:buf)
   if l:pair != ""
@@ -133,7 +133,7 @@ function! Cds()
   endif
 endfunction
 
-function! Cs_inv()
+function! CsInv()
   if g:colors_name == "wh"
     colo bl
   else
@@ -141,7 +141,7 @@ function! Cs_inv()
   endif
 endfunction
 
-function! Cs_upd()
+function! CsUpd()
   for l:line in readfile("/home/abinav/.t_col", '', 2)
     if line =~ 'wh'
       colo wh
@@ -151,7 +151,7 @@ function! Cs_upd()
   endfor
 endfunction
 
-function! Nt_toggle()
+function! NTToggle()
   if ! g:NERDTree.IsOpen()
     NERDTreeCWD
   else
@@ -159,7 +159,7 @@ function! Nt_toggle()
   endif
 endfunction
 
-function! Map_all(keys, nrhs, irhs, crhs)
+function! MapAll(keys, nrhs, irhs, crhs)
   execute 'nnoremap' a:keys a:nrhs
   execute 'vnoremap' a:keys a:nrhs
   execute 'inoremap' a:keys a:irhs
@@ -183,7 +183,7 @@ func! CopyAsBreakpoint()
   call system("xclip", s:pos)
 endfunc
 
-command! Cl :call Cleanme()
+command! Cl :call CleanMe()
 command! Cdb :lcd %:p:h
 
 " mappings
@@ -200,13 +200,13 @@ nnoremap <Leader>f :set filetype
 nnoremap <Leader>l :set list!<CR>
 nnoremap <Leader>s :set spell!<CR>
 nnoremap <Leader>w :set wrap!<CR>
-nnoremap <Leader>t :call Trailing_space_match()<CR>
-nnoremap <Leader>n :call Nt_toggle()<CR>
+nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
+nnoremap <Leader>n :call NTToggle()<CR>
 nnoremap <Leader>m :SyntasticToggleMode<CR>
 nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
 nnoremap <Leader>p :FZF
 nnoremap <Leader>b :call CopyAsBreakpoint()<cr>
-nnoremap <Leader>c :call Cs_inv()<CR>
+nnoremap <Leader>c :call CsInv()<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
 
@@ -269,44 +269,44 @@ nnoremap <C-a><C-v> "Ap<esc>`[v`]=`]i<right>
 nnoremap <C-a><C-r> :call setreg('a', "")<CR>
 
 " controlled cursor movement
-call Map_all('<C-i>', '<up>', '<up>', '<up>')
-call Map_all('<C-k>', '<down>', '<down>', '<down>')
-call Map_all('<C-j>', '<left>', '<left>', '<left>')
-call Map_all('<C-l>', '<right>', '<right>', '<right>')
+call MapAll('<C-i>', '<up>', '<up>', '<up>')
+call MapAll('<C-k>', '<down>', '<down>', '<down>')
+call MapAll('<C-j>', '<left>', '<left>', '<left>')
+call MapAll('<C-l>', '<right>', '<right>', '<right>')
 
 " alternate cursor movement
-call Map_all('<A-i>', '{', '<C-o>{', '')
-call Map_all("\ei", '{', '<C-o>{', '')
-call Map_all('<A-k>', '}', '<C-o>}', '')
-call Map_all("\ek", '}', '<C-o>}', '')
-call Map_all('<A-j>', 'b', '<C-o>b', '<S-left>')
-call Map_all("\ej", 'b', '<C-o>b', '<S-left>')
-call Map_all('<A-l>', 'w', '<C-o>w', '<S-right>')
-call Map_all("\el", 'w', '<C-o>w', '<S-right>')
+call MapAll('<A-i>', '{', '<C-o>{', '')
+call MapAll("\ei", '{', '<C-o>{', '')
+call MapAll('<A-k>', '}', '<C-o>}', '')
+call MapAll("\ek", '}', '<C-o>}', '')
+call MapAll('<A-j>', 'b', '<C-o>b', '<S-left>')
+call MapAll("\ej", 'b', '<C-o>b', '<S-left>')
+call MapAll('<A-l>', 'w', '<C-o>w', '<S-right>')
+call MapAll("\el", 'w', '<C-o>w', '<S-right>')
 
 " controlled alternate cursor movement
-call Map_all('<C-A-i>', '5k', '<C-o>5k', '')
-call Map_all("\e<C-i>", '5k', '<C-o>5k', '')
-call Map_all('<C-A-k>', '5j', '<C-o>5j', '')
-call Map_all("\e<C-k>", '5j', '<C-o>5j', '')
-call Map_all('<C-A-j>', '3b', '<C-o>3b', '')
-call Map_all("\e<C-j>", '3b', '<C-o>3b', '')
-call Map_all('<C-A-l>', '3w', '<C-o>3w', '')
-call Map_all("\e<C-l>", '3w', '<C-o>3w', '')
+call MapAll('<C-A-i>', '5k', '<C-o>5k', '')
+call MapAll("\e<C-i>", '5k', '<C-o>5k', '')
+call MapAll('<C-A-k>', '5j', '<C-o>5j', '')
+call MapAll("\e<C-k>", '5j', '<C-o>5j', '')
+call MapAll('<C-A-j>', '3b', '<C-o>3b', '')
+call MapAll("\e<C-j>", '3b', '<C-o>3b', '')
+call MapAll('<C-A-l>', '3w', '<C-o>3w', '')
+call MapAll("\e<C-l>", '3w', '<C-o>3w', '')
 
 " extra shift cursor binding
-call Map_all('<A-S-j>', '^', '<C-o>^', '')
-call Map_all("\eJ", '^', '<C-o>^', '')
-call Map_all('<A-S-l>', '$', '<C-o>$', '<Home>')
-call Map_all("\eL", '$', '<C-o>$', '<Home>')
-call Map_all('<A-S-k>', 'YP', '<C-o>Y<C-o>p', '<End>')
-call Map_all("\eK", 'YP', '<C-o>Y<C-o>p', '<End>')
+call MapAll('<A-S-j>', '^', '<C-o>^', '')
+call MapAll("\eJ", '^', '<C-o>^', '')
+call MapAll('<A-S-l>', '$', '<C-o>$', '<Home>')
+call MapAll("\eL", '$', '<C-o>$', '<Home>')
+call MapAll('<A-S-k>', 'YP', '<C-o>Y<C-o>p', '<End>')
+call MapAll("\eK", 'YP', '<C-o>Y<C-o>p', '<End>')
 
 " tab
-call Map_all('<A-,>', ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
-call Map_all("\e,", ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
-call Map_all('<A-.>', ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
-call Map_all("\e.", ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
+call MapAll('<A-,>', ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
+call MapAll("\e,", ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
+call MapAll('<A-.>', ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
+call MapAll("\e.", ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 
 " split
 nnoremap <C-w><C-j> <C-w>h
@@ -331,12 +331,12 @@ cnoremap <C-@> <tab>
 " plugin-manager that doesn't do so.
 " syntax on
 " filetype plugin indent on
-call Cs_upd()
+call CsUpd()
 
 
 " autocmds
 " --------
-autocmd vimenter * call Cs_upd() | call setreg('a', "")
+autocmd vimenter * call CsUpd() | call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
 autocmd insertenter * exe 'hi! StatusLine ctermbg=047'
@@ -345,10 +345,10 @@ autocmd TabEnter * NERDTreeClose
 autocmd TabLeave * if g:NERDTree.IsOpen() | wincmd p
 
 autocmd filetype c,cpp,fortran
-  \| inoremap <F6> <C-o>:wa <bar> call Qcomprun('')<CR>
-  \| inoremap <F7> <C-o>:wa <bar> call Qcomprun('gdb')<CR>
-  \| inoremap <F8> <C-o>:wa <bar> call Qcomprun('valgrind')<CR>
-  \| nnoremap <Leader>h :call C_pair()<CR>
+  \| inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
+  \| inoremap <F7> <C-o>:wa <bar> call QCompRun('gdb')<CR>
+  \| inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
+  \| nnoremap <Leader>h :call CPair()<CR>
   \| inoremap <C-n> #include <><Left>
   \| set softtabstop=2 | set shiftwidth=2
 
