@@ -235,6 +235,7 @@ nmap <C-\>l :LspNextReference<CR><Right>i
 nmap <C-\><S-l> :LspPreviousReference<CR><Right>i
 nmap <C-\>p :LspPeekDefinition<CR>i
 nmap <C-\>P :LspPeekDeclaration<CR>i
+nmap <C-\>f :LspWorkspaceSymbol 
 
 vnoremap <C-]> g<C-]>
 nnoremap <A-]> <C-w><C-]><C-w>T

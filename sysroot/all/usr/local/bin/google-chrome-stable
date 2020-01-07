@@ -1,10 +1,5 @@
 #! /bin/bash
 
 mmrc chrome
-if nvok; then
-  optirun /usr/bin/google-chrome-stable --enable-features=WebUIDarkMode \
-    --force-dark-mode &
-else
-  /usr/bin/google-chrome-stable --enable-features=WebUIDarkMode \
-    --force-dark-mode &
-fi
+/usr/bin/google-chrome-stable --enable-features=WebUIDarkMode \
+  --force-dark-mode &
