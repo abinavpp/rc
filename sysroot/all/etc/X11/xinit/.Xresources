@@ -16,7 +16,7 @@ XTerm*dynamicColors: true
 !Xft.antialias: true
 !Xft.hinting: true
 !Xft.hintstyle: hintfull
-!Xft.dpi: 96
+Xft.dpi: 96
 !Xft.rgba: rgb
 
 !URxvt.transparent: true

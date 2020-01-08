@@ -31,7 +31,7 @@ let s:white       = "#ffffff"
 let s:black       = "#000000"
 let s:lightgrey   = "#949494"	" Window div etc
 let s:darkgrey    = "#8a8a8a" " Comment
-let s:darkergrey  = "#3a3a3a"
+let s:darkergrey  = "#303030"
 let s:darkestgrey = "#1a1a1a"
 
 
@@ -189,10 +189,10 @@ call <SID>X("CursorLine", "", "", "none")
 call <SID>X("CursorLineNR", s:yellow, "", "none")
 call <SID>X("CursorColumn", "", "", "none")
 call <SID>X("ColorColumn", "", s:red, "none")
-call <SID>X("DiffText", s:violet, s:darkestgrey, "underline")
+call <SID>X("DiffText", s:violet, s:darkergrey, "underline")
 call <SID>X("DiffAdd", s:foreground, s:leafgreen, "none")
 call <SID>X("DiffDelete", s:darkred, s:darkred, "none")
-call <SID>X("DiffChange", "", s:darkestgrey, "none")
+call <SID>X("DiffChange", "", s:darkergrey, "none")
 call <SID>X("SignColumn", "", s:background, "none")
 call <SID>X("PMenu", s:white, s:black, "none")
 call <SID>X("PMenuSel", s:white, s:teal, "none")
