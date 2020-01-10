@@ -102,6 +102,7 @@ function mdlb() {
   md_colonvar LIBRARY_PATH $opt $(realpath "$@" 2> /dev/null);
 }
 
+export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
 export EDITOR="$VISUAL" # use $EDITOR if "our" vim creates trouble
 export ABINAV="thats my name, that name again - is Mr.Plow"

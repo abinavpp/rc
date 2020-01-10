@@ -18,7 +18,7 @@ let s:pink        = "#d75faf" " Include/Exception
 let s:orange      = "#d78700" " String/Identifier
 
 let s:green       = "#00d75f" " Type
-let s:leafgreen   = "#005f00" " DiffAdd
+let s:_darkestgreen   = "#002000" " DiffAdd
 let s:darkgreen   = "#00875f" " Nontext/Matchparen
 let s:teal        = "#005f5f" " Selection/Inactive
 
@@ -33,6 +33,7 @@ let s:lightgrey   = "#949494"	" Window div etc
 let s:darkgrey    = "#8a8a8a" " Comment
 let s:darkergrey  = "#303030"
 let s:darkestgrey = "#1a1a1a"
+let s:_darkestgrey = "#181818"
 
 
 " Basic:
@@ -161,6 +162,13 @@ function <SID>X(group, fg, bg, attr)
     endif
 endfunction
 
+function <SID>X2(group, fg, bg, attr, attrcol)
+  call <SID>X(a:group, a:fg, a:bg, a:attr)
+  if a:attrcol != ""
+    exec "hi " . a:group . " guisp=" . a:attrcol
+  endif
+endfunction
+
 " UI Highlighting
 call <SID>X("Normal", "", "", "none")
 call <SID>X("NonText", s:darkgreen, "", "none")
@@ -182,17 +190,17 @@ call <SID>X("Question", s:orange, "", "none")
 call <SID>X("WarningMsg", s:green, "", "none")
 call <SID>X("MatchParen", s:black, s:darkgreen, "none")
 call <SID>X("Folded", s:white, s:purple, "none")
-" call <SID>X("FoldColumn", "", s:background, "none")
+call <SID>X("FoldColumn", "", s:background, "none")
 call <SID>X("Cursor", s:black, s:pink, "none")
 call <SID>X("CursorIM", s:black, s:aqua, "none")
-call <SID>X("CursorLine", "", "", "none")
+call <SID>X("CursorLine", "", s:_darkestgrey, "none")
 call <SID>X("CursorLineNR", s:yellow, "", "none")
 call <SID>X("CursorColumn", "", "", "none")
 call <SID>X("ColorColumn", "", s:red, "none")
-call <SID>X("DiffText", s:violet, s:darkergrey, "underline")
-call <SID>X("DiffAdd", s:foreground, s:leafgreen, "none")
-call <SID>X("DiffDelete", s:darkred, s:darkred, "none")
-call <SID>X("DiffChange", "", s:darkergrey, "none")
+call <SID>X2("DiffText", s:violet, s:darkestgrey, "underline", s:violet)
+call <SID>X("DiffAdd", "", s:_darkestgreen, "none")
+call <SID>X("DiffDelete", s:darkred, s:background, "none")
+call <SID>X("DiffChange", "", s:darkestgrey, "none")
 call <SID>X("SignColumn", "", s:background, "none")
 call <SID>X("PMenu", s:white, s:black, "none")
 call <SID>X("PMenuSel", s:white, s:teal, "none")

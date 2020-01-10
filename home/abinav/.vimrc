@@ -329,6 +329,7 @@ inoremap <C-@> <tab>
 set wildcharm=<tab>
 cnoremap <C-@> <tab>
 
+set termguicolors
 " The following is done by vim-plug, uncomment if using another
 " plugin-manager that doesn't do so.
 " syntax on
@@ -341,8 +342,8 @@ call CsUpd()
 autocmd vimenter * call CsUpd() | call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
-autocmd insertenter * exe 'hi! StatusLine ctermbg=047'
-autocmd insertleave * exe 'hi! StatusLine ctermbg=220'
+autocmd insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
+autocmd insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
 autocmd TabEnter * NERDTreeClose
 autocmd TabLeave * if g:NERDTree.IsOpen() | wincmd p
 
@@ -423,7 +424,7 @@ set expandtab
 set pastetoggle=<F2>
 set completeopt=noselect,menuone,preview
 set autoread
-set cursorline
+" set cursorline
 set diffopt+=vertical
 
 set clipboard=unnamed

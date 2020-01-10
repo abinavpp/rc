@@ -17,7 +17,7 @@ sub pacbatch_get_filtered_list {
 	my ($path_pacbatch_db, @pacbatch_labels) = @_;
 	my @ret;
 
-	open(my $fh_pacbatch_db, "<", $path_pacbatch_db) || 
+	open(my $fh_pacbatch_db, "<", $path_pacbatch_db) ||
 		die("Can't open $path_pacbatch_db");
 	while (my $line = <$fh_pacbatch_db>) {
 		if ($line =~ /^#/ || $line =~ /^\s*$/) {
@@ -54,7 +54,6 @@ sub pacman_is_in_sys {
 sub pacbatch_list_verify_S {
 	my ($pacbatch_list) = @_;
 
-	# foreach my $pacbatch_pkg (@$pacbatch_list) {
 	for (my $i = 0; $i < scalar @$pacbatch_list; $i++) {
 		my $pacbatch_pkg = @$pacbatch_list[$i];
 		if (!pacman_is_in_repo($pacbatch_pkg)) {
@@ -75,19 +74,18 @@ sub pacbatch_list_verify_S {
 }
 
 sub usage() {
-	say '
-	"o=s" => \my $path_pacbatch_out,
-	"d=s" => \$path_pacbatch_db,
-	"S" => \my $pacman_S,
-	"help" => \my $opt_help)
+  say
+'Usage: pacbatch -d <path> -o <path> [-S] profile-1 [profile-2]*
+Dumps a space-delimited text file with package names as per the cmdline.
+You can feed the output to pacman.
+
+Options:
+  -o <path>   path to output file
+  -d <path>   path to database
+  -S          to verify or not
+  -help       duh
 	';
 }
-
-# sub confirm_silly () {
-# 	if (!defined $pacman_noconfirm) {
-# 		print "\n\nEnter to confirm "; my $x = <STDIN>;
-# 	}
-# }
 
 GetOptions(
 	"o=s" => \my $path_pacbatch_out,
@@ -117,4 +115,3 @@ if ($pacman_S) {
 }
 
 system("echo @pacbatch_filtered_list > $path_pacbatch_out");
-
