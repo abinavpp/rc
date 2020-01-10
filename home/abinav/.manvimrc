@@ -46,5 +46,7 @@ set ignorecase
 set smartcase
 set noswapfile
 set scrolloff=44
+hi IncSearch ctermfg=black ctermbg=208
+hi Search ctermfg=black ctermbg=208
 so ~/.vim/plugged/vim-searchindex/plugin/searchindex.vim
 map <silent> c :call cursor(22,0)<CR>

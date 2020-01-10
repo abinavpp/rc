@@ -1,45 +1,64 @@
-" Theme:        CandyPaper
-" Author:       DF_XYZ
-" License:      MIT
+" This theme is a fork of CandyPaper by dfxyz. It's heavily modified for my
+" personal taste.
 
-set background=dark
 hi clear
 if exists('syntax_on')
     syntax reset
 endif
-let g:colors_name = "bl"
+
+let g:colors_name = "CandyPaper2"
 
 " Palette:
+" _xxx colors are beyond the 256 spectrum, you need true-color terminal or gvim
+" for them. Others are strictly the ones for 256 as specified by 256col.svg file
+" in .vim/colors/
 let s:yellow      = "#ffff00" " Incsearch
 let s:cheddar     = "#d75f00" " Tabline
-let s:red         = "#d70000" " Number/Error
+let s:red         = "#d70000" " Number, Error
 let s:darkred     = "#5f0000" " DiffDelete
-let s:pink        = "#d75faf" " Include/Exception
-let s:orange      = "#d78700" " String/Identifier
+let s:pink        = "#d75faf" " Include, Exception
+let s:orange      = "#d78700" " String, Identifier
 
-let s:green       = "#00d75f" " Type
-let s:_darkestgreen   = "#002000" " DiffAdd
-let s:darkgreen   = "#00875f" " Nontext/Matchparen
-let s:teal        = "#005f5f" " Selection/Inactive
+let s:lightgreen    = "#5fffaf"
+let s:green         = "#00d75f" " Type
+let s:darkgreen     = "#00875f" " Nontext, Matchparen
+let s:_darkestgreen = "#002000" " DiffAdd
+let s:teal          = "#005f5f" " Selection, Inactive
 
-let s:aqua        = "#00d7ff" " Keyword/Macro cond
-let s:blue        = "#0087d7" " Operator/Delimiter/Const
-let s:purple      = "#af5fd7" " Repeat/Conditional
+let s:aqua        = "#00d7ff" " Keyword, Macro
+let s:blue        = "#0087d7" " Operator, Delimiter, Const
+let s:purple      = "#af5fd7" " Repeat, Conditional
 let s:violet      = "#870087" " Difftext
 
-let s:white       = "#ffffff"
-let s:black       = "#000000"
-let s:lightgrey   = "#949494"	" Window div etc
-let s:darkgrey    = "#8a8a8a" " Comment
-let s:darkergrey  = "#303030"
-let s:darkestgrey = "#1a1a1a"
-let s:_darkestgrey = "#181818"
-
+let s:white         = "#ffffff"
+let s:lightergrey   = "#e4e4e4"
+let s:lightgrey     = "#949494"
+let s:darkgrey      = "#8a8a8a" " Comment
+let s:darkergrey    = "#303030"
+let s:darkestgrey   = "#262626"
+let s:lightblack    = "#121212"
+let s:black         = "#000000"
 
 " Basic:
 let s:foreground   = s:white
 let s:background   = s:black
 
+if g:color_theme == 'light'
+  let s:pink        = "#d700af"
+  let s:orange      = "#d75f00"
+
+  let s:green       = "#00af00"
+
+  let s:aqua        = "#0087ff"
+  let s:blue        = "#0000d7"
+  let s:purple      = "#af00d7"
+
+  let s:darkgrey      = "#626262"
+  let s:lightgrey     = "#c6c6c6"
+
+  let s:foreground  = s:black
+  let s:background  = s:white
+endif
 
 " Returns an approximate grey index for the given grey level
 function <SID>grey_number(x)
@@ -193,14 +212,25 @@ call <SID>X("Folded", s:white, s:purple, "none")
 call <SID>X("FoldColumn", "", s:background, "none")
 call <SID>X("Cursor", s:black, s:pink, "none")
 call <SID>X("CursorIM", s:black, s:aqua, "none")
-call <SID>X("CursorLine", "", s:_darkestgrey, "none")
-call <SID>X("CursorLineNR", s:yellow, "", "none")
 call <SID>X("CursorColumn", "", "", "none")
 call <SID>X("ColorColumn", "", s:red, "none")
-call <SID>X2("DiffText", s:violet, s:darkestgrey, "underline", s:violet)
-call <SID>X("DiffAdd", "", s:_darkestgreen, "none")
-call <SID>X("DiffDelete", s:darkred, s:background, "none")
-call <SID>X("DiffChange", "", s:darkestgrey, "none")
+if g:color_theme == "dark"
+  call <SID>X("CursorLine", "", s:lightblack, "none")
+  call <SID>X("CursorLineNR", s:yellow, "", "none")
+
+  call <SID>X("DiffAdd", "", s:_darkestgreen, "none")
+  call <SID>X("DiffDelete", s:darkred, s:background, "none")
+  call <SID>X("DiffChange", "", s:darkestgrey, "none")
+  call <SID>X2("DiffText", s:violet, s:darkestgrey, "underline", s:violet)
+else
+  call <SID>X("CursorLine", "", s:lightergrey, "none")
+  call <SID>X("CursorLineNR", s:cheddar, "", "none")
+
+  call <SID>X("DiffAdd", "", s:lightgreen, "none")
+  call <SID>X("DiffDelete", s:red, s:background, "none")
+  call <SID>X("DiffChange", "", s:lightgrey, "none")
+  call <SID>X2("DiffText", s:violet, s:lightgrey, "underline", s:violet)
+endif
 call <SID>X("SignColumn", "", s:background, "none")
 call <SID>X("PMenu", s:white, s:black, "none")
 call <SID>X("PMenuSel", s:white, s:teal, "none")
@@ -245,6 +275,7 @@ call <SID>X("StorageClass", s:orange, "", "none")
 call <SID>X("Structure", s:aqua, "", "none")
 call <SID>X("SpecialComment", s:darkgrey, "", "none")
 call <SID>X("SpellBad", s:red, s:background, "underline")
+call <SID>X("SpellCap", s:blue, s:background, "underline")
 
 " C Highlighting
 call <SID>X("cType", s:green, "", "none")
@@ -467,6 +498,7 @@ call <SID>X("xmlAttrib", s:aqua, "", "none")
 
 " Delete Functions
 delfunction <SID>X
+delfunction <SID>X2
 delfunction <SID>rgb
 delfunction <SID>colour
 delfunction <SID>rgb_colour

@@ -1,3 +1,5 @@
+" plugins
+" =======
 call plug#begin('~/.vim/plugged')
 Plug 'https://github.com/Raimondi/delimitMate.git'
 Plug 'https://github.com/scrooloose/nerdtree.git'
@@ -15,7 +17,7 @@ Plug 'https://github.com/prabirshrestha/async.vim'
 call plug#end()
 
 " variables
-" ---------
+" =========
 let mapleader = " "
 let $BASH_ENV = "~/.bash_vim"
 let sys = substitute(system('uname -r'), '\n\+$', '', '')
@@ -47,7 +49,6 @@ let g:lsp_signs_enabled = 0
 let g:lsp_highlights_enabled = 0 " for neovim
 let g:lsp_textprop_enabled = 0
 let g:lsp_highlight_references_enabled = 1
-" let g:lsp_diagnostics_enabled = 0
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_peek_alignment = "center"
 let g:lsp_preview_keep_focus = 0
@@ -62,13 +63,14 @@ let fortran_do_enddo = 1
 " for functions in this file
 let s:trailing_space_flag = 1
 let g:qcomprun_cflags = "-lpthread -lm"
+let g:color_theme = "dark"
 
 if filereadable($HOME . "/vimrc.before")
   source $HOME/vimrc.before
 endif
 
 " functions
-" ---------
+" =========
 function! Chomp(string)
   return substitute(a:string, '\n\+$', '', '')
 endfunction
@@ -134,21 +136,23 @@ function! Cds()
 endfunction
 
 function! CsInv()
-  if g:colors_name == "wh"
-    colo bl
+  if g:color_theme == "light"
+    let g:color_theme = 'dark'
   else
-    colo wh
+    let g:color_theme = 'light'
   endif
+  colo CandyPaper2
 endfunction
 
 function! CsUpd()
   for l:line in readfile("/home/abinav/.t_col", '', 2)
     if line =~ 'wh'
-      colo wh
+      let g:color_theme = 'light'
     else
-      colo bl
+      let g:color_theme = 'dark'
     endif
   endfor
+  colo CandyPaper2
 endfunction
 
 function! NTToggle()
@@ -188,7 +192,7 @@ command! Cdb :lcd %:p:h
 command! Gd :Gdiff <bar> :wincmd l <bar> :wincmd H
 
 " mappings
-" --------
+" ========
 " visual
 vmap <C-_> gc
 vnoremap <C-x> d
@@ -329,7 +333,60 @@ inoremap <C-@> <tab>
 set wildcharm=<tab>
 cnoremap <C-@> <tab>
 
-set termguicolors
+" set
+" ===
+abbr mian main
+abbr itn int
+abbr tin int
+abbr fucntion function
+
+set ttimeoutlen=50
+set textwidth=80
+set scrolloff=5
+set backspace=2
+set t_Co=256
+set tabstop=2
+set shiftwidth=2
+set laststatus=2
+set expandtab
+set pastetoggle=<F2>
+set completeopt=noselect,menuone,preview
+set autoread
+set diffopt+=vertical
+set clipboard=unnamed
+set mouse=a
+set notitle
+set nowrap
+set number
+set hlsearch
+set incsearch
+set ruler
+set smartindent
+set smarttab
+set splitright
+set ignorecase
+set smartcase
+set noshowmode
+set rtp+=~/.fzf
+set termguicolors " for highlight guixx in xterm
+set background=dark
+
+set statusline =
+set statusline +=\ %{mode()}
+set statusline +=\ %{expand('%:p:h:t')}/%t " short path
+set statusline +=\ %{tagbar#currenttag('%s','','%f')}
+set statusline +=%m " modified flag
+set statusline +=\ %r " readonly flag
+
+set statusline +=%=
+silent! set statusline +=\ %{fugitive#statusline()}	" current git branch
+set statusline +=\ %{&ff} " file format
+set statusline +=%y " file type
+set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " file encoding
+set statusline +=\ %v " column number
+set statusline +=\ %l " current line
+set statusline +=/%L " total lines
+
 " The following is done by vim-plug, uncomment if using another
 " plugin-manager that doesn't do so.
 " syntax on
@@ -338,7 +395,7 @@ call CsUpd()
 
 
 " autocmds
-" --------
+" ========
 autocmd vimenter * call CsUpd() | call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
@@ -402,67 +459,6 @@ au FileType cpp setlocal commentstring=//\ %s
     " ftype/python.vim overwrites this
     " au FileType python setlocal ts=2 sts=2 sw=2
 " aug end
-
-" run
-" ---
-abbr mian main
-abbr itn int
-abbr tin int
-abbr fucntion function
-
-" set
-" ---
-set ttimeoutlen=50
-set textwidth=80
-set scrolloff=5
-set backspace=2
-set t_Co=256
-set tabstop=2
-set shiftwidth=2
-set laststatus=2
-set expandtab
-set pastetoggle=<F2>
-set completeopt=noselect,menuone,preview
-set autoread
-" set cursorline
-set diffopt+=vertical
-
-set clipboard=unnamed
-set mouse=a
-
-set notitle
-set nowrap
-set number
-set hlsearch
-set incsearch
-set ruler
-set smartindent
-set smarttab
-set splitright
-set ignorecase
-set smartcase
-set noshowmode
-set rtp+=~/.fzf
-
-set statusline =
-set statusline +=\ %{mode()}
-" set statusline +=\ %<%t " full path, '<' truncates the path
-set statusline +=\ %{expand('%:p:h:t')}/%t " short path
-set statusline +=\ %{tagbar#currenttag('%s','','%f')}
-set statusline +=%m " modified flag
-set statusline +=\ %r " readonly flag
-
-" set statusline +=0x%B "character under cursor
-set statusline +=%=
-silent! set statusline +=\ %{fugitive#statusline()}	" current git branch
-set statusline +=\ %{&ff} " file format
-set statusline +=%y " file type
-set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " file encoding
-set statusline +=\ %v " column number
-set statusline +=\ %l " current line
-set statusline +=/%L " total lines
-" set statusline +=\ %P " percentage
-" silent! set statusline +=%{SyntasticStatuslineFlag()}
 
 if filereadable($HOME . "/vimrc.after")
   source $HOME/vimrc.after
