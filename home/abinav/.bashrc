@@ -112,6 +112,7 @@ export HISTFILESIZE=8192
 export EXTRA_RUN="/home/abinav/rc/run"
 export HOME_BIN="/home/abinav/bin"
 export LLVM_DEV="/home/abinav/llvm_dev"
+export FZF_DEFAULT_OPTS="--color 16" # we're used to this :)
 
 mdpath -p "$EXTRA_RUN" "$HOME_BIN"
 md_colonvar PATH -p "."
@@ -136,8 +137,8 @@ voc_dir="/home/abinav/documents/notes/voc_db/"
 t_col_path="/home/abinav/.t_col"
 
 # Terminal colorscheme
-t_bg_col_cur=
-t_fg_col_cur=
+t_bg_curr_col=
+t_fg_curr_col=
 
 function ind {
 	$@ &
@@ -154,12 +155,12 @@ function _t_col_upd {
 		echo $cur > "${t_col_path}"
 	fi
 
-	t_bg_col_cur="${t_bg_col[$cur]}"
+	t_bg_curr_col="${t_bg_col[$cur]}"
 
 	if [[ $cur == "wh" ]]; then
-		t_fg_col_cur="${t_fg_col[bl]}"
+		t_fg_curr_col="${t_fg_col[bl]}"
 	else
-		t_fg_col_cur="${t_fg_col[wh]}"
+		t_fg_curr_col="${t_fg_col[wh]}"
 	fi
 }
 
@@ -186,11 +187,11 @@ function coall {
 			continue
 		fi
 
-		echo -ne "${t_fg_col_cur}" > $t
-		echo -ne "${t_bg_col_cur}" > $t
+		echo -ne "${t_fg_curr_col}" > $t
+		echo -ne "${t_bg_curr_col}" > $t
 	done
 
-	${EXTRA_RUN}/mkconf_gui $(echo $t_bg_col_cur | cut -c7-13)
+	${EXTRA_RUN}/mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
 	unset t
 }
 
@@ -214,11 +215,11 @@ function prompt_command {
 
 	_t_col_upd
 # this line forces the terminal colorscheme
-	PS1+="\[${t_fg_col_cur}\]\[${t_bg_col_cur}\]"
+	PS1+="\[${t_fg_curr_col}\]\[${t_bg_curr_col}\]"
 }
 
 _t_col_upd
-${EXTRA_RUN}/mkconf_gui $(echo $t_bg_col_cur | cut -c7-13)
+${EXTRA_RUN}/mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
 
 PROMPT_COMMAND=prompt_command
 
@@ -324,21 +325,24 @@ if am_i_home; then
 fi
 
 function cd {
-	if [[ "$PWD" =~ ^$LLVM_DEV/.*$ ]]; then
-		local srcroot=$(srcerer 2> /dev/null)
-		if [[ -z "$srcroot" ]]; then
-			command cd "$@"
-			return;
-		fi
+  local srcroot=$(srcerer 2> /dev/null)
+  if [[ -z "$srcroot" ]]; then
+    command cd "$@"
+    return
+  fi
 
-		local arg="$1"
-		if [[ $arg == "" ]]; then
-			command cd "$srcroot/"
-		elif [[ $arg == "inc" ]]; then
+  local arg="$1"
+  if [[ $arg == "" ]]; then
+    command cd "$srcroot/"
+    return
+  fi
+
+	if [[ "$PWD" =~ ^$LLVM_DEV/.*$ ]]; then
+		if [[ $arg == "inc" ]]; then
 			command cd "$srcroot/include/llvm"
 		elif [[ $arg == "x86" ]]; then
 			command cd "$srcroot/lib/Target/X86"
-		elif [[ $arg == "cdg" ]]; then
+		elif [[ $arg == "cg" ]]; then
 			command cd "$srcroot/lib/CodeGen"
 		elif [[ $arg == "tra" ]]; then
 			command cd "$srcroot/lib/Transforms"
@@ -351,7 +355,8 @@ function cd {
 		fi
 		return
 	fi
-		command cd "$@"
+
+	command cd "$@"
 }
 
 function pacdry {

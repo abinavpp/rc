@@ -1,3 +1,5 @@
+#! /bin/bash
+
 file="$1"
 extension="${file##*.}"
 
@@ -7,7 +9,7 @@ if [[ ! -e "$file" ]]; then
   if [[ $extension == "py" ]]; then
     true
   elif [[ $extension == "pl" ]]; then
-    echo "#! /usr/bin/perl" > "$file" 
+    echo "#! /usr/bin/perl" > "$file"
   else
     echo "#! /bin/bash" > "$file";
   fi

@@ -1,7 +1,8 @@
 #! /usr/bin/perl
 
 my $eoi_path = qr/^
-  (PATH | LD_LIBRARY_PATH | LIBRARY_PATH)
+  (PATH | LD_LIBRARY_PATH | LIBRARY_PATH |
+  C_INCLUDE_PATH | CPLUS_INCLUDE_PATH | CPATH)
   $/x;
 
 my $eoi_extra = qr/^

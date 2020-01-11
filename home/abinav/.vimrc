@@ -50,7 +50,7 @@ let g:lsp_highlights_enabled = 0 " for neovim
 let g:lsp_textprop_enabled = 0
 let g:lsp_highlight_references_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
-let g:lsp_peek_alignment = "center"
+let g:lsp_peek_alignment = 'center'
 let g:lsp_preview_keep_focus = 0
 
 let g:tagbar_left = 1
@@ -403,6 +403,7 @@ autocmd insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
 autocmd insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
 autocmd TabEnter * NERDTreeClose
 autocmd TabLeave * if g:NERDTree.IsOpen() | wincmd p
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 autocmd filetype c,cpp,fortran
   \| inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
