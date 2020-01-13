@@ -221,7 +221,7 @@ if g:color_theme == "dark"
   call <SID>X("DiffAdd", "", s:_darkestgreen, "none")
   call <SID>X("DiffDelete", s:darkred, s:background, "none")
   call <SID>X("DiffChange", "", s:darkestgrey, "none")
-  call <SID>X2("DiffText", s:violet, s:darkestgrey, "underline", s:violet)
+  call <SID>X2("DiffText", "", s:darkestgrey, "underline", s:violet)
 else
   call <SID>X("CursorLine", "", s:lightergrey, "none")
   call <SID>X("CursorLineNR", s:cheddar, "", "none")
@@ -229,7 +229,7 @@ else
   call <SID>X("DiffAdd", "", s:lightgreen, "none")
   call <SID>X("DiffDelete", s:red, s:background, "none")
   call <SID>X("DiffChange", "", s:lightgrey, "none")
-  call <SID>X2("DiffText", s:violet, s:lightgrey, "underline", s:violet)
+  call <SID>X2("DiffText", "", s:lightgrey, "underline", s:violet)
 endif
 call <SID>X("SignColumn", "", s:background, "none")
 call <SID>X("PMenu", s:white, s:black, "none")
