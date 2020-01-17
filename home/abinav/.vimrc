@@ -339,6 +339,7 @@ abbr mian main
 abbr itn int
 abbr tin int
 abbr fucntion function
+abbr progrma program
 
 set ttimeoutlen=50
 set textwidth=80
@@ -371,10 +372,13 @@ set rtp+=~/.fzf
 set termguicolors " for highlight guixx in xterm
 set background=dark
 
+" use %#BoldStatusLine#foobar%#StatusLine to add bold texts to our
+" statusline
 set statusline =
 set statusline +=\ %{mode()}
-set statusline +=\ %{expand('%:p:h:t')}/%t " short path
-set statusline +=\ %{tagbar#currenttag('%s','','%f')}
+" set statusline +=\ %{expand('%:p:h:t')}/%t " short path
+set statusline +=\ %<%F " full path, '<' truncates the path
+set statusline +=\ \ %{tagbar#currenttag('%s','','%f')}
 set statusline +=%m " modified flag
 set statusline +=\ %r " readonly flag
 
@@ -400,7 +404,11 @@ autocmd vimenter * call CsUpd() | call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
 autocmd insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
+  \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
+  \. 'guifg=#000000 ctermbg=047 guibg=#00ff5f'
 autocmd insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
+  \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
+  \. 'guifg=#000000 ctermbg=220 guibg=#ffdf00'
 autocmd TabEnter * NERDTreeClose
 autocmd TabLeave * if g:NERDTree.IsOpen() | wincmd p
 autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
