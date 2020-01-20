@@ -1,98 +1,102 @@
 #! /bin/bash
 
-# Use wrcs, which is a wrapper for this script
-
-g_prefix_run= # not used as of now
-g_run_mode= # run type (dry or nothing)
-
 function print_usage {
+cat << EOL
+Usage: rcsync [OPTION] <profile_name> <run>
+Options:
+-H <profile_name> :	sets profile_type=home for profile_name at
+					home/profile_name
+-S <profile_name> :	sets profile_type=sys for profile_name at
+					syroot/profile_name (and sysroot/all)
+-d                :	does a dry run (used along with -H or -S)
 
-cat <<EOL
-You should be using wrcs wrapper unless you know what you're doing.
-Usage : rcsync [EXTRA_OPTIONS] -s <tree> -f <from> -t <to>
+Note: -S inclues sysroot/all as well. (sudoes all relevant execs)
 
-Options :
--s : tree-directory
--f : syncing from directory
--t : syncing to directory
--d : dry run (Always do this first!)
--c : view diff (this too!)
+<run>:
+diff	: diff in with out
+sin 	: Sync in with out
+sout	: Sync out with in
 
-Brief:
-The tree-dir forms the hierarchy of files which would be
-the "tree" for synchronization from "from" to "to"
-Example : 
-To "sync in" your home	:	rcsync -s home/ -f /home/abinav -t to/repo/home
-To "sync out" your home	:	rcsync -s home/ -f to/repo/home -t /home/abinav
-Note : "sync in" mean "update the git repo from system" You should be doing
-this more often.
-And "sync out" means "update the system from the git repo". If you are
-doing this, then either you have a new system or unsynced system or you
-messed up your system big time.
+where, in means this repo and
+       out means the system
+
+rcsync or wrapper for rcsync is a high level script for rcsync.
+See rcsync -h and the examples below. The option and arg sets the profile
+name/type while the final argument sets the run type.
+
+Examples:
+rcsync -d -H abinav sin # dry run of sin (sync home/abinav with ~)
+rcsync -S y50 diff # does a diff with / and (sysroot/all + sysroot/y50)
+rcsync -H abinav sin # does sync in, do diff and dry before!
+rcsync -H abinav sout # does sync out, diff and dry first!
+
 EOL
-
 }
 
-
-function sanitize_path_string {
-	dir=`echo $1 | tr -s /`
-
-	if [[ $dir == '/' ]]; then
-		echo -n '/'
-	fi
-	echo -n $dir | sed 's:/$::' # remove the trailing /
-}
-
-function rc_tree_sync {
-	if [[ $# -ne 3 ]]; then
-		print_usage; exit
-	fi	   
-	dir_tree=`sanitize_path_string $1`
-	dir_from=`sanitize_path_string $2`
-	dir_to=`sanitize_path_string $3`
-
-	if [[ ! -d $dir_tree || ! -d $dir_from || ! -d $dir_to ]]; then
-		print_usage; exit
-	fi
-
-	tree_root_len=`echo -n "$dir_tree" | wc -c`
-
-	files_tree=(`$g_prefix_run find $dir_tree -type f -print |	\
-		cut -c1-$(($tree_root_len + 1)) --complement `)
-
-	for f in ${files_tree[@]}; do
-		if [[ $g_run_mode == "dry" ]]; then
-			echo "$g_prefix_run mkdir -p `dirname ${dir_to}/$f`"
-			echo "$g_prefix_run cp -v ${dir_from}/$f `dirname ${dir_to}/$f`"
-
-		elif [[ $g_run_mode == "diff" ]]; then
-			echo "diff ${dir_from}/$f ${dir_to}/$f"
-			$g_prefix_run diff ${dir_from}/$f ${dir_to}/$f
-			echo
-
-		else
-			# $f can be a x/y/file so get dirname with it
-			$g_prefix_run mkdir -p `dirname ${dir_to}/$f`
-			$g_prefix_run cp -v ${dir_from}/$f `dirname ${dir_to}/$f`
-		fi
-	done
-}
-
-while getopts "hcds:f:t:" opt 
+while getopts "hdS:H:" opt
 do
 	case "$opt" in
-	c) g_run_mode="diff";;
-	d) g_run_mode="dry";;
-	h)	print_usage
-		exit;;
-	s) tree=$OPTARG;;
-	f) from=$OPTARG;;
-	t) to=$OPTARG;;
-	?) 	print_usage
-		exit;;
+		S)	profile_type="sys"
+			profile_name=$OPTARG;;
+		H)	profile_type="home"
+			profile_name=$OPTARG;;
+		d)	dry="-d";;
+		h)	print_usage
+			exit;;
+		?) 	print_usage
+			exit;;
 	esac
 done
 
-echo; echo "Running($g_prefix_run$g_run_mode by UID:$UID) : rc_tree_sync $tree $from $to"
-echo;
-rc_tree_sync $tree $from $to
+if [[ $profile_type == "home" ]]; then
+	in="home/${profile_name}"
+	out="$HOME" # '~' breaks when used below TODO: know why!
+
+elif [[ $profile_type == "sys" ]]; then
+	sudo="sudo"
+	in="sysroot/${profile_name}"
+	out="/"
+else
+	print_usage
+	exit
+fi
+
+if [[ ! -e $in || ! -e $out ]]; then
+	print_usage
+	exit
+fi
+
+for run_type; do true; done # gets last arg
+
+echo "Performing $run_type : "
+
+if [[ $run_type == "sin" ]]; then
+	from=$out
+	to=$in
+	if [[ $profile_type == "sys" ]]; then
+		$sudo ./treesync $dry $diff -s sysroot/all -f / -t sysroot/all
+	fi
+
+elif [[ $run_type == "sout" ]]; then
+	from=$in
+	to=$out
+	if [[ $profile_type == "sys" ]]; then
+		$sudo ./treesync $dry $diff -s sysroot/all -f sysroot/all -t /
+	fi
+
+elif [[ $run_type == "diff" ]]; then
+	from=$out
+	to=$in # order doesn't matter here
+	diff="-c"
+
+	if [[ $profile_type == "sys" ]]; then
+		$sudo ./treesync $dry $diff -s sysroot/all -f / -t sysroot/all
+	fi
+
+else
+	print_usage
+	exit
+fi
+
+echo "$sudo ./treesync $dry $diff -s $in -f $from -t $to"
+$sudo ./treesync $dry $diff -s $in -f $from -t $to

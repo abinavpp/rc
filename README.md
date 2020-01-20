@@ -1,6 +1,10 @@
 # rcs and confs
 
-wrcs is a wrapper for rcsync that help you synchronize the root/home with
-this repo `$ wrcs -H abinav sout` or the other way around `$ wrcs -H abinav
-sin` (see `$ wrcs -h`). Only the directories home and sysroot are subject
-to synchronization.
+I keep my rc and conf files up-to-date here so that I can feel at home on any
+machine. Feel free to look around :)
+
+Use the rcsync tool to synchronize.
+
+rcsync is a wrapper for treesync that help you synchronize the root/home with
+this repo (eg. `$ rcsync -H abinav sout`) or the other way around. (eg.
+`$ rcsync -H abinav sin`) see `$ rcsyn -h`.
