@@ -7,4 +7,4 @@ Use the rcsync tool to synchronize.
 
 rcsync is a wrapper for treesync that help you synchronize the root/home with
 this repo (eg. `$ rcsync -H abinav sout`) or the other way around. (eg.
-`$ rcsync -H abinav sin`) see `$ rcsyn -h`.
+`$ rcsync -H abinav sin`) see `$ rcsync -h`.
