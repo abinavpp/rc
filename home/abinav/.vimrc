@@ -57,7 +57,7 @@ let g:tagbar_left = 1
 
 let fortran_free_source = 1
 let fortran_have_tabs = 1
-let fortran_more_precise = 1
+" let fortran_more_precise = 1
 let fortran_do_enddo = 1
 
 " for functions in this file
@@ -234,6 +234,7 @@ nmap <C-\>d :LspDefinition<CR>i
 nmap <C-\><S-d> :tab split<CR>:LspDefinition<CR>i
 nmap <C-\>s :LspDeclaration<CR>i
 nmap <C-\>r :LspReference<CR>i
+nmap <C-\><S-R> :LspRename<CR>
 nmap <C-\>i :LspHover<CR>i
 nmap <C-\>e :LspNextError<CR>i
 nmap <C-\>l :LspNextReference<CR><Right>i

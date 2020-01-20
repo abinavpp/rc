@@ -69,7 +69,6 @@ function tree_sync {
 		elif [[ $run_mode == "diff" ]]; then
 			echo "diff ${dir_from}/$f ${dir_to}/$f"
 			$prefix_run diff ${dir_from}/$f ${dir_to}/$f
-			echo
 
 		else
 			# $f can be a x/y/file so get dirname with it
