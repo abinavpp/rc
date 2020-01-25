@@ -1,3 +1,30 @@
+python
+class LLDump(gdb.Function):
+  def __init__(self):
+    super(LLDump, self).__init__("llDump")
+
+  def invoke(self, var, name):
+    # sym = gdb.lookup_symbol(name)[0]
+    if var.type.code == gdb.TYPE_CODE_PTR:
+      # gdb.execute('call %s->dump()' % sym.name)
+      return 'TODO'
+    else:
+      return 'TODO'
+
+class IsPointer(gdb.Function):
+  def __init__(self):
+    super(IsPointer, self).__init__("isPointer")
+
+  def invoke(self, var):
+    if var.type.code == gdb.TYPE_CODE_PTR:
+      return True
+    else:
+      return False
+
+LLDump()
+IsPointer()
+end
+
 define asm
 	la asm
 	la reg
@@ -25,26 +52,14 @@ define sub
 end
 
 define dm
-	if sizeof($arg0) == 8
+  if $isPointer($arg0)
 		call $arg0->dump()
 	else
 		call $arg0.dump()
 	end
 end
 
-define dmr
-	if sizeof(TRI) == 8
-		call TRI->getName($arg0)
-	else
-		call TRI.getName($arg0)
-	end
-end
-
-define numpass
-	call getNumContainedPasses()
-end
-
-define getpass
+define llgetpass
 	p *getContainedPass($arg0)
 end
 
