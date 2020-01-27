@@ -19,8 +19,8 @@ Brief:
 The tree-dir forms the hierarchy of files which would be
 the "tree" for synchronization from "from" to "to"
 Example :
-To "sync in" your home	:	rcsync -s home/ -f /home/abinav -t to/repo/home
-To "sync out" your home	:	rcsync -s home/ -f to/repo/home -t /home/abinav
+To "sync in" your home  : rcsync -s home/ -f /home/abinav -t to/repo/home
+To "sync out" your home : rcsync -s home/ -f to/repo/home -t /home/abinav
 Note : "sync in" mean "update the git repo from system" You should be doing
 this more often.
 And "sync out" means "update the system from the git repo". If you are
@@ -35,62 +35,62 @@ function die {
 }
 
 function sanitize_path_string {
-	dir=`echo $1 | tr -s /`
+  dir=`echo $1 | tr -s /`
 
-	if [[ $dir == '/' ]]; then
-		echo -n '/'
-	fi
-	echo -n $dir | sed 's:/$::' # remove the trailing /
+  if [[ $dir == '/' ]]; then
+    echo -n '/'
+  fi
+  echo -n $dir | sed 's:/$::' # remove the trailing /
 }
 
 function tree_sync {
-	if [[ $# -ne 3 ]]; then
+  if [[ $# -ne 3 ]]; then
     die "tree_sync() must be called with exactly 3 args"
-	fi
+  fi
 
-	dir_tree="$1"
-	dir_from="$2"
-	dir_to="$3"
+  dir_tree="$1"
+  dir_from="$2"
+  dir_to="$3"
 
-	if [[ ! -d $dir_tree || ! -d $dir_from || ! -d $dir_to ]]; then
-		print_usage; exit
-	fi
+  if [[ ! -d $dir_tree || ! -d $dir_from || ! -d $dir_to ]]; then
+    print_usage; exit
+  fi
 
-	tree_root_len=`echo -n "$dir_tree" | wc -c`
+  tree_root_len=`echo -n "$dir_tree" | wc -c`
 
-	files_tree=(`$prefix_run find $dir_tree -type f -print |	\
-		cut -c1-$(($tree_root_len + 1)) --complement `)
+  files_tree=(`$prefix_run find $dir_tree -type f -print |  \
+    cut -c1-$(($tree_root_len + 1)) --complement `)
 
-	for f in ${files_tree[@]}; do
-		if [[ $run_mode == "dry" ]]; then
-			echo "$prefix_run mkdir -p `dirname ${dir_to}/$f`"
-			echo "$prefix_run cp -v ${dir_from}/$f `dirname ${dir_to}/$f`"
+  for f in ${files_tree[@]}; do
+    if [[ $run_mode == "dry" ]]; then
+      echo "$prefix_run mkdir -p `dirname ${dir_to}/$f`"
+      echo "$prefix_run cp -v ${dir_from}/$f `dirname ${dir_to}/$f`"
 
-		elif [[ $run_mode == "diff" ]]; then
-			echo "diff ${dir_from}/$f ${dir_to}/$f"
-			$prefix_run diff ${dir_from}/$f ${dir_to}/$f
+    elif [[ $run_mode == "diff" ]]; then
+      echo "diff ${dir_from}/$f ${dir_to}/$f"
+      $prefix_run diff ${dir_from}/$f ${dir_to}/$f
 
-		else
-			# $f can be a x/y/file so get dirname with it
-			$prefix_run mkdir -p `dirname ${dir_to}/$f`
-			$prefix_run cp -v ${dir_from}/$f `dirname ${dir_to}/$f`
-		fi
-	done
+    else
+      # $f can be a x/y/file so get dirname with it
+      $prefix_run mkdir -p `dirname ${dir_to}/$f`
+      $prefix_run cp -v ${dir_from}/$f `dirname ${dir_to}/$f`
+    fi
+  done
 }
 
 while getopts "hcds:f:t:" opt
 do
-	case "$opt" in
-	c) run_mode="diff";;
-	d) run_mode="dry";;
-	h)	print_usage
-		exit;;
-	s) tree=$OPTARG;;
-	f) from=$OPTARG;;
-	t) to=$OPTARG;;
-	?) 	print_usage
-		exit;;
-	esac
+  case "$opt" in
+  c) run_mode="diff";;
+  d) run_mode="dry";;
+  h)  print_usage
+    exit;;
+  s) tree=$OPTARG;;
+  f) from=$OPTARG;;
+  t) to=$OPTARG;;
+  ?)  print_usage
+    exit;;
+  esac
 done
 
 if [[ $tree == "" || $from == "" || $to == "" ]]; then

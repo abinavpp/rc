@@ -26,49 +26,49 @@ IsPointer()
 end
 
 define asm
-	la asm
-	la reg
+  la asm
+  la reg
 end
 
 define sta
-	start
-	del
+  start
+  del
 end
 
 define ps
-	print (char *) $arg0
+  print (char *) $arg0
 end
 
 
 define ub
-	b $arg0
-	cont
-	del
+  b $arg0
+  cont
+  del
 end
 
 define sub
-	start
-	ub $arg0
+  start
+  ub $arg0
 end
 
 define dm
   if $isPointer($arg0)
-		call $arg0->dump()
-	else
-		call $arg0.dump()
-	end
+    call $arg0->dump()
+  else
+    call $arg0.dump()
+  end
 end
 
 define llgetpass
-	p *getContainedPass($arg0)
+  p *getContainedPass($arg0)
 end
 
 define u
-	up
+  up
 end
 
 define d
-	down
+  down
 end
 
 skip -gfi /usr/include/c++/*/bits/*.h

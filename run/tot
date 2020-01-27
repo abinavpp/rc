@@ -12,61 +12,61 @@ use feature qw(say);
 my $tot_msg;
 
 sub usage {
-	print "TODO\n";
+  print "TODO\n";
 }
 
 sub tot_human {
-	my @tots;
-	my $regex_unit_human = '((k|m|g)(ib|b)?)';
+  my @tots;
+  my $regex_unit_human = '((k|m|g)(ib|b)?)';
 
-	while (my $line = <stdin>) {
-		print $line;
-		my @words = split(/\s+/, $line);
+  while (my $line = <stdin>) {
+    print $line;
+    my @words = split(/\s+/, $line);
 
-		my ($i_tots, $i_words) = (0, 0);
-		foreach my $word (@words) {
-			if ($word =~ /^\d+?(\.\d+?)?$regex_unit_human?$/i) {
+    my ($i_tots, $i_words) = (0, 0);
+    foreach my $word (@words) {
+      if ($word =~ /^\d+?(\.\d+?)?$regex_unit_human?$/i) {
 
-				# to handle 256\s+MiB
-				if ($word !~ /$regex_unit_human$/i) {
-					if (defined $words[$i_words + 1] &&
-						$words[$i_words + 1] =~ /^$regex_unit_human$/i) {
-							$word .= $words[++$i_words]; # skip next word as well
-					}
-					# print "! $words[$i_words + 1]";
-				}
-				# say "got $word = " . parse_bytes($word);
-				$tots[$i_tots++] += parse_bytes($word);
-			}
-			$i_words++
-		}
-	}
+        # to handle 256\s+MiB
+        if ($word !~ /$regex_unit_human$/i) {
+          if (defined $words[$i_words + 1] &&
+            $words[$i_words + 1] =~ /^$regex_unit_human$/i) {
+            $word .= $words[++$i_words]; # skip next word as well
+          }
+          # print "! $words[$i_words + 1]";
+        }
+        # say "got $word = " . parse_bytes($word);
+        $tots[$i_tots++] += parse_bytes($word);
+      }
+      $i_words++
+    }
+  }
 
-	if (!$tot_msg) {
-		print "\nTotal size : ";
-	} else {
-		print $tot_msg;
-	}
-	foreach my $tot (@tots) {
-		print format_bytes($tot) . " ";
-	}
-	print "\n";
+  if (!$tot_msg) {
+    print "\nTotal size : ";
+  } else {
+    print $tot_msg;
+  }
+  foreach my $tot (@tots) {
+    print format_bytes($tot) . " ";
+  }
+  print "\n";
 }
 
 GetOptions(
-	"h" => \my $opt_human,
-	"m=s" => \$tot_msg,
-	"help" => \my $opt_help)
-	or die "Error parsing cmdline";
+  "h" => \my $opt_human,
+  "m=s" => \$tot_msg,
+  "help" => \my $opt_help)
+  or die "Error parsing cmdline";
 
 if ($opt_help) {
-	usage();
-	exit;
+  usage();
+  exit;
 }
 
 if ($opt_human) {
-	tot_human();
-	exit;
+  tot_human();
+  exit;
 }
 
 # print Dumper(@x);

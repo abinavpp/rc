@@ -1,61 +1,61 @@
 #! /bin/bash
 
 function set_gtk {
-	/bin/mkdir -p ~/.config/gtk-3.0
+  /bin/mkdir -p ~/.config/gtk-3.0
 
-	exec > ~/.config/gtk-3.0/settings.ini
-	cat << ENDCAT
+  exec > ~/.config/gtk-3.0/settings.ini
+  cat << ENDCAT
 [Settings]
 gtk-theme-name=$1
 ENDCAT
 
-	exec > ~/.gtkrc-2.0
-	cat << ENDCAT
+exec > ~/.gtkrc-2.0
+cat << ENDCAT
 gtk-theme-name="$1"
 ENDCAT
 }
 
 function set_zathura {
-	/bin/mkdir -p ~/.config/zathura
-	
-	exec > ~/.config/zathura/zathurarc
+  /bin/mkdir -p ~/.config/zathura
 
-	cat << ENDCAT
+  exec > ~/.config/zathura/zathurarc
+
+  cat << ENDCAT
 map <C-c> recolor
 set show-v-scrollbar
 set show-recent 0
 # set default-bg "$1"
 ENDCAT
-	
-	if [[ $1 != "#ffffff" ]]; then
-	cat << ENDCAT
+
+if [[ $1 != "#ffffff" ]]; then
+  cat << ENDCAT
 # set recolor-darkcolor "#3a3a3a" # sets fg col
 set recolor-lightcolor "$1" # sets bg col
 set recolor-keephue true
 set recolor true
 ENDCAT
-	fi
+fi
 }
 
 function set_xroot {
-	if xset q &> /dev/null; then
-		type xsetroot &> /dev/null && \
-			xsetroot -solid "$col"
-	fi
+  if xset q &> /dev/null; then
+    type xsetroot &> /dev/null && \
+      xsetroot -solid "$col"
+  fi
 }
 
 
 if [[ $# -ne 1 ]]; then
-	exit
+  exit
 fi
 
 col=$1
 
 if [[ $col != "#ffffff" ]]; then
-	set_gtk Breeze-Dark
-	# set_gtk Arc-Darker
+  set_gtk Breeze-Dark
+  # set_gtk Arc-Darker
 else
-	set_gtk Breeze
+  set_gtk Breeze
 fi
 
 set_xroot $col

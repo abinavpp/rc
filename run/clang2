@@ -19,56 +19,56 @@ my $input_file = "";
 my $input_ll = "";
 
 sub systeml {
-	system @_;
-	return;
+  system @_;
+  return;
 
-	open(my $fh, '>>', $clang_log);
-	print $fh "@_";
-	close $fh;
+  open(my $fh, '>>', $clang_log);
+  print $fh "@_";
+  close $fh;
 }
 
 sub cleanup {
-	return;
+  return;
 
-	systeml("rm $input_ll");
+  systeml("rm $input_ll");
 }
 
 sub giveup {
-	my $cmdline = join " ", @ARGV;
-	system("$def_clang $cmdline");
-	cleanup;
-	exit;
+  my $cmdline = join " ", @ARGV;
+  system("$def_clang $cmdline");
+  cleanup;
+  exit;
 }
 
 sub applyall {
-	my ($opt) = @_;
-	$fe_opts .= "$opt ";
-	$be_opts .= "$opt ";
+  my ($opt) = @_;
+  $fe_opts .= "$opt ";
+  $be_opts .= "$opt ";
 }
 
 for (my $argi = 0; $argi < scalar(@ARGV); $argi++) {
-	my $arg = $ARGV[$argi];
+  my $arg = $ARGV[$argi];
 
-	if ($arg eq "-S") {next;}
-	if ($arg eq "-c") {$be_opts .= "-filetype=obj "; next;}
-	if ($arg eq "-o") {$be_opts .= "-o $ARGV[++$argi] "; next;}
-	if ($arg eq "-v") {giveup;}
-	if ($arg =~ /^\-O[0-9]+$/) {applyall $arg; next;}
-	
+  if ($arg eq "-S") {next;}
+  if ($arg eq "-c") {$be_opts .= "-filetype=obj "; next;}
+  if ($arg eq "-o") {$be_opts .= "-o $ARGV[++$argi] "; next;}
+  if ($arg eq "-v") {giveup;}
+  if ($arg =~ /^\-O[0-9]+$/) {applyall $arg; next;}
 
-	# input_file
-	if ($arg =~ /^[^-]/ && -e $arg) {
-		if ($arg =~ /\.o$/ && $ARGV[$argi - 1] ne "-o") {
-			# if .o files are input_files, then this probably must be linking, we leave
-			# the cmdline undisturbed then
-			giveup
-		}
-		$input_file = $arg;
-		$input_ll = $input_file =~ s/(.+)\.[^.]+$/${1}.ll/r;
-		next;
-	}
 
-	$fe_opts .= "$arg ";
+  # input_file
+  if ($arg =~ /^[^-]/ && -e $arg) {
+    if ($arg =~ /\.o$/ && $ARGV[$argi - 1] ne "-o") {
+      # if .o files are input_files, then this probably must be linking, we leave
+      # the cmdline undisturbed then
+      giveup
+    }
+    $input_file = $arg;
+    $input_ll = $input_file =~ s/(.+)\.[^.]+$/${1}.ll/r;
+    next;
+  }
+
+  $fe_opts .= "$arg ";
 }
 
 systeml("$def_clang $fe_opts -S -emit-llvm -o $input_ll $input_file\n");

@@ -384,7 +384,7 @@ set statusline +=%m " modified flag
 set statusline +=\ %r " readonly flag
 
 set statusline +=%=
-silent! set statusline +=\ %{fugitive#statusline()}	" current git branch
+silent! set statusline +=\ %{fugitive#statusline()} " current git branch
 set statusline +=\ %{&ff} " file format
 set statusline +=%y " file type
 set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " file encoding

@@ -1,50 +1,50 @@
 #! /bin/bash
 
 function get_root() {
-	local orig_pwd=$(pwd)
+  local orig_pwd=$(pwd)
 
-	while [[ $(pwd) != "/" ]]; do
-		if [[ -e ".git" || -e ".clang-format" || -x "configure" ]]; then
-			echo $(pwd);
-			break;
-		fi
-		cd ..
-	done
-	cd "$orig_pwd"
+  while [[ $(pwd) != "/" ]]; do
+    if [[ -e ".git" || -e ".clang-format" || -x "configure" ]]; then
+      echo $(pwd);
+      break;
+    fi
+    cd ..
+  done
+  cd "$orig_pwd"
 }
 
 function find_in_tree() {
-	local arg="$1"
-	find $(get_root) -name $arg
+  local arg="$1"
+  find $(get_root) -name $arg
 }
 
 function get_src_pair() {
-	local arg="$1"
+  local arg="$1"
 
-	local file=$(basename "$arg")
-	local extension="${arg##*.}"
+  local file=$(basename "$arg")
+  local extension="${arg##*.}"
 
-	if [[ "$extension" =~ ^(c|cpp|cc)$ ]]; then
-		local header=$(basename "$file" .$extension).h
-		find_in_tree "$header"
+  if [[ "$extension" =~ ^(c|cpp|cc)$ ]]; then
+    local header=$(basename "$file" .$extension).h
+    find_in_tree "$header"
 
-	elif [[ "$extension" == "h" ]]; then
-		local src=$(basename "$file" .$extension).cpp
-		find_in_tree "$src"
+  elif [[ "$extension" == "h" ]]; then
+    local src=$(basename "$file" .$extension).cpp
+    find_in_tree "$src"
 
-		src=$(basename "$file" .$extension).c
-		find_in_tree "$src"
-	fi
+    src=$(basename "$file" .$extension).c
+    find_in_tree "$src"
+  fi
 }
 
 if [[ -z $(get_root) ]]; then
-	echo "Not sure if this is under a srctree" >& 2;
-	exit 1;
+  echo "Not sure if this is under a srctree" >& 2;
+  exit 1;
 fi
 
 if [[ $# -eq 0 ]]; then
-	get_root
-	exit 0;
+  get_root
+  exit 0;
 fi
 
 get_src_pair "$1"

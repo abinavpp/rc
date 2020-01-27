@@ -1,10 +1,10 @@
 [alias]
   sh  = show --stat --oneline
-	st  = status
-	cm  = commit
-	ch  = checkout
-	cat = cat-file
-	br  = branch
-	cl  = clone
+  st  = status
+  cm  = commit
+  ch  = checkout
+  cat = cat-file
+  br  = branch
+  cl  = clone
   pm  = push origin master
   rbi = rebase -i

@@ -1,7 +1,7 @@
 shopt -s expand_aliases
 
 function manvim() {
-	man $@ | vim -u ~/.manvimrc -
+  man $@ | vim -u ~/.manvimrc -
 }
 
 alias man='manvim'
@@ -29,5 +29,3 @@ alias tree='tree -aC'
 alias psa='ps -eflj'
 alias jobs='jobs -l'
 alias lsblk='lsblk -o +FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC,MODEL,UUID'
-
-

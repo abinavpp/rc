@@ -1,8 +1,8 @@
 #! /bin/bash
 
 if [[ -z $LLVM_DEV ]]; then
-	echo "Set your \$LLVM_DEV and try again"
-	exit 1
+  echo "Set your \$LLVM_DEV and try again"
+  exit 1
 fi
 
 # default output files
@@ -11,91 +11,91 @@ opt_out="opt.ll"
 dot_out="dot.ll"
 
 function is_ll() {
-	if [[ ${1: -3} == ".ll" ]]; then # _space_ b/w : and -
-		return 0;
-	fi
-	return 1;
+  if [[ ${1: -3} == ".ll" ]]; then # _space_ b/w : and -
+    return 0;
+  fi
+  return 1;
 }
 
 function get_ll() {
   project=$1 file="$2"
-	if is_ll $file; then
-		echo "$file";
-		return
-	fi
+  if is_ll $file; then
+    echo "$file";
+    return
+  fi
 
   llvmr $project clang -S -emit-llvm -Xclang -disable-O0-optnone -o \
     "$clang_out" "$file" || exit 1
 
-	echo "$clang_out";
+  echo "$clang_out";
 }
 
 function get_ll_for_dot() {
   project=$1 file="$2"
-	if is_ll $file; then
-		ll="$file";
-	else
-		get_ll $project "$file" &> /dev/null
-		llvmr $project opt -mem2reg -loop-simplify -instcombine -instnamer \
-			-indvars -S -o "$dot_out" "$clang_out" || exit 1;
-		ll="$dot_out"
-	fi
-	echo $ll;
+  if is_ll $file; then
+    ll="$file";
+  else
+    get_ll $project "$file" &> /dev/null
+    llvmr $project opt -mem2reg -loop-simplify -instcombine -instnamer \
+      -indvars -S -o "$dot_out" "$clang_out" || exit 1;
+          ll="$dot_out"
+  fi
+  echo $ll;
 }
 
 function do_mir {
   project="$1"; shift
-	ll=$(get_ll $project "$1") || exit 1
-	shift;
+  ll=$(get_ll $project "$1") || exit 1
+  shift;
 
-	if [[ $# -eq 0 ]]; then
-		llvmr $project llc "$ll" 2>&1
-		return
-	fi
+  if [[ $# -eq 0 ]]; then
+    llvmr $project llc "$ll" 2>&1
+    return
+  fi
 
-	if [[ $1 == "ab" || $1 == "ba" ]]; then
-		# llvmu mir foo.c ab/ba <pass>
-		vimdiff <(llvmr $project llc -print-before=$2 "$ll" 2>&1) \
-			<(llvmr $project llc -print-after=$2 "$ll" 2>&1)
-		return
-	fi
+  if [[ $1 == "ab" || $1 == "ba" ]]; then
+    # llvmu mir foo.c ab/ba <pass>
+    vimdiff <(llvmr $project llc -print-before=$2 "$ll" 2>&1) \
+      <(llvmr $project llc -print-after=$2 "$ll" 2>&1)
+          return
+  fi
 
-	local first_print_cmd="" second_print_cmd=""
-	local first_stop_cmd=""
+  local first_print_cmd="" second_print_cmd=""
+  local first_stop_cmd=""
 
-	if [[ $1 == "b" ]]; then
-		first_print_cmd="-print-before=$2"
-		first_stop_cmd="-stop-before=$2"
-	elif [[ $1 == "a" ]]; then
-		first_print_cmd="-print-after=$2"
-		first_stop_cmd="-stop-after=$2"
-	elif [[ $1 == "all" ]]; then
+  if [[ $1 == "b" ]]; then
+    first_print_cmd="-print-before=$2"
+    first_stop_cmd="-stop-before=$2"
+  elif [[ $1 == "a" ]]; then
+    first_print_cmd="-print-after=$2"
+    first_stop_cmd="-stop-after=$2"
+  elif [[ $1 == "all" ]]; then
     # cmdline: llvmu mir foo.c all
     llvmr $project llc -print-machineinstrs "$ll" 2>&1
-		return
-	fi
+    return
+  fi
 
-	if [[ $# -eq 2 ]]; then
+  if [[ $# -eq 2 ]]; then
     # cmdline: llvmu mir foo.c b/a <pass>
     llvmr $project llc $first_print_cmd "$ll" 2>&1
-		return
-	fi
+    return
+  fi
 
-	if [[ $3 == "b" ]]; then
-		second_print_cmd="-print-before=$4"
-	elif [[ $3 == "a" ]]; then
-		second_print_cmd="-print-after=$4"
-	fi
+  if [[ $3 == "b" ]]; then
+    second_print_cmd="-print-before=$4"
+  elif [[ $3 == "a" ]]; then
+    second_print_cmd="-print-after=$4"
+  fi
 
   # cmdline: llvmu mir foo.c b/a <pass1> b/a <pass2>
   vimdiff <(llvmr $project llc $first_print_cmd "$ll" 2>&1) \
-      <(llvmr $project llc $second_print_cmd "$ll" 2>&1)
-}
+    <(llvmr $project llc $second_print_cmd "$ll" 2>&1)
+  }
 
 if [[ $1 == "dot" ]]; then
   project="main"; shift
 
-	ll=$(get_ll_for_dot $project $1) || exit 1;
+  ll=$(get_ll_for_dot $project $1) || exit 1;
   # we need to prefix the cfg for llvm >= 8 to conform with llvm <= 7 std.
   llvmr $project opt -dot-cfg -cfg-dot-filename-prefix="cfg" -dot-dom \
     -dot-callgraph --disable-output $ll
@@ -112,39 +112,39 @@ if [[ $1 == "dot" ]]; then
 
 elif [[ $1 == "scev" ]]; then
   project="main"
-	shift
-	ll=$(get_ll $project "$1") || exit 1;
-	llvmr $project opt -mem2reg -S -o "$clang_out" "$ll"
-	llvmr $project opt -analyze -scalar-evolution "$clang_out"
+  shift
+  ll=$(get_ll $project "$1") || exit 1;
+  llvmr $project opt -mem2reg -S -o "$clang_out" "$ll"
+  llvmr $project opt -analyze -scalar-evolution "$clang_out"
 
 elif [[ $1 == "mod" ]]; then
   project="main"
-	shift
-	/usr/bin/clang++ -g `llvmr $project llvm-config --cxxflags --ldflags --system-libs \
-		--libs core mc x86` $@
-  if [[ $? == 0 ]]; then
-    llvmr $project a.out &> clang.ll
-  fi
-
-elif [[ $1 == "ir" ]]; then
-  project="main"
-	shift
-	get_ll $project "$1" &> /dev/null || exit 1;
-  llvmr $project opt -mem2reg -loop-simplify -instcombine -instnamer \
-    -indvars -S -o "$clang_out" "$clang_out" || exit 1;
-
-
-elif [[ $1 == "mir" ]]; then
-  project="main"
-	shift;
-  do_mir $project "$@"
-
-elif [[ $1 == "dis" ]]; then
   shift
-  tmpir=$(mktemp /tmp/$1.XXXXXX)
-  llvm-dis $1 -o $tmpir
-  vim -c "set filetype=llvm" $tmpir
-  trap 'rm -f $tmpir' EXIT
-else
-  exit 1
+  /usr/bin/clang++ -g `llvmr $project llvm-config --cxxflags --ldflags --system-libs \
+    --libs core mc x86` $@
+      if [[ $? == 0 ]]; then
+        llvmr $project a.out &> clang.ll
+      fi
+
+    elif [[ $1 == "ir" ]]; then
+      project="main"
+      shift
+      get_ll $project "$1" &> /dev/null || exit 1;
+      llvmr $project opt -mem2reg -loop-simplify -instcombine -instnamer \
+        -indvars -S -o "$clang_out" "$clang_out" || exit 1;
+
+
+    elif [[ $1 == "mir" ]]; then
+      project="main"
+      shift;
+      do_mir $project "$@"
+
+    elif [[ $1 == "dis" ]]; then
+      shift
+      tmpir=$(mktemp /tmp/$1.XXXXXX)
+      llvm-dis $1 -o $tmpir
+      vim -c "set filetype=llvm" $tmpir
+      trap 'rm -f $tmpir' EXIT
+    else
+      exit 1
 fi

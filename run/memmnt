@@ -7,158 +7,158 @@ path_mntpt=$path_memfs$mntpt
 function die() { echo "$*" 1>&2 ; exit 1; }
 
 if ! am_i_home; then
-    exit 1
+  exit 1
 fi
 
 # check if linux-like
 if [[ ! -d "$path_memfs" ]]; then
-	die "no memfs"
+  die "no memfs"
 fi
 
 mkdir -p "$path_mntpt" || die "can't create mntpt"
 chmod 0777 "$path_mntpt" &> /dev/null
 
 function mntpt_nexti {
-	local f i=0
+  local f i=0
 
-	for f in $(ls $path_mntpt | grep -P '^\d+$' | sort -n); do true; done
+  for f in $(ls $path_mntpt | grep -P '^\d+$' | sort -n); do true; done
 
-	if [[ $f =~ ^[0-9]+$ ]]; then
-		echo $(($f + 1))
-	else # empty dir or only non-ifiles in mntpt
-		echo "0"
-	fi
+  if [[ $f =~ ^[0-9]+$ ]]; then
+    echo $(($f + 1))
+  else # empty dir or only non-ifiles in mntpt
+    echo "0"
+  fi
 }
 
 function is_ifile {
-	# can't just check if it's i-file, cuz other apps can write a ^[0-9]+$
-	# file sometimes (remember chrome)
-	if [[ -w "$1" && "$1" =~ $path_mntpt.+ ]]; then
-		return 0
-	fi
-	return 1
+  # can't just check if it's i-file, cuz other apps can write a ^[0-9]+$
+  # file sometimes (remember chrome)
+  if [[ -w "$1" && "$1" =~ $path_mntpt.+ ]]; then
+    return 0
+  fi
+  return 1
 }
 
 # the strict version that doesn't respect symlink, checks write
 function is_reg_or_dir {
-	if [[ -L "$1" ]]; then
-		return 1
-	fi
+  if [[ -L "$1" ]]; then
+    return 1
+  fi
 
-	if [[ -f "$1" || -d "$1" ]]; then
-		return 0
-	else
-		return 1
-	fi
+  if [[ -f "$1" || -d "$1" ]]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 # not just -w, checks with parent dir as well
 function is_alterable {
-	local dir_par=$(dirname "$1")
+  local dir_par=$(dirname "$1")
 
-	if [[ -w "$1" && -w "$dir_par" ]]; then
-		return 0
-	else
-		return 1
-	fi
+  if [[ -w "$1" && -w "$dir_par" ]]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 function memmnt_mnt {
-	local path_target=$1
-	path_target=${path_target%/} # else ln -s would fail
+  local path_target=$1
+  path_target=${path_target%/} # else ln -s would fail
 
-	# no super complicated symlink refs please
-	if ! is_reg_or_dir "$path_target" || ! is_alterable "$path_target"; then
-		die "can't mount $path_target"
-	fi
-	
-	local nexti=$(mntpt_nexti)
-	local path_ifile="$path_mntpt/$nexti"
+  # no super complicated symlink refs please
+  if ! is_reg_or_dir "$path_target" || ! is_alterable "$path_target"; then
+    die "can't mount $path_target"
+  fi
 
-	if [[ $nexti ]]; then
-		mv "$path_target" "$path_ifile"
-		ln -s "$path_ifile" "$path_target"
-	fi
+  local nexti=$(mntpt_nexti)
+  local path_ifile="$path_mntpt/$nexti"
+
+  if [[ $nexti ]]; then
+    mv "$path_target" "$path_ifile"
+    ln -s "$path_ifile" "$path_target"
+  fi
 }
 
 function memmnt_umnt {
-	if [[ $# -eq 1 ]]; then
-		local opt="" path_target=$1
-	else
-		local opt=$1 path_target=$2
-	fi
-	path_target=${path_target%/}
+  if [[ $# -eq 1 ]]; then
+    local opt="" path_target=$1
+  else
+    local opt=$1 path_target=$2
+  fi
+  path_target=${path_target%/}
 
-	if [[ ! -L "$path_target" ]]; then
-		die "$path_target not a symlink"
-	fi
+  if [[ ! -L "$path_target" ]]; then
+    die "$path_target not a symlink"
+  fi
 
-	local path_ifile=$(readlink -f "$path_target")
+  local path_ifile=$(readlink -f "$path_target")
 
-	if ! is_ifile "$path_ifile" || ! is_alterable "$path_target"; then
-		die "can't un-mount $path_target"
-	fi
+  if ! is_ifile "$path_ifile" || ! is_alterable "$path_target"; then
+    die "can't un-mount $path_target"
+  fi
 
-	rm -rf "$path_target"
+  rm -rf "$path_target"
 
-	case "$opt" in # none of the opts fully removes target
-	-d) # discard ifile, but keep target's meta
-		if [[ -d "$path_ifile" ]]; then
-			mkdir "$path_target"
-		else
-			touch "$path_target"
-		fi
-		rm -rf "$path_ifile";;
+  case "$opt" in # none of the opts fully removes target
+    -d) # discard ifile, but keep target's meta
+      if [[ -d "$path_ifile" ]]; then
+        mkdir "$path_target"
+      else
+        touch "$path_target"
+      fi
+      rm -rf "$path_ifile";;
 
-	*)
-		mv "$path_ifile" "$path_target";;
-	esac
+    *)
+      mv "$path_ifile" "$path_target";;
+  esac
 }
 
 function memmnt_clear {
-	rm -rf "$path_mntpt"
-	mkdir "$path_mntpt"
+  rm -rf "$path_mntpt"
+  mkdir "$path_mntpt"
 }
 
 function memmnt_list {
-	ls -a --color=auto "$path_mntpt"
+  ls -a --color=auto "$path_mntpt"
 }
 
 function print_usage {
-	echo "TODO"
+  echo "TODO"
 }
 
 if [[ $# -eq 1 ]]; then
-	# skip if memmnt -c
-	if [[ ! "$1" =~ ^-.+$ ]]; then
-		memmnt_mnt "$1"
-	fi
+  # skip if memmnt -c
+  if [[ ! "$1" =~ ^-.+$ ]]; then
+    memmnt_mnt "$1"
+  fi
 fi
 
 
 while getopts "chlu:d:" opt
 do
-	case "$opt" in
-	c)
-		memmnt_clear;;
+  case "$opt" in
+    c)
+      memmnt_clear;;
 
-	l)
-		memmnt_list;;
+    l)
+      memmnt_list;;
 
-	d) # discard ifile
-		memmnt_umnt -d "$OPTARG";;
+    d) # discard ifile
+      memmnt_umnt -d "$OPTARG";;
 
-	u) # restore ifile to target
-		memmnt_umnt "$OPTARG";;
+    u) # restore ifile to target
+      memmnt_umnt "$OPTARG";;
 
-	h)
-		print_usage
-		exit;;
+    h)
+      print_usage
+      exit;;
 
-	?)
-		print_usage
-		exit;;
-	esac
+    ?)
+      print_usage
+      exit;;
+  esac
 done
 
 

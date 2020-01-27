@@ -3,24 +3,24 @@
 function clean_up {
   for f in ${template}[0-9]*.pdf; do
     rm $f; done
-  rm ${template}.pdf
-}
+    rm ${template}.pdf
+  }
 
 function vdot {
-	local i=0 f
+  local i=0 f
 
   [[ ! $# -gt 0 ]] && return 1
 
-	template=$(mktemp -tu vdot__def__XXXXXX);
+  template=$(mktemp -tu vdot__def__XXXXXX);
 
-	for f in "$@"; do
-		[[ ! -f "$f" ]] && continue
+  for f in "$@"; do
+    [[ ! -f "$f" ]] && continue
     dot -Tpdf "$f" -o "$template$((i++)).pdf" || return 1
   done
 
-	pdfunite ${template}[0-9]*.pdf ${template}.pdf || return 1
+  pdfunite ${template}[0-9]*.pdf ${template}.pdf || return 1
 
-	zathura ${template}.pdf
+  zathura ${template}.pdf
 }
 
 vdot $@

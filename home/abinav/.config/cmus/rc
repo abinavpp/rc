@@ -1,11 +1,11 @@
 set output_plugin=alsa
 
-#set dsp.alsa.device=plug:dmixer
-#set mixer.alsa.device=plug:dmixer
-#set dsp.alsa.device=default
-#set mixer.alsa.device=default
-#set dsp.alsa.device=plug:dmixer_zoomg5
-#set mixer.alsa.device=plug:dmixer_zoomg5
+# set dsp.alsa.device=plug:dmixer
+# set mixer.alsa.device=plug:dmixer
+# set dsp.alsa.device=default
+# set mixer.alsa.device=default
+# set dsp.alsa.device=plug:dmixer_zoomg5
+# set mixer.alsa.device=plug:dmixer_zoomg5
 
 
 set mixer.alsa.channel=Master
@@ -22,16 +22,16 @@ bind -f common mouse_scroll_down win-scroll-down
 bind -f common mouse_scroll_up win-scroll-up
 
 # Color chart
-#------------
-#33		sky_blue
-#71 	dull_green
-#89		deep_pink
-#108 	dark_dull_green
-#22 	leaf_green
-#124	red
-#240	light_grey
-#184	yellow
-#208	orange
+# ===========
+# 33   sky_blue
+# 71   dull_green
+# 89   deep_pink
+# 108  dark_dull_green
+# 22   leaf_green
+# 124  red
+# 240  light_grey
+# 184  yellow
+# 208  orange
 
 set color_error=124
 set color_info=208

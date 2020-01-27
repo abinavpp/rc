@@ -6,14 +6,14 @@ use warnings;
 use File::Find;
 
 sub is_max_volume_normal {
-	my ($file) = @_;
-	print "$file\n";
-	system('ffmpeg -af "volumedetect" -vn -sn -dn -f null /dev/null ' .
-		"-i \"$file\" |& grep max_volume");
+  my ($file) = @_;
+  print "$file\n";
+  system('ffmpeg -af "volumedetect" -vn -sn -dn -f null /dev/null ' .
+    "-i \"$file\" |& grep max_volume");
 }
 
 sub process_file {
-	is_max_volume_normal($File::Find::name);
+  is_max_volume_normal($File::Find::name);
 }
 
 find(\&process_file, "$ARGV[0]");

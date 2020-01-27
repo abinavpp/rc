@@ -3,21 +3,21 @@ use strict;
 use warnings;
 
 my @deps = (
-    "dot",
-    "pdfunite",
-    "zathura",
+  "dot",
+  "pdfunite",
+  "zathura",
 
-    "gdb-add-index",
-    "readelf",
+  "gdb-add-index",
+  "readelf",
 
-    "fzf",
-    "ranger",
+  "fzf",
+  "ranger",
 
-    "xclip"
+  "xclip"
 );
 
 for my $dep(@deps) {
-    if (system("which $dep &> /dev/null")) {
-        print "$dep not installed!\n";
-    }
+  if (system("which $dep &> /dev/null")) {
+    print "$dep not installed!\n";
+  }
 }

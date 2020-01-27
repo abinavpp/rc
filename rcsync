@@ -4,18 +4,18 @@ function print_usage {
 cat << EOL
 Usage: rcsync [OPTION] <profile_name> <run>
 Options:
--H <profile_name> :	sets profile_type=home for profile_name at
-					home/profile_name
--S <profile_name> :	sets profile_type=sys for profile_name at
-					syroot/profile_name (and sysroot/all)
--d                :	does a dry run (used along with -H or -S)
+-H <profile_name> : sets profile_type=home for profile_name at
+          home/profile_name
+-S <profile_name> : sets profile_type=sys for profile_name at
+          syroot/profile_name (and sysroot/all)
+-d                : does a dry run (used along with -H or -S)
 
 Note: -S inclues sysroot/all as well. (sudoes all relevant execs)
 
 <run>:
-diff	: diff in with out
-sin 	: Sync in with out
-sout	: Sync out with in
+diff  : diff in with out
+sin   : Sync in with out
+sout  : Sync out with in
 
 where, in means this repo and
        out means the system
@@ -35,35 +35,35 @@ EOL
 
 while getopts "hdS:H:" opt
 do
-	case "$opt" in
-		S)	profile_type="sys"
-			profile_name=$OPTARG;;
-		H)	profile_type="home"
-			profile_name=$OPTARG;;
-		d)	dry="-d";;
-		h)	print_usage
-			exit;;
-		?) 	print_usage
-			exit;;
-	esac
+  case "$opt" in
+    S)  profile_type="sys"
+      profile_name=$OPTARG;;
+    H)  profile_type="home"
+      profile_name=$OPTARG;;
+    d)  dry="-d";;
+    h)  print_usage
+      exit;;
+    ?)  print_usage
+      exit;;
+  esac
 done
 
 if [[ $profile_type == "home" ]]; then
-	in="home/${profile_name}"
-	out="$HOME" # '~' breaks when used below TODO: know why!
+  in="home/${profile_name}"
+  out="$HOME" # '~' breaks when used below TODO: know why!
 
 elif [[ $profile_type == "sys" ]]; then
-	sudo="sudo"
-	in="sysroot/${profile_name}"
-	out="/"
+  sudo="sudo"
+  in="sysroot/${profile_name}"
+  out="/"
 else
-	print_usage
-	exit
+  print_usage
+  exit
 fi
 
 if [[ ! -e $in || ! -e $out ]]; then
-	print_usage
-	exit
+  print_usage
+  exit
 fi
 
 for run_type; do true; done # gets last arg
@@ -71,31 +71,31 @@ for run_type; do true; done # gets last arg
 echo "Performing $run_type : "
 
 if [[ $run_type == "sin" ]]; then
-	from=$out
-	to=$in
-	if [[ $profile_type == "sys" ]]; then
-		$sudo ./treesync $dry $diff -s sysroot/all -f / -t sysroot/all
-	fi
+  from=$out
+  to=$in
+  if [[ $profile_type == "sys" ]]; then
+    $sudo ./treesync $dry $diff -s sysroot/all -f / -t sysroot/all
+  fi
 
 elif [[ $run_type == "sout" ]]; then
-	from=$in
-	to=$out
-	if [[ $profile_type == "sys" ]]; then
-		$sudo ./treesync $dry $diff -s sysroot/all -f sysroot/all -t /
-	fi
+  from=$in
+  to=$out
+  if [[ $profile_type == "sys" ]]; then
+    $sudo ./treesync $dry $diff -s sysroot/all -f sysroot/all -t /
+  fi
 
 elif [[ $run_type == "diff" ]]; then
-	from=$out
-	to=$in # order doesn't matter here
-	diff="-c"
+  from=$out
+  to=$in # order doesn't matter here
+  diff="-c"
 
-	if [[ $profile_type == "sys" ]]; then
-		$sudo ./treesync $dry $diff -s sysroot/all -f / -t sysroot/all
-	fi
+  if [[ $profile_type == "sys" ]]; then
+    $sudo ./treesync $dry $diff -s sysroot/all -f / -t sysroot/all
+  fi
 
 else
-	print_usage
-	exit
+  print_usage
+  exit
 fi
 
 echo "$sudo ./treesync $dry $diff -s $in -f $from -t $to"

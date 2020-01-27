@@ -1,0 +1,21 @@
+#! /bin/bash
+
+function view_opts_full() {
+  build_dir=$(mktemp -dt cmopts_XXXXXX)
+
+  src_dir=$PWD
+  if [[ $# -eq 1 ]]; then
+    src_dir="$1"
+  fi
+
+  cd "$build_dir"
+
+  cmake -LA $(realpath $src_dir)
+
+  cd - &> /dev/null
+
+  rm -rf "$build_dir"
+}
+
+view_opts_full "$@" |& egrep -v "^\-\-\ .+$" | \
+  egrep "^[[:print:]]+:[[:print:]]+=.*$"

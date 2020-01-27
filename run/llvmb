@@ -18,17 +18,17 @@ build_dir="$LLVM_DEV/build/$1"
 n_cores=$(nproc --all || getconf _NPROCESSORS_ONLN || echo 1)
 
 if [[ ! -d "$build_dir" || $# -eq 0 ]]; then
-    echo "project doesn't exist"
-    exit 1
+  echo "project doesn't exist"
+  exit 1
 fi
 
 shift;
 cd "$build_dir"
 
 if [[ -e build.ninja ]]; then
-    ninja $@
+  ninja $@
 elif [[ -e Makefile ]]; then
-    make $@
+  make $@
 fi
 
 ret=$?
