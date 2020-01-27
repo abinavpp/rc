@@ -222,14 +222,6 @@ nnoremap <Leader>x :set textwidth=
 " Stick to xterm! Moolenaar does I guess. Nevertheless, try to minimize dependency on
 " alt key-bindings
 
-" basic, plugins etc
-inoremap <C-z> <C-o>u
-inoremap <C-r> <C-o><C-r>
-" don't do anything
-nnoremap <C-o> <esc>
-" sometimes C-] is not enough (TODO why?)
-nnoremap <C-]> g<C-]>
-
 nmap <C-\>d :LspDefinition<CR>i
 nmap <C-\><S-d> :tab split<CR>:LspDefinition<CR>i
 nmap <C-\>s :LspDeclaration<CR>i
@@ -243,19 +235,22 @@ nmap <C-\>p :LspPeekDefinition<CR>i
 nmap <C-\>P :LspPeekDeclaration<CR>i
 nmap <C-\>f :LspWorkspaceSymbol<CR>
 
-vnoremap <C-]> g<C-]>
-nnoremap <A-]> <C-w><C-]><C-w>T
-" exec "nnoremap \e] <C-w><C-]><C-w>T"
-vnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
-exec "vnoremap \e] <Esc>:tab tjump <C-r><C-w><CR>"
-" double escape forces command mode from <C-o> mode
-nnoremap gg <esc><esc>mxgg
+" basic, plugins etc
 nnoremap / <esc><esc>/
+nnoremap <C-o> <esc>
+" don't do anything
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-n> :on<CR>
 nnoremap <C-x> :q<CR>
 imap <C-_> <esc>gcci
-
+nnoremap <C-]> g<C-]>
+" double escape forces command mode from <C-o> mode
+nnoremap gg <esc><esc>mxgg
+nnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
+inoremap <C-z> <C-o>u
+inoremap <C-r> <C-o><C-r>
+" sometimes C-] is not enough (TODO why?)
+nnoremap <C-]> g<C-]>
 nnoremap zz :call Save()<CR>
 nnoremap hh :noh<CR>
 nnoremap tt :TagbarToggle<CR>

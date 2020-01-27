@@ -1,8 +1,0 @@
-#! /bin/bash
-
-function main {
-    is_this_arch
-    return $? 
-}
-
-main

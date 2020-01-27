@@ -38,7 +38,7 @@ function get_ll_for_dot() {
     get_ll $project "$file" &> /dev/null
     llvmr $project opt -mem2reg -loop-simplify -instcombine -instnamer \
       -indvars -S -o "$dot_out" "$clang_out" || exit 1;
-          ll="$dot_out"
+    ll="$dot_out"
   fi
   echo $ll;
 }
@@ -57,7 +57,7 @@ function do_mir {
     # llvmu mir foo.c ab/ba <pass>
     vimdiff <(llvmr $project llc -print-before=$2 "$ll" 2>&1) \
       <(llvmr $project llc -print-after=$2 "$ll" 2>&1)
-          return
+    return
   fi
 
   local first_print_cmd="" second_print_cmd=""
@@ -90,7 +90,7 @@ function do_mir {
   # cmdline: llvmu mir foo.c b/a <pass1> b/a <pass2>
   vimdiff <(llvmr $project llc $first_print_cmd "$ll" 2>&1) \
     <(llvmr $project llc $second_print_cmd "$ll" 2>&1)
-  }
+}
 
 if [[ $1 == "dot" ]]; then
   project="main"; shift
@@ -122,29 +122,31 @@ elif [[ $1 == "mod" ]]; then
   shift
   /usr/bin/clang++ -g `llvmr $project llvm-config --cxxflags --ldflags --system-libs \
     --libs core mc x86` $@
-      if [[ $? == 0 ]]; then
-        llvmr $project a.out &> clang.ll
-      fi
 
-    elif [[ $1 == "ir" ]]; then
-      project="main"
-      shift
-      get_ll $project "$1" &> /dev/null || exit 1;
-      llvmr $project opt -mem2reg -loop-simplify -instcombine -instnamer \
-        -indvars -S -o "$clang_out" "$clang_out" || exit 1;
+  if [[ $? == 0 ]]; then
+    llvmr $project a.out &> clang.ll
+  fi
+
+elif [[ $1 == "ir" ]]; then
+  project="main"
+  shift
+  get_ll $project "$1" &> /dev/null || exit 1;
+  llvmr $project opt -mem2reg -loop-simplify -instcombine -instnamer \
+    -indvars -S -o "$clang_out" "$clang_out" || exit 1;
 
 
-    elif [[ $1 == "mir" ]]; then
-      project="main"
-      shift;
-      do_mir $project "$@"
+elif [[ $1 == "mir" ]]; then
+  project="main"
+  shift;
+  do_mir $project "$@"
 
-    elif [[ $1 == "dis" ]]; then
-      shift
-      tmpir=$(mktemp /tmp/$1.XXXXXX)
-      llvm-dis $1 -o $tmpir
-      vim -c "set filetype=llvm" $tmpir
-      trap 'rm -f $tmpir' EXIT
-    else
-      exit 1
+elif [[ $1 == "dis" ]]; then
+  shift
+  tmpir=$(mktemp /tmp/$1.XXXXXX)
+  llvm-dis $1 -o $tmpir
+  vim -c "set filetype=llvm" $tmpir
+  trap 'rm -f $tmpir' EXIT
+
+else
+  exit 1
 fi

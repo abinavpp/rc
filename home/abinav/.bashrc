@@ -123,27 +123,16 @@ export RESET_LIBRARY_PATH=$LIBRARY_PATH
 source /etc/bash.before &> /dev/null
 source ${HOME}/bash.before &> /dev/null
 
-sd=/usr/lib/systemd/system
-cd=/var/lib/systemd/coredump
-
-_psufield="flag,stat,euser,pid,ppid,pgid,sid,%mem,%cpu,\
-  wchan=WIDE-WCHAN-COLUMN,tty,cmd"
-  _pskfield="flag,stat,pid,ppid,pri,ni,class,bsdtime,cmd"
-  _tty=`tty`
-
-  nt_dir="/home/abinav/documents/notes/sys/"
-  voc_dir="/home/abinav/documents/notes/voc_db/"
-
-  t_col_path="/home/abinav/.t_col"
-
-# Terminal colorscheme
-t_bg_curr_col=
-t_fg_curr_col=
-
 function ind {
   $@ &
   disown $!
 }
+
+t_col_path="/home/abinav/.t_col"
+
+# Terminal colorscheme
+t_bg_curr_col=
+t_fg_curr_col=
 
 # updates the global script vars ${t_<fg/bg>_col_cur} as per the file name
 # referred by ${t_col_path}
@@ -183,7 +172,7 @@ function coall {
   for t in /dev/pts/*
   do
     # skip this pts and ptmx, (the prompt will set color for this pts)
-    if [[ $t == "${_tty}" || $t == "/dev/pts/ptmx" ]]; then
+    if [[ $t == "$(tty)" || $t == "/dev/pts/ptmx" ]]; then
       continue
     fi
 
@@ -199,23 +188,23 @@ function coall {
 function prompt_command {
   # \e] are xterm OSC \e[ are VT100 ctrl seq
 
-# to set title
-echo -ne "\033]0; ${USER}@${HOSTNAME}[$_tty]    ${PWD}\007"
+  # to set title
+  echo -ne "\033]0; ${USER}@${HOSTNAME}[$(tty)]    ${PWD}\007"
 
-# VT100 sequences MUST be within \[ and \] in the PS1 string, same
-# applies for xterm OSC or any non printable stuff in PS1 string.
+  # VT100 sequences MUST be within \[ and \] in the PS1 string, same
+  # applies for xterm OSC or any non printable stuff in PS1 string.
 
-# Using xterm OSC seems to create issues such as flickering, so I have
-# only used it once at the last line of PS1.
-PS1='\[\e[38;5;76m\]\u' # VT100 ctrl seq works here
-PS1+='@\[\e[0m\]' # VT100 ctrl seq that reset all attributes
-PS1+='\h '
-PS1+='\W '
-PS1+='\$ ' # note that we NEED single quotes here!
+  # Using xterm OSC seems to create issues such as flickering, so I have
+  # only used it once at the last line of PS1.
+  PS1='\[\e[38;5;76m\]\u' # VT100 ctrl seq works here
+  PS1+='@\[\e[0m\]' # VT100 ctrl seq that reset all attributes
+  PS1+='\h '
+  PS1+='\W '
+  PS1+='\$ ' # note that we NEED single quotes here!
 
-_t_col_upd
-# this line forces the terminal colorscheme
-PS1+="\[${t_fg_curr_col}\]\[${t_bg_curr_col}\]"
+  _t_col_upd
+  # this line forces the terminal colorscheme
+  PS1+="\[${t_fg_curr_col}\]\[${t_bg_curr_col}\]"
 }
 
 _t_col_upd
@@ -249,31 +238,31 @@ function vim {
 
   local args="" arg=""
 
-    # if we have a non file arg and we have a bg_vim then run a new vim.
-    for arg in "$@"; do
-      if [[ ! -e $arg  && $bg_pid ]]; then
-        $vim_bin "$@"
-        return
-      fi
-    done
-
-    if [[ $bg_pid ]]; then # ie. bg_vim exists
-      local bg_pwd=$(pwdx $bg_pid | awk '{print $2}')/
-      # All arg should be file(s) here.
-      for arg in "$@"; do
-        arg=$(realpath "$arg")
-
-        # if path is under bg_pwd, then access it relative (so that tab heading
-        # won't look ugly)
-        $cmd --remote-send "<esc>:tabnew ${arg##$bg_pwd} <CR>"
-      done
-      fg $(pid2jid $bg_pid)
+  # if we have a non file arg and we have a bg_vim then run a new vim.
+  for arg in "$@"; do
+    if [[ ! -e $arg  && $bg_pid ]]; then
+      $vim_bin "$@"
       return
-
-    else
-      $cmd "$@"
     fi
-  }
+  done
+
+  if [[ $bg_pid ]]; then # ie. bg_vim exists
+    local bg_pwd=$(pwdx $bg_pid | awk '{print $2}')/
+    # All arg should be file(s) here.
+    for arg in "$@"; do
+      arg=$(realpath "$arg")
+
+      # if path is under bg_pwd, then access it relative (so that tab heading
+      # won't look ugly)
+      $cmd --remote-send "<esc>:tabnew ${arg##$bg_pwd} <CR>"
+    done
+    fg $(pid2jid $bg_pid)
+    return
+
+  else
+    $cmd "$@"
+  fi
+}
 
 function sgrep {
   local exclude=""
@@ -382,7 +371,7 @@ function pacdry {
     printf "%-30s%-20s%-20s\n" "${pkg_names[$i]}" "${pkg_download_szs[$i]}" \
       "${pkg_installed_szs[$i]}"
     done
-  }
+}
 
 function pacdry_fresh {
   local path_tmpdb=$(mktemp -t -d pacdry_tmpdb.XXXXXX)
@@ -394,19 +383,20 @@ function pacdry_fresh {
 
   sudo pacman -Sy --dbpath "$path_tmpdb" --logfile /dev/null 1>&2 && \
     pacdry --dbpath "$path_tmpdb" "$@"
-      sudo rm -rf "$path_tmpdb" &> /dev/null
-    }
+  sudo rm -rf "$path_tmpdb" &> /dev/null
+}
 
-  function pacdry2 {
-    sudo pacman --logfile /dev/null "$@"
-  }
+function pacdry2 {
+  sudo pacman --logfile /dev/null "$@"
+}
 
 function pid2jid {
   jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
     /bin/grep -oE "[[:digit:]]+"
-  }
+}
 
 function nt {
+  local nt_dir="/home/abinav/documents/notes/sys/"
   if [[ -e "$nt_dir" ]]; then
     if [[ $# -ne 0  ]]; then
       vim "$nt_dir/$@"
@@ -419,6 +409,7 @@ function nt {
 }
 
 _comp_nt() {
+  local nt_dir="/home/abinav/documents/notes/sys/"
   local nt_comp=`ls $nt_dir | sed -r "/^\.+$/d"`
   local cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$nt_comp" -- $cur) )
@@ -463,21 +454,28 @@ function print_batstat {
   fi
 }
 
-function print_voc {
-  local vocpath n=1
-  if [[ $# -eq 1 ]]; then
-    n=$1
+function vocutil {
+  local voc_dir="/home/abinav/documents/notes/voc_db/"
+  local run=$1; shift
+
+  if [[ $run == "def" ]]; then
+    if [[ -e ${voc_dir}  && $# -eq 1 ]]; then
+      grep -inr --color $1 ${voc_dir}/ 2> /dev/null
+    fi
+    return
   fi
-  vocpath="$EXTRA_RUN/voc"
 
-  echo -e "\e[00;35m";
-  [[ -e ${vocpath} ]] && ${vocpath} -r $n ${voc_dir}
-  echo -e "\e[0m";
-}
 
-function vocdef {
-  if [[ -e ${voc_dir}  && $# -eq 1 ]]; then
-    grep -inr --color $1 ${voc_dir}/ 2> /dev/null
+  if [[ $run == "print" ]]; then
+    local voc_path n=1
+    if [[ $# -eq 1 ]]; then
+      n=$1
+    fi
+    voc_path="$EXTRA_RUN/voc"
+
+    echo -e "\e[00;35m";
+    [[ -e ${voc_path} ]] && ${voc_path} -r $n ${voc_dir}
+    echo -e "\e[0m";
   fi
 }
 
@@ -558,14 +556,27 @@ function harakiri {
   pkill -u ${USER}
 }
 
+function psx {
+  local type=$1; shift
+
+  if [[ $type == "us" ]]; then
+    local fields="flag,stat,euser,pid,ppid,pgid,sid,%mem,%cpu,"
+    fields+="wchan=WIDE-WCHAN-COLUMN,tty,cmd"
+  else
+    local fields="flag,stat,pid,ppid,pri,ni,class,bsdtime,cmd"
+  fi
+
+  ps -o ${fields} $@
+}
+
 if am_i_home; then
   function before_poweroff {
     mmrc -u xorg thumbnails chrome &> /dev/null
   }
 
-function poweroff { before_poweroff; /bin/poweroff; }
+  function poweroff { before_poweroff; /bin/poweroff; }
 
-function reboot { before_poweroff; /bin/reboot; }
+  function reboot { before_poweroff; /bin/reboot; }
 fi
 
 . /usr/share/bash-completion/completions/man
@@ -591,8 +602,7 @@ if ! pgrep Xorg 1> /dev/null && am_i_home; then
 else
 
   print_fortune
-  print_voc 1
-  # print_batstat;
+  vocutil print 1
 fi
 
 if am_i_home; then
@@ -636,7 +646,7 @@ alias vimb="vim ~/.bashrc"
 alias vimv="vim ~/.vimrc"
 alias vimm="vim -u /etc/vimrc"
 
-alias psu="ps -o ${_psufield} --ppid 2 -p 2 -N"
-alias psi="ps -o ${_psufield} --ppid=1"
-alias psk="ps -o ${_pskfield} --ppid 2 -p 2"
+alias psu="psx us --ppid 2 -p 2 -N"
+alias psi="psx us --ppid=1"
+alias psk="psx ks --ppid 2 -p 2"
 alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
