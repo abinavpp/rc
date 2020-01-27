@@ -571,7 +571,7 @@ function psx {
 
 if am_i_home; then
   function before_poweroff {
-    mmrc -u xorg thumbnails chrome &> /dev/null
+    mmrc -u thumbnails chrome &> /dev/null
   }
 
   function poweroff { before_poweroff; /bin/poweroff; }
@@ -591,19 +591,8 @@ complete -F _pacman -o default pacdry2
 bind '"\C-d":unix-filename-rubout'
 
 clhome .sw? .calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo
-
-if ! pgrep Xorg 1> /dev/null && am_i_home; then
-  mmrc xorg thumbnails &> /dev/null
-  sudo mkconf_i3s &> /dev/null
-
-  if [[ -n `type startx 2> /dev/null` ]]; then
-    startx # we might want to see stderr here!
-  fi
-else
-
-  print_fortune
-  vocutil print 1
-fi
+print_fortune
+vocutil print 1
 
 if am_i_home; then
   source /usr/share/fzf/key-bindings.bash &> /dev/null
