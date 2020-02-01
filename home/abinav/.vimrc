@@ -187,6 +187,8 @@ func! CopyAsBreakpoint()
   call system("xclip", s:pos)
 endfunc
 
+" Commands
+" ========
 command! Cl :call CleanMe()
 command! Cdb :lcd %:p:h
 command! Gd :Gdiff <bar> :wincmd l <bar> :wincmd H
@@ -244,16 +246,18 @@ nnoremap <C-n> :on<CR>
 nnoremap <C-x> :q<CR>
 imap <C-_> <esc>gcci
 nnoremap <C-]> g<C-]>
-" double escape forces command mode from <C-o> mode
-nnoremap gg <esc><esc>mxgg
-nnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
 inoremap <C-z> <C-o>u
 inoremap <C-r> <C-o><C-r>
 " sometimes C-] is not enough (TODO why?)
 nnoremap <C-]> g<C-]>
+nnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
+
+" double escape forces command mode from <C-o> mode
+nnoremap gg <esc><esc>mxgg
 nnoremap zz :call Save()<CR>
 nnoremap hh :noh<CR>
 nnoremap tt :TagbarToggle<CR>
+nnoremap dt :difft<CR>
 
 " cut/copy/select
 inoremap <C-p> <C-x>
@@ -399,17 +403,18 @@ call CsUpd()
 autocmd vimenter * call CsUpd() | call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
-autocmd insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
+au insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
   \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
   \. 'guifg=#000000 ctermbg=047 guibg=#00ff5f'
-autocmd insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
+au insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
   \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
   \. 'guifg=#000000 ctermbg=220 guibg=#ffdf00'
-autocmd TabEnter * NERDTreeClose
-autocmd TabLeave * if g:NERDTree.IsOpen() | wincmd p
-autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+au TabEnter * NERDTreeClose
+au TabLeave * if g:NERDTree.IsOpen() | wincmd p
+au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
-autocmd filetype c,cpp,fortran
+inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
+au filetype c,cpp,fortran
   \| inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
   \| inoremap <F7> <C-o>:wa <bar> call QCompRun('gdb')<CR>
   \| inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
@@ -417,35 +422,35 @@ autocmd filetype c,cpp,fortran
   \| inoremap <C-n> #include <><Left>
   \| set softtabstop=2 | set shiftwidth=2
 
-autocmd filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
+au filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
-autocmd filetype tex inoremap <F6> <C-o>:wa <bar> exec
+au filetype tex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
-autocmd filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
+au filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
 
-autocmd filetype sh inoremap <F6> <C-o>:wa <bar> exec
+au filetype sh inoremap <F6> <C-o>:wa <bar> exec
   \'!./'.shellescape('%')<CR>
-autocmd filetype perl inoremap <F6> <C-o>:wa <bar>
+au filetype perl inoremap <F6> <C-o>:wa <bar>
   \exec '!perl '.shellescape('%')<CR>
-autocmd filetype python inoremap <F6> <C-o>:wa <bar>
+au filetype python inoremap <F6> <C-o>:wa <bar>
   \exec '!python '.shellescape('%')<CR>
-autocmd filetype ruby inoremap <F6> <C-o>:wa <bar>
+au filetype ruby inoremap <F6> <C-o>:wa <bar>
   \exec '!ruby '.shellescape('%')<CR>
-autocmd filetype php inoremap <F6> <C-o>:wa <bar>
+au filetype php inoremap <F6> <C-o>:wa <bar>
   \exec '!php '.shellescape('%')<CR>
 
 if executable('clangd')
   augroup lsp_clangd
-    autocmd!
-    autocmd User lsp_setup call lsp#register_server({
+    au!
+    au User lsp_setup call lsp#register_server({
       \ 'name': 'clangd',
       \ 'cmd': {server_info->['clangd']},
       \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
       \ })
-    autocmd FileType c setlocal omnifunc=lsp#complete
-    autocmd FileType cpp setlocal omnifunc=lsp#complete
-    autocmd FileType objc setlocal omnifunc=lsp#complete
-    autocmd FileType objcpp setlocal omnifunc=lsp#complete
+    au FileType c setlocal omnifunc=lsp#complete
+    au FileType cpp setlocal omnifunc=lsp#complete
+    au FileType objc setlocal omnifunc=lsp#complete
+    au FileType objcpp setlocal omnifunc=lsp#complete
   augroup end
 endif
 

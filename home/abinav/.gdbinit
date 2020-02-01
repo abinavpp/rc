@@ -71,11 +71,15 @@ define d
   down
 end
 
-skip -gfi /usr/include/c++/*/bits/*.h
-set follow-fork-mode child
-set detach-on-fork off
 source /usr/share/gdb/python/gdb/command/pretty_printers.py
 source ~/llvm_dev/main/llvm/utils/gdb-scripts/prettyprinters.py
+
+skip -gfi /usr/include/c++/*/bits/*.h
+
+set follow-fork-mode child
+set detach-on-fork off
 set confirm off
+set index-cache on
+
 tui enable
 foc cmd

@@ -184,7 +184,6 @@ function coall {
   unset t
 }
 
-
 function prompt_command {
   # \e] are xterm OSC \e[ are VT100 ctrl seq
 
@@ -458,6 +457,10 @@ function vocutil {
   local voc_dir="/home/abinav/documents/notes/voc_db/"
   local run=$1; shift
 
+  if [[ ! -d $voc_dir ]]; then
+    return
+  fi
+
   if [[ $run == "def" ]]; then
     if [[ -e ${voc_dir}  && $# -eq 1 ]]; then
       grep -inr --color $1 ${voc_dir}/ 2> /dev/null
@@ -627,7 +630,7 @@ alias dmesg='dmesg -T'
 alias dmesge='dmesg -T --level alert,crit,emerg,err'
 
 alias qtmux='tmux kill-server'
-alias tmux='qtmux; tmux -u -2'
+alias tmux='tmux -u -2'
 
 alias cmus='TERM=xterm-256color cmus'
 

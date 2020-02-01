@@ -1,10 +1,10 @@
 #! /bin/bash
 
 function main {
-    if [[ -L /bin ]]; then
-        return 0;
-    fi
-    return 1;
+  if [[ -L /bin && $(hostname) =~ ppa\-.* ]]; then
+    return 0
+  fi
+  return 1
 }
 
 main
