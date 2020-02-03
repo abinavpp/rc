@@ -414,13 +414,11 @@ au TabLeave * if g:NERDTree.IsOpen() | wincmd p
 au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
-au filetype c,cpp,fortran
-  \| inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
-  \| inoremap <F7> <C-o>:wa <bar> call QCompRun('gdb')<CR>
-  \| inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
-  \| nnoremap <Leader>h :call CPair()<CR>
+inoremap <F7> <C-o>:wa <bar> call QCompRun('gdb')<CR>
+inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
+au filetype c,cpp nnoremap <Leader>h :call CPair()<CR>
   \| inoremap <C-n> #include <><Left>
-  \| set softtabstop=2 | set shiftwidth=2
+  \| set softtabstop=2
 
 au filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
