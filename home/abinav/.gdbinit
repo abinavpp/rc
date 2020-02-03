@@ -72,7 +72,12 @@ define d
 end
 
 source /usr/share/gdb/python/gdb/command/pretty_printers.py
-source ~/llvm_dev/main/llvm/utils/gdb-scripts/prettyprinters.py
+
+python
+import os
+gdb.execute('source ' + os.environ['LLVM_DEV'] +
+  '/main/llvm/utils/gdb-scripts/prettyprinters.py')
+end
 
 skip -gfi /usr/include/c++/*/bits/*.h
 
