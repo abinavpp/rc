@@ -1,8 +1,23 @@
 #! /usr/bin/perl
 
+use strict;
+use warnings;
+
 my @lines = <STDIN>;
+my @cmdlines;
+
 foreach my $line (@lines) {
   if ($line !~ /^(\ \").+$/) { next; }
-  print "$line";
-  print "\n";
+  $line =~ s/\n/;\n/;
+  push(@cmdlines, $line);
+}
+
+if (scalar @ARGV) {
+  foreach my $arg(@ARGV) {
+    if (defined $cmdlines[$arg]) {
+      print "$cmdlines[$arg]\n"
+    }
+  }
+} else {
+  print join("\n", @cmdlines), "\n";
 }
