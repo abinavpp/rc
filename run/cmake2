@@ -18,7 +18,7 @@ if (defined $ENV{'LIBRARY_PATH'}) {
   print $fh "# export LIBRARY_PATH=$ENV{'LIBRARY_PATH'}\n";
 }
 
-print $fh "\ncmake \\\n";
+print $fh "\ncmake2 \\\n";
 foreach my $i (0 .. $#ARGV) {
   print $fh "  \"$ARGV[$i]\"";
   if ($i == $#ARGV) {
