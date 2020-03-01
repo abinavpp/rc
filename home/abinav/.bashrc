@@ -489,7 +489,7 @@ function vimj {
   journalctl --no-pager $* |
     grep -Pv  "^\w{3}\ \d{2}\ \d{2}:\d{2}:\d{2}\ $hst\ sudo\[\d+\].*$" | \
     ${EDITOR} -c "set filetype=messages" - "+normal G"
-  }
+}
 
 function crynt {
   local cry_dir="/home/abinav/documents/eph/_x/"

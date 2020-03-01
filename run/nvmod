@@ -10,4 +10,3 @@ if [[ $run == "on" ]]; then
 else
   sudo mv /usr/bin/nvidia-modprobe "$stash" &> /dev/null
 fi
-  

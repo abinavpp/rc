@@ -139,7 +139,7 @@ if [[ $this == "cluda" ]]; then
   [[ ! -d $cuda_path ]] && cuda_path="/usr/lib/cuda"
 
   # Why --cuda-gpu-arch=sm_xx is an unused option ?
-  clang++  -L ${cuda_path}/lib64 -I ${cuda_path}/include -lcuda $@
+  clang++ -L ${cuda_path}/lib64 -I ${cuda_path}/include -lcuda $@
   exit $?
 
 elif [[ $this == "iromp" ]]; then
@@ -156,6 +156,13 @@ if [[ $run == "nv" ]]; then
   shift
   clang $omp_common -fopenmp-targets=nvptx64-nvidia-cuda -Xopenmp-target \
     -march=sm_$(nvsm) $@
+
+# FIXME! remove the -march hard-coding
+elif [[ $run == "gcn" ]]; then
+  shift
+  clang $omp_common -fopenmp-targets=amdgcn-amd-amdhsa \
+    -Xopenmp-target=amdgcn-amd-amdhsa -march=gfx900 $@
+
 else
   clang $omp_common -fopenmp-targets=x86_64-pc-linux-gnu $@
 fi
