@@ -604,14 +604,12 @@ else
   [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
 fi
 
-source /etc/bash.after &> /dev/null
-source ${HOME}/bash.after &> /dev/null
-
 alias grep='grep -P --color -n'
 alias ka='killall'
 alias srb='. ~/.bashrc'
 alias ls='ls -a --color=auto --group-directories-first'
-alias ll='ls -alih --color=auto --group-directories-first'
+alias ll='/bin/ls -alih --color=auto --group-directories-first'
+alias lt='/bin/ls -alihrt --color=auto'
 alias jobs='jobs -l'
 alias lsblk='lsblk -o +FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC,MODEL,UUID'
 alias cl='clear'
@@ -642,3 +640,6 @@ alias psu="psx us --ppid 2 -p 2 -N"
 alias psi="psx us --ppid=1"
 alias psk="psx ks --ppid 2 -p 2"
 alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
+
+source /etc/bash.after &> /dev/null
+source ${HOME}/bash.after &> /dev/null
