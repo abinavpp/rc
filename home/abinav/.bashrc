@@ -548,9 +548,9 @@ function cltex {
   local f
   for f in *.tex; do
     f=${f%.tex}
-    rm ${f}.pdf ${f}.log ${f}.aux ${f}.pgf
+    rm ${f}.pdf ${f}.log ${f}.aux ${f}.pgf &> /dev/null
   done
-  rm missfont.log
+  rm missfont.log &> /dev/null
 }
 
 function harakiri {
