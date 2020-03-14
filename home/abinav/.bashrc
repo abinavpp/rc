@@ -282,36 +282,6 @@ function sgrep {
   fi
 }
 
-if am_i_home; then
-  function make {
-    local n_cores=$(nproc --all || getconf _NPROCESSORS_ONLN || echo 1)
-    local cmd_make="/usr/bin/make -j $((n_cores + 1)) "
-
-    local likelihood_linux_kernel=0 f
-    local linux_kernel_top=("arch" "fs" "drivers" "kernel" "mm" \
-      "tools" "Makefile")
-
-    for f in *; do
-      if in_array "$f" "${linux_kernel_top[@]}"; then
-        ((likelihood_linux_kernel++))
-      fi
-    done
-
-    if [[ $likelihood_linux_kernel -gt 5 ]]; then
-      echo "Guessing $(pwd) as linux kernel source tree"
-      if [[ -d cooked ]]; then
-        echo "$cmd_make O=cooked $@"
-        $cmd_make O=cooked $@
-      else
-        echo "mkdir cooked first, then try again"
-        return 1
-      fi
-    else
-      $cmd_make $@
-    fi
-  }
-fi
-
 function cd {
   local srcroot=$(srcerer 2> /dev/null)
   if [[ -z "$srcroot" ]]; then
@@ -347,31 +317,6 @@ function cd {
   command cd "$@"
 }
 
-function pacdry {
-  local pkg_infos=$(pacman -p --print-format "%n" "$@" | xargs pacman -Si)
-
-  SAVEIFS=$IFS
-  IFS=$'\n' # for filling arrays below
-
-  local pkg_names=($(pacman -p --print-format "%n" "$@"))
-
-  # can't use +ve look-behinds here since we need "var-length look-behind"!
-  local pkg_download_szs=($(echo "$pkg_infos" | grep -P -o \
-    'Download Size.*?[0-9\.]+.*' | grep -P -o '[0-9\.]+.*$' | \
-    tr -d ' ')) # so you can pipe it to sort -h
-
-  local pkg_installed_szs=($(echo "$pkg_infos" | grep -P -o \
-    'Installed Size.*?[0-9\.]+.*$' | grep -P -o '[0-9\.]+.*$' | \
-    tr -d ' '))
-
-  IFS=$SAVEIFS
-
-  for (( i=0; i<${#pkg_installed_szs[@]}; i++ )); do
-    printf "%-30s%-20s%-20s\n" "${pkg_names[$i]}" "${pkg_download_szs[$i]}" \
-      "${pkg_installed_szs[$i]}"
-    done
-}
-
 function pacdry_fresh {
   local path_tmpdb=$(mktemp -t -d pacdry_tmpdb.XXXXXX)
 
@@ -385,7 +330,7 @@ function pacdry_fresh {
   sudo rm -rf "$path_tmpdb" &> /dev/null
 }
 
-function pacdry2 {
+function pacdry {
   sudo pacman --logfile /dev/null "$@"
 }
 
@@ -430,12 +375,12 @@ function rn {
       cd -- "$(cat "$tempfile")"
     fi
     rm -f -- "$tempfile"
-  }
+}
 
 function print_fortune {
   [[ "$PS1"  ]] && (type fortune &> /dev/null \
     && echo -e "\e[00;36m$(fortune)\e[00m")
-  }
+}
 
 function print_batstat {
   [[ -e ${HOME}/.bat ]] && \
@@ -548,7 +493,7 @@ function cltex {
   local f
   for f in *.tex; do
     f=${f%.tex}
-    rm ${f}.pdf ${f}.log ${f}.aux ${f}.pgf &> /dev/null
+    rm ${f}.pdf ${f}.log ${f}.aux ${f}.pgf ${f}.toc &> /dev/null
   done
   rm missfont.log &> /dev/null
 }
