@@ -38,7 +38,7 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_mode_map = {
   \ "mode": "active",
-  \ "passive_filetypes": ["c", "cpp", "tex"] }
+  \ "passive_filetypes": ["c", "cpp", "cuda", "tex"] }
 let g:syntastic_c_compiler_options = '-Wparentheses'
 
 " let g:lsp_log_verbose = 1
@@ -416,7 +416,7 @@ au! CompleteDone * if pumvisible() == 0 | pclose | endif
 inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
 inoremap <F7> <C-o>:wa <bar> call QCompRun('gdb')<CR>
 inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
-au filetype c,cpp nnoremap <Leader>h :call CPair()<CR>
+au filetype c,cpp,cuda nnoremap <Leader>h :call CPair()<CR>
   \| inoremap <C-n> #include <><Left>
   \| set softtabstop=2
 
