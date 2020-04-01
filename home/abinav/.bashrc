@@ -479,7 +479,7 @@ function cdp {
 function clhome {
   local f
   for f in "$@"; do
-    [[ -n `ls ~/$f 2> /dev/null` ]] && rm ~/$f
+    [[ -n `ls ~/$f 2> /dev/null` ]] && rm -rf ~/$f
   done
 }
 
