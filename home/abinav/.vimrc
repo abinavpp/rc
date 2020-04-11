@@ -90,6 +90,12 @@ function! TrailingSpaceMatch()
   endif
 endfunction
 
+function! Gnu()
+  set tabstop=8
+  set nosmartindent
+  match none
+endfunction
+
 function! QCompRun(cmdline)
   if filereadable("Makefile")
     exec '!make &&
@@ -190,6 +196,7 @@ endfunc
 " Commands
 " ========
 command! Cl :call CleanMe()
+command! Gnu :call Gnu()
 command! Cdb :lcd %:p:h
 command! Gd :Gdiff <bar> :wincmd l <bar> :wincmd H
 

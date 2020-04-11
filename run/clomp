@@ -14,7 +14,7 @@ host_obj="host.o"
 offload_wrapper_bitcode="offload_wrapper.bc"
 
 run=$1
-omp_common="-fopenmp -I $LLVM_DEV/build/main/projects/openmp/runtime/src"
+omp_common="-fopenmp -I $LLVM_DEV/build/llvm-main/projects/openmp/runtime/src"
 
 function dump_x86_dev_lk() {
   dev_out="$1"

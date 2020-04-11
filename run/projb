@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# usage: llvmb <project> [the-part-after-ninja/make]
+# usage: projb <project> [the-part-after-ninja/make]
 
 orig_path="$PATH"
 orig_ldlp="$LD_LIBRARY_PATH"
@@ -14,7 +14,7 @@ else
   shift;
 fi
 
-build_dir="$LLVM_DEV/build/$1"
+build_dir="$PROJ/build/$1"
 n_cores=$(nproc --all || getconf _NPROCESSORS_ONLN || echo 1)
 
 if [[ ! -d "$build_dir" || $# -eq 0 ]]; then

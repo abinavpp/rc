@@ -46,9 +46,9 @@ sub setup_plugins_for_pathogen {
 }
 
 sub setup_llvm {
-  system("cp -r $ENV{LLVM_DEV}/main/llvm/utils/vim/syntax "
+  system("cp -r $ENV{LLVM_DEV}/llvm-main/llvm/utils/vim/syntax "
     . "$ENV{HOME}/.vim &> /dev/null");
-  system("cp -r $ENV{LLVM_DEV}/main/mlir/utils/vim/syntax"
+  system("cp -r $ENV{LLVM_DEV}/llvm-main/mlir/utils/vim/syntax"
     . "$ENV{HOME}/.vim &> /dev/null");
 }
 

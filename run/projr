@@ -11,11 +11,11 @@ fi
 
 
 proj=$1
-bin_dir="$LLVM_DEV/install/$proj/bin"
-test ! -d "$bin_dir" && bin_dir="$LLVM_DEV/build/$proj/bin"
+bin_dir="$PROJ/install/$proj/bin"
+test ! -d "$bin_dir" && bin_dir="$PROJ/build/$proj/bin"
 
-lib_dir="$LLVM_DEV/install/$proj/lib"
-test ! -d "$lib_dir" && lib_dir="$LLVM_DEV/build/$proj/lib"
+lib_dir="$PROJ/install/$proj/lib"
+test ! -d "$lib_dir" && lib_dir="$PROJ/build/$proj/lib"
 
 if [[ ! -d "$bin_dir" ]]; then
   die_no_project

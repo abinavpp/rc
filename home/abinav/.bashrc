@@ -5,11 +5,11 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-function is_in_colonvar() {
+function is_in_delimvar() {
   declare -A fields
   local field
-  local colonvar=$1 check=$2
-  fields=`echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}' | tr '\n' ' '`
+  local delim=$1 delimvar=$2 check=$3
+  fields=`echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}' | tr '\n' ' '`
 
   for field in ${fields[@]}; do
     if [[ $check == $field ]]; then
@@ -21,34 +21,34 @@ function is_in_colonvar() {
   return 1
 }
 
-function md_colonvar() {
-  if [[ $# -lt 2 ]]; then
+function edelimvar() {
+  if [[ $# -lt 3 ]]; then
     return
   fi
 
-  local colonvar=$1 opt=$2; shift 2
+  local delim=$1 delimvar=$2 opt=$3; shift 3
   local arg i
 
-  # print the colonvar
+  # print the delimvar
   if [[ $opt == "-o" ]]; then
-    echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}'
+    echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}'
     return
   fi
 
-  # resets colonvar to it's $RESET_XXX var
+  # resets delimvar to it's $RESET_XXX var
   if [[ $opt == "-r" ]]; then
-    local reset_colonvar="RESET_$colonvar"
-    export $colonvar=${!reset_colonvar}
+    local reset_delimvar="RESET_$delimvar"
+    export $delimvar=${!reset_delimvar}
     return
   fi
 
-  # edit colonvar in vim with newlines as "temporary separators". :wq to save
+  # edit delimvar in vim with newlines as "temporary separators". :wq to save
   # changes, :q to discard changes
   if [[ $opt == "-e" ]]; then
-    local temp=$(mktemp -t md_colonvar.XXXXXX)
-    echo ${!colonvar} | awk -F: '{for (i = 1; i <= NF; i++) print $i}' > $temp
+    local temp=$(mktemp -t md_delimvar.XXXXXX)
+    echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}' > $temp
     vim $temp
-    export $colonvar=$(cat $temp | tr '\n' ':' | sed 's/:$//g')
+    export $delimvar=$(cat $temp | tr '\n' $delim | sed "s/$delim$//g")
     rm $temp
     return
   fi
@@ -58,10 +58,10 @@ function md_colonvar() {
     return
   fi
 
-  # if colonvar is blank or not set
-  if [[ ! $(echo ${!colonvar}) =~ [[:print:]]+ ]]; then
-    if ! is_in_colonvar $colonvar $1; then
-      export $colonvar="$1"
+  # if delimvar is blank or not set
+  if [[ ! $(echo ${!delimvar}) =~ [[:print:]]+ ]]; then
+    if ! is_in_delimvar $delim $delimvar $1; then
+      export $delimvar="$1"
     fi
     shift
     opt="-a" # XXX: Faking the option to force appending
@@ -71,8 +71,8 @@ function md_colonvar() {
   if [[ $opt == "-p" ]]; then
     for (( i=$#; i > 0; i-- )); do
       arg="${!i}"
-      if ! is_in_colonvar $colonvar $arg; then
-        export $colonvar="$arg:${!colonvar}"
+      if ! is_in_delimvar $delim $delimvar $arg; then
+        export $delimvar="${arg}${delim}${!delimvar}"
       fi
     done
   fi
@@ -80,26 +80,26 @@ function md_colonvar() {
   # appends $@'s as it is.
   if [[ $opt == "-a" ]]; then
     for arg in "$@"; do
-      if ! is_in_colonvar $colonvar $arg; then
-        export $colonvar="${!colonvar}:$arg"
+      if ! is_in_delimvar $delim $delimvar $arg; then
+        export $delimvar="${!delimvar}${delim}${arg}"
       fi
     done
   fi
 }
 
-function mdpath() {
+function epath() {
   local opt=$1; shift;
-  md_colonvar PATH $opt $(realpath "$@" 2> /dev/null);
+  edelimvar ':' PATH $opt $(realpath "$@" 2> /dev/null);
 }
 
-function mdld() {
+function eld() {
   local opt=$1; shift;
-  md_colonvar LD_LIBRARY_PATH $opt $(realpath "$@" 2> /dev/null);
+  edelimvar ':' LD_LIBRARY_PATH $opt $(realpath "$@" 2> /dev/null);
 }
 
-function mdlb() {
+function elb() {
   local opt=$1; shift;
-  md_colonvar LIBRARY_PATH $opt $(realpath "$@" 2> /dev/null);
+  edelimvar ':' LIBRARY_PATH $opt $(realpath "$@" 2> /dev/null);
 }
 
 export TERM=xterm-256color
@@ -111,11 +111,12 @@ export HISTSIZE=8192
 export HISTFILESIZE=8192
 export EXTRA_RUN="/home/abinav/rc/run"
 export HOME_BIN="/home/abinav/bin"
-export LLVM_DEV="/home/abinav/llvm_dev"
+export PROJ="/home/abinav/proj"
+export LLVM_DEV="$PROJ"
 export FZF_DEFAULT_OPTS="--color 16" # we're used to this :)
 
-mdpath -p "$EXTRA_RUN" "$HOME_BIN"
-md_colonvar PATH -p "."
+epath -p "$HOME_BIN" "$EXTRA_RUN"
+edelimvar ':' PATH -p "."
 export RESET_PATH=$PATH
 export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 export RESET_LIBRARY_PATH=$LIBRARY_PATH
@@ -431,7 +432,7 @@ function vimj {
   local hst=$(cat /etc/hostname)
 
   # Apr 24 20:42:21 localhost sudo[5336]:
-  journalctl --no-pager $* |
+  sudo journalctl --no-pager $* |
     grep -Pv  "^\w{3}\ \d{2}\ \d{2}:\d{2}:\d{2}\ $hst\ sudo\[\d+\].*$" | \
     ${EDITOR} -c "set filetype=messages" - "+normal G"
 }
