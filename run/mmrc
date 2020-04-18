@@ -225,7 +225,7 @@ sub memmnt_profile {
 }
 
 sub usage {
-  print 
+  print
   "mmrc [OPTIONS] <profile_1> <profile_2> ...
   -u              umnt
   -h, --help      view this help\n";

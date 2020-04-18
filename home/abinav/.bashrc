@@ -115,14 +115,14 @@ export PROJ="/home/abinav/proj"
 export LLVM_DEV="$PROJ"
 export FZF_DEFAULT_OPTS="--color 16" # we're used to this :)
 
+edelimvar ':' PATH -a "."
 epath -p "$HOME_BIN" "$EXTRA_RUN"
-edelimvar ':' PATH -p "."
 export RESET_PATH=$PATH
 export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 export RESET_LIBRARY_PATH=$LIBRARY_PATH
 
-source /etc/bash.before &> /dev/null
-source ${HOME}/bash.before &> /dev/null
+source /etc/.pre-bashrc &> /dev/null
+source ${HOME}/.pre-bashrc &> /dev/null
 
 function ind {
   $@ &
@@ -520,7 +520,7 @@ function psx {
 
 if am_i_home; then
   function before_poweroff {
-    mmrc -u thumbnails chrome &> /dev/null
+    mmrc -u chrome &> /dev/null
   }
 
   function poweroff { before_poweroff; /bin/poweroff; }
@@ -587,5 +587,5 @@ alias psi="psx us --ppid=1"
 alias psk="psx ks --ppid 2 -p 2"
 alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
 
-source /etc/bash.after &> /dev/null
-source ${HOME}/bash.after &> /dev/null
+source /etc/.post-bashrc &> /dev/null
+source ${HOME}/.post-bashrc &> /dev/null

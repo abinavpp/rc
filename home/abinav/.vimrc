@@ -92,10 +92,10 @@ endfunction
 
 function! Gnu()
   set tabstop=8
-  set nosmartindent
   match none
 endfunction
 
+" inoremap { d{<left><bs><right>}<left>
 function! QCompRun(cmdline)
   if filereadable("Makefile")
     exec '!make &&
@@ -258,6 +258,21 @@ inoremap <C-r> <C-o><C-r>
 " sometimes C-] is not enough (TODO why?)
 nnoremap <C-]> g<C-]>
 nnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
+
+" FIXME! This is a workaround! The problem:
+" for (...)<CR>
+"   |
+"
+" for (...)
+" {|
+"
+" ie. braces always shift left in a new line in c/c++/java etc. files. This is
+" some weird vim default non-sense for c-style source. I disabled all the
+" plugins and verified.
+" FIXME! This is for GNU indent style, but adding under our Gnu() function
+" doesn't work due to delimitMate.
+" Yes, the d is just a random character.
+inoremap { d{<left><bs><right>}<left>
 
 " double escape forces command mode from <C-o> mode
 nnoremap gg <esc><esc>mxgg
@@ -462,6 +477,8 @@ au BufRead,BufNewFile lit.*cfg set filetype=python
 au BufRead,BufNewFile *.td set filetype=tablegen
 au BufRead,BufNewFile *.cpp.inc set filetype=cpp
 au BufRead,BufNewFile *.h.inc set filetype=cpp
+au BufRead,BufNewFile *.def set filetype=cpp
+au BufNewFile,BufRead *.c.* set filetype=rtl
 
 au FileType llvm setlocal commentstring=;\ %s
 au FileType mlir setlocal commentstring=//\ %s

@@ -28,7 +28,7 @@ sub setup_pathogen {
 sub setup_vimplug {
   chdir "$ENV{HOME}/.vim";
   system("mkdir autoload/");
-  system("wget -O autoload/plug.vim ".
+  system("wget -O autoload/plug.vim " .
     "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim");
 }
 
@@ -46,20 +46,38 @@ sub setup_plugins_for_pathogen {
 }
 
 sub setup_llvm {
-  system("cp -r $ENV{LLVM_DEV}/llvm-main/llvm/utils/vim/syntax "
-    . "$ENV{HOME}/.vim &> /dev/null");
-  system("cp -r $ENV{LLVM_DEV}/llvm-main/mlir/utils/vim/syntax"
-    . "$ENV{HOME}/.vim &> /dev/null");
+  my $llvm_repo = "https://raw.githubusercontent.com/llvm/llvm-project/master";
+
+  system("wget " .
+    "$llvm_repo/llvm/utils/vim/syntax/llvm.vim "
+    . "-P $ENV{HOME}/.vim/syntax");
+
+  system("wget " .
+    "$llvm_repo/llvm/utils/vim/syntax/tablegen.vim "
+    . "-P $ENV{HOME}/.vim/syntax");
+
+  system("wget " .
+    "$llvm_repo/mlir/utils/vim/syntax/mlir.vim "
+    . "-P $ENV{HOME}/.vim/syntax");
+}
+
+sub setup_gcc {
+  system("wget " .
+    "https://raw.githubusercontent.com/utensils/colors.vim/master/rtl.vim " .
+    "-P $ENV{HOME}/.vim/syntax")
 }
 
 sub setup_vim {
   system("mkdir $ENV{HOME}/.vim &> /dev/null");
+  system("mkdir $ENV{HOME}/.vim/syntax &> /dev/null");
 }
 
 setup_vim;
 setup_llvm;
-# setup_pathogen;
+setup_gcc;
 setup_vimplug;
+
+# setup_pathogen;
 # setup_plugins_for_pathogen;
 
 

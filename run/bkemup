@@ -1,0 +1,30 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+use Sys::Hostname;
+
+sub die_usage {
+  print("usage: bkemup /path/to/backup.tar.gz\n");
+  exit 1;
+}
+
+my $host = hostname();
+
+my @backups = (
+  "/home/abinav/documents",
+  "/home/abinav/rc",
+  "/home/abinav/proj/my",
+  "/home/abinav/www",
+  "/home/abinav/.config/google-chrome",
+  "/home/abinav/.mozilla/"
+);
+
+my $dest = ".";
+
+if (scalar @ARGV > 1) { die_usage(); }
+
+if (scalar @ARGV == 1) { $dest = $ARGV[0]; }
+
+system("mmrc -u chrome");
+system("tar -czf $host.tar.gz -C $dest @backups");
