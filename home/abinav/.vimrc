@@ -65,8 +65,8 @@ let s:trailing_space_flag = 1
 let g:qcomprun_cflags = "-lpthread -lm"
 let g:color_theme = "dark"
 
-if filereadable($HOME . "/vimrc.before")
-  source $HOME/vimrc.before
+if filereadable($HOME . "/.pre-vimrc")
+  source $HOME/.pre-vimrc
 endif
 
 " functions
@@ -489,6 +489,6 @@ au FileType cpp setlocal commentstring=//\ %s
     " au FileType python setlocal ts=2 sts=2 sw=2
 " aug end
 
-if filereadable($HOME . "/vimrc.after")
-  source $HOME/vimrc.after
+if filereadable($HOME . "/.post-vimrc")
+  source $HOME/.post-vimrc
 endif
