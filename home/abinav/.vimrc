@@ -95,7 +95,6 @@ function! Gnu()
   match none
 endfunction
 
-" inoremap { d{<left><bs><right>}<left>
 function! QCompRun(cmdline)
   if filereadable("Makefile")
     exec '!make &&
@@ -189,14 +188,20 @@ function! Save()
 endfunction
 
 func! CopyAsBreakpoint()
-  let s:pos=expand('%:p') . ':' . line('.')
-  call system("xclip", s:pos)
+  let s:pos = expand('%:p') . ':' . line('.')
+  call system("xsel", s:pos)
+endfunc
+
+func! FoldIfDef()
+  set foldmarker=#if,#endif
+  set foldmethod=marker
 endfunc
 
 " Commands
 " ========
 command! Cl :call CleanMe()
 command! Gnu :call Gnu()
+command! Fif :call FoldIfDef()
 command! Cdb :lcd %:p:h
 command! Gd :Gdiff <bar> :wincmd l <bar> :wincmd H
 
