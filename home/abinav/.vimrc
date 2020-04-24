@@ -278,6 +278,8 @@ nnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
 " doesn't work due to delimitMate.
 " Yes, the d is just a random character.
 inoremap { d{<left><bs><right>}<left>
+" Similarly for # in c/c++
+inoremap # d#<left><bs><right>
 
 " double escape forces command mode from <C-o> mode
 nnoremap gg <esc><esc>mxgg
