@@ -115,16 +115,22 @@ export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
 export HISTSIZE=8192
 export HISTFILESIZE=8192
 export EXTRA_RUN="/home/abinav/rc/run"
-export HOME_BIN="/home/abinav/bin"
+export HOME_BIN="/home/abinav/sys/usr/bin"
+export HOME_LIB="/home/abinav/sys/usr/lib"
+export HOME_INCLUDE="/home/abinav/sys/usr/include"
 export PROJ="/home/abinav/proj"
 export LLVM_DEV="$PROJ"
 export FZF_DEFAULT_OPTS="--color 16" # we're used to this :)
 
 edelimvar ':' PATH -a "."
 epath -p "$HOME_BIN" "$EXTRA_RUN"
+eld -p "$HOME_LIB"
+elb -p "$HOME_LIB"
+ecpath -p "$HOME_INCLUDE"
 export RESET_PATH=$PATH
 export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 export RESET_LIBRARY_PATH=$LIBRARY_PATH
+export RESET_CPATH=$CPATH
 
 source /etc/.pre-bashrc &> /dev/null
 source ${HOME}/.pre-bashrc &> /dev/null
