@@ -140,6 +140,11 @@ function ind {
   disown $!
 }
 
+function pid2jid {
+  jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
+    /bin/grep -oE "[[:digit:]]+"
+}
+
 t_col_path="/home/abinav/.t_col"
 
 # Terminal colorscheme
@@ -231,12 +236,18 @@ function in_array {
 }
 
 function vim {
-  local srv_name=$(tty)
   # we must hardcode /usr/bin/vim else we recurse!
   local vim_bin="/usr/bin/vim"
 
   [[ -x $HOME_BIN/vim ]] && vim_bin="$HOME_BIN/vim"
 
+  # if $vim_bin has no client-server feature, then no fancy stuff
+  if ! $vim_bin --version | /bin/grep -P '\+clientserver' 1> /dev/null; then
+    $vim_bin -i NONE -p $@
+    return
+  fi
+
+  local srv_name=$(tty)
   local cmd="$vim_bin -i NONE -p --servername $srv_name"
   if [[ $1 == "-" ]]; then
     $vim_bin -i NONE -
@@ -346,11 +357,6 @@ function pacdry {
   sudo pacman --logfile /dev/null "$@"
 }
 
-function pid2jid {
-  jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
-    /bin/grep -oE "[[:digit:]]+"
-}
-
 function nt {
   local nt_dir="/home/abinav/documents/notes/sys/"
   if [[ -e "$nt_dir" ]]; then
@@ -411,16 +417,16 @@ function print_batstat {
 }
 
 function vocutil {
-  local voc_dir="/home/abinav/documents/notes/voc_db/"
+  local voc_db="/home/abinav/documents/notes/voc_db/"
   local run=$1; shift
 
-  if [[ ! -d $voc_dir ]]; then
+  if [[ ! -d $voc_db ]]; then
     return
   fi
 
   if [[ $run == "def" ]]; then
-    if [[ -e ${voc_dir}  && $# -eq 1 ]]; then
-      grep -inr --color $1 ${voc_dir}/ 2> /dev/null
+    if [[ -e ${voc_db}  && $# -eq 1 ]]; then
+      grep -inr --color $1 ${voc_db}/ 2> /dev/null
     fi
     return
   fi
@@ -434,7 +440,7 @@ function vocutil {
     voc_path="$EXTRA_RUN/voc"
 
     echo -e "\e[00;35m";
-    [[ -e ${voc_path} ]] && ${voc_path} -r $n ${voc_dir}
+    [[ -e ${voc_path} ]] && ${voc_path} -r $n ${voc_db}
     echo -e "\e[0m";
   fi
 }
@@ -483,7 +489,7 @@ function cdp {
   if [[ $pid == "" ]]; then
     return
   fi
-  echo "cmdline : "
+  echo -n "cmdline: "
   echo `tr -d '\0' < /proc/$pid/cmdline` # else null bytes throw warn
   cd /proc/$pid
 }

@@ -5,12 +5,12 @@ use warnings;
 
 sub qemucl_sane_local_virtfs {
   my ($paths) = (@_);
-  my $ret;
+  my $ret = "";
 
   my $i = 0;
   foreach my $path (@$paths) {
-    $ret .= " -virtfs local,path=$path,mount_tag=host$i,security_model" .
-    "=passthrough,id=host$i ";
+    $ret .= " -virtfs local,path=$path,mount_tag=host$i,security_model"
+      . "=passthrough,id=host$i ";
     $i++;
   }
   return $ret;
@@ -21,7 +21,10 @@ sub qemucl_sane_kvm {
 }
 
 sub qemucl_sane_net {
-  return " -net nic,vlan=0,model=virtio -net user,vlan=0";
+  # -net vlan got deprecated from 2.9.0
+  # return " -net nic,vlan=0,model=virtio -net user,vlan=0i ";
+
+  return " -net nic,model=virtio -net user ";
 }
 
 sub qemucl_drive {
@@ -30,7 +33,10 @@ sub qemucl_drive {
 }
 
 sub qemucl_sane_gpu {
-  return " -vga std ";
+  # return " -vga std ";
+
+  # virtio gives better resolution
+  return " -vga virtio ";
 }
 
 if (scalar @ARGV != 2) {
@@ -41,9 +47,7 @@ my $profile = $ARGV[0];
 my $path_vm = $ARGV[1];
 
 if ($profile eq "usual") {
-  my @virtfs_dirs = ("/home/abinav/Downloads/src/", 
-    "/home/abinav/documents/proj/kernel/",
-    "/home/abinav/documents/snp/kernel/");
+  my @virtfs_dirs = ();
 
   system("qemu-system-x86_64 -smp 4 -m 1024 " . qemucl_sane_kvm . qemucl_sane_net .
     qemucl_sane_gpu .

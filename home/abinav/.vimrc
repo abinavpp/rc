@@ -203,6 +203,7 @@ command! Cl :call CleanMe()
 command! Gnu :call Gnu()
 command! Fif :call FoldIfDef()
 command! Cdb :lcd %:p:h
+command! Cds :call Cds()
 command! Gd :Gdiff <bar> :wincmd l <bar> :wincmd H
 
 " mappings
