@@ -19,7 +19,6 @@ call plug#end()
 " variables
 " =========
 let mapleader = " "
-let $BASH_ENV = "~/.bash_vim"
 let sys = substitute(system('uname -r'), '\n\+$', '', '')
 
 let delimitMate_expand_cr = 1

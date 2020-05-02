@@ -128,11 +128,15 @@ sub memmnt_chrome {
   my $relapath_config_chrome_Default = "Default";
 
   my @wl_syncbk_config_chrome = ('Local State', 'First Run');
-  my @wl_syncbk_config_chrome_Default = ('Bookmarks', 'Bookmarks.bak',
-    'Extensions', 'Extension Rules', 'Extension State',
+
+  # Default/ currently doesn't maintain:
+  # - Local App Settings
+  # Also, Bookmarks.bak is not always there.
+  my @wl_syncbk_config_chrome_Default = ('Bookmarks',
+    'Extensions', 'Extension Rules', 'Extension State', 'Sync Extension Settings',
     'Preferences', 'Secure Preferences',
-    'Local App Settings', 'Local Extension Settings', 'Sync Extension Settings',
-    'Local Storage');
+    'Local Extension Settings', 'Local Storage'
+  );
 
   if (memmnt_verify_target_hard($path_config_chrome) == -1) {
     return;
