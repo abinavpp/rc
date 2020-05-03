@@ -9,6 +9,15 @@ sub die_usage {
   exit 1;
 }
 
+sub delete_array_elements {
+  my ($array_ref, @indices) = @_;
+
+  # Remove indexes from end.
+  for (sort { $b <=> $a } @indices) {
+    splice(@$array_ref, $_, 1);
+  }
+}
+
 my $host = hostname();
 
 my $chrome_config_path = "$ENV{HOME}/.config/google-chrome";
@@ -40,11 +49,14 @@ if (scalar @ARGV > 1) { die_usage(); }
 
 if (scalar @ARGV == 1) { $dest = $ARGV[0]; }
 
+my @ignore_indices;
 for my $i (0 .. $#backup_paths) {
   if (! -e $backup_paths[$i]) {
     print "ignoring: $backup_paths[$i]\n";
-    splice @backup_paths, $i, 1;
+    push(@ignore_indices, $i);
   }
 }
+
+delete_array_elements(\@backup_paths, @ignore_indices);
 
 system("tar", "-c", "-z", "-f", "$host.tar.gz", "-C", "$dest", @backup_paths);
