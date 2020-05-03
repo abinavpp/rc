@@ -6,10 +6,6 @@ path_mntpt=$path_memfs$mntpt
 
 function die() { echo "$*" 1>&2 ; exit 1; }
 
-if ! am_i_home; then
-  exit 1
-fi
-
 # check if linux-like
 if [[ ! -d "$path_memfs" ]]; then
   die "no memfs"

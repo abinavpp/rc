@@ -17,7 +17,11 @@ sub qemucl_sane_local_virtfs {
 }
 
 sub qemucl_sane_kvm {
-  return " -enable-kvm -cpu host -machine q35,accel=kvm ";
+  if (system('lsmod | grep kvm &> /dev/null') == 0) {
+    return " -enable-kvm -cpu host -machine q35,accel=kvm ";
+  } else {
+    return " -cpu max -machine q35 ";
+  }
 }
 
 sub qemucl_sane_net {
@@ -39,6 +43,29 @@ sub qemucl_sane_gpu {
   return " -vga virtio ";
 }
 
+sub qemucl_sane_mem {
+  my $mem = (`cat /proc/meminfo |  grep "MemTotal" | awk '{print \$2}'`);
+  $mem = $mem / (1024 * 1024);
+
+  if ($mem > 8) {
+    return " -m 2048 ";
+  } elsif ($mem > 4) {
+    return " -m 1024 ";
+  } else {
+    return " -m 128 ";
+  }
+}
+
+sub qemucl_sane_smp {
+  my $nproc = (`nproc`);
+
+  if ($nproc == 1) {
+    return " -smp 1 ";
+  } else {
+    return " -smp " . $nproc / 2;
+  }
+}
+
 if (scalar @ARGV != 2) {
   die "Error: Invalid cmdline";
 }
@@ -49,8 +76,12 @@ my $path_vm = $ARGV[1];
 if ($profile eq "usual") {
   my @virtfs_dirs = ();
 
-  system("qemu-system-x86_64 -smp 4 -m 1024 " . qemucl_sane_kvm . qemucl_sane_net .
-    qemucl_sane_gpu .
-    qemucl_sane_local_virtfs(\@virtfs_dirs) . qemucl_drive("raw", $path_vm));
+  my $cmd = "qemu-system-x86_64 " . qemucl_sane_smp . qemucl_sane_mem
+    . qemucl_sane_kvm . qemucl_sane_net . qemucl_sane_gpu
+    . qemucl_sane_local_virtfs(\@virtfs_dirs) . qemucl_drive("raw", $path_vm)
+  ;
+
+  print "Running: $cmd\n";
+  system($cmd);
   exit;
 }

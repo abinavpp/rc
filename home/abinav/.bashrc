@@ -114,16 +114,16 @@ export ABINAV="thats my name, that name again - is Mr.Plow"
 export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
 export HISTSIZE=8192
 export HISTFILESIZE=8192
-export EXTRA_RUN="/home/abinav/rc/run"
-export HOME_BIN="/home/abinav/sys/usr/bin"
-export HOME_LIB="/home/abinav/sys/usr/lib"
-export HOME_INCLUDE="/home/abinav/sys/usr/include"
-export PROJ="/home/abinav/proj"
+export EXTRA_BIN="$HOME/rc/run"
+export HOME_BIN="$HOME/sys/usr/bin"
+export HOME_LIB="$HOME/sys/usr/lib"
+export HOME_INCLUDE="$HOME/sys/usr/include"
+export PROJ="$HOME/proj"
 export LLVM_DEV="$PROJ"
 export FZF_DEFAULT_OPTS="--color 16" # we're used to this :)
 
 edelimvar ':' PATH -a "."
-epath -p "$HOME_BIN" "$EXTRA_RUN"
+epath -p "$HOME_BIN" "$EXTRA_BIN"
 eld -p "$HOME_LIB"
 elb -p "$HOME_LIB"
 ecpath -p "$HOME_INCLUDE"
@@ -145,7 +145,7 @@ function pid2jid {
     /bin/grep -oE "[[:digit:]]+"
 }
 
-t_col_path="/home/abinav/.t_col"
+t_col_path="$HOME/.t_col"
 
 # Terminal colorscheme
 t_bg_curr_col=
@@ -197,7 +197,7 @@ function coall {
     echo -ne "${t_bg_curr_col}" > $t
   done
 
-  ${EXTRA_RUN}/mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
+  mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
   unset t
 }
 
@@ -224,7 +224,7 @@ function prompt_command {
 }
 
 _t_col_upd
-${EXTRA_RUN}/mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
+mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
 
 PROMPT_COMMAND=prompt_command
 
@@ -358,7 +358,7 @@ function pacdry {
 }
 
 function nt {
-  local nt_dir="/home/abinav/documents/notes/sys/"
+  local nt_dir="$HOME/documents/notes/sys/"
   if [[ -e "$nt_dir" ]]; then
     if [[ $# -ne 0  ]]; then
       vim "$nt_dir/$@"
@@ -371,7 +371,7 @@ function nt {
 }
 
 _comp_nt() {
-  local nt_dir="/home/abinav/documents/notes/sys/"
+  local nt_dir="$HOME/documents/notes/sys/"
   local nt_comp=`ls $nt_dir | sed -r "/^\.+$/d"`
   local cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$nt_comp" -- $cur) )
@@ -417,7 +417,7 @@ function print_batstat {
 }
 
 function vocutil {
-  local voc_db="/home/abinav/documents/notes/voc_db/"
+  local voc_db="$HOME/documents/notes/voc_db/"
   local run=$1; shift
 
   if [[ ! -d $voc_db ]]; then
@@ -433,14 +433,13 @@ function vocutil {
 
 
   if [[ $run == "print" ]]; then
-    local voc_path n=1
+    local n=1
     if [[ $# -eq 1 ]]; then
       n=$1
     fi
-    voc_path="$EXTRA_RUN/voc"
 
     echo -e "\e[00;35m";
-    [[ -e ${voc_path} ]] && ${voc_path} -r $n ${voc_db}
+    type voc &> /dev/null && voc -r $n ${voc_db}
     echo -e "\e[0m";
   fi
 }
@@ -455,7 +454,7 @@ function vimj {
 }
 
 function crynt {
-  local cry_dir="/home/abinav/documents/eph/_x/"
+  local cry_dir="$HOME/documents/eph/_x/"
   local gpg="gpg --batch --yes"
   if [[ $# -ne 1 || ! -d $cry_dir ]]; then
     return

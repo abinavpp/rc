@@ -6,9 +6,9 @@
 use strict;
 use warnings;
 
-my $def_clang = "/home/abinav/bin/llvm_bin/clang";
-my $def_llc = "/home/abinav/bin/llvm_bin/llc";
-my $clang_log = "/home/abinav/clang2.log";
+my $def_clang = "$ENV{HOME}/bin/llvm_bin/clang";
+my $def_llc = "$ENV{HOME}/bin/llvm_bin/llc";
+my $clang_log = "$ENV{HOME}/clang2.log";
 
 # options for front-end, middle-end and back-end
 my ($fe_opts, $me_opts, $be_opts) = ("", "", "");

@@ -19,8 +19,8 @@ Brief:
 The tree-dir forms the hierarchy of files which would be
 the "tree" for synchronization from "from" to "to"
 Example :
-To "sync in" your home  : rcsync -s home/ -f /home/abinav -t to/repo/home
-To "sync out" your home : rcsync -s home/ -f to/repo/home -t /home/abinav
+To "sync in" your home  : rcsync -s home/abinav -f /home/abinav -t repo/home/abinav
+To "sync out" your home : rcsync -s home/abinav -f repo/home/abinav -t /home/abinav
 Note : "sync in" mean "update the git repo from system" You should be doing
 this more often.
 And "sync out" means "update the system from the git repo". If you are

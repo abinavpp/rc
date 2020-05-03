@@ -149,7 +149,7 @@ function! CsInv()
 endfunction
 
 function! CsUpd()
-  for l:line in readfile("/home/abinav/.t_col", '', 2)
+  for l:line in readfile($HOME . "/.t_col", '', 2)
     if line =~ 'wh'
       let g:color_theme = 'light'
     else

@@ -105,7 +105,7 @@ sub memmnt_files {
 
 
 sub memmnt_chrome {
-  my $path_config_chrome = "/home/abinav/.config/google-chrome";
+  my $path_config_chrome = "$ENV{HOME}/.config/google-chrome";
   my ($opt) = @_;
   if (!defined $opt) {
     $opt = "";
