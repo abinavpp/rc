@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 function spun {
   if [[ `expr match "$1"  "^[[:print:]]*\ .*"` -ne 0 ]]; then
@@ -12,17 +12,15 @@ if [[ "$#" -eq 0 ]]; then
   exit
 fi
 
-#for all dirs/files d
 for d in "$@"
 do
-  #if not dir
+  # if not dir
   if [[ ! -d "${d}" ]]; then
     spun "$d"
     continue
   fi
 
-  #if dir
-  #for all files in d
+  # if dir
   for f in ${d}/*
   do
     spun "$f"

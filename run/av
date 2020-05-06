@@ -4,16 +4,50 @@ use strict;
 use warnings;
 
 use File::Find;
+use Getopt::Long;
 
-sub is_max_volume_normal {
+my $opt_dump_info;
+
+sub dump_info {
   my ($file) = @_;
   print "$file\n";
   system('ffmpeg -af "volumedetect" -vn -sn -dn -f null /dev/null ' .
     "-i \"$file\" |& grep max_volume");
+  system("ffmpeg -i \"$file\" |& grep Duration");
+  system("ffmpeg -i \"$file\" |& grep Stream");
+  print "\n";
 }
 
 sub process_file {
-  is_max_volume_normal($File::Find::name);
+  if ($opt_dump_info) {
+    dump_info($File::Find::name);
+  }
+}
+
+sub usage {
+  print
+  "av <cmd> /path/
+  -dump-info      dumps minimal info
+  -h, --help      view this help\n";
+}
+
+sub usage_and_die {
+  usage();
+  exit 1;
+}
+
+GetOptions(
+  "dump-info" => \$opt_dump_info,
+  "help" => \my $opt_help)
+  or usage_and_die();
+
+if (scalar @ARGV != 1) {
+  usage_and_die();
+}
+
+if ($opt_help) {
+  usage();
+  exit;
 }
 
 find(\&process_file, "$ARGV[0]");

@@ -188,7 +188,10 @@ endfunction
 
 func! CopyAsBreakpoint()
   let s:pos = expand('%:p') . ':' . line('.')
-  call system("xsel", s:pos)
+  " TODO: why the following fails in Ubuntu 18.04 vim build.
+  " call system("xsel", s:pos)
+  exe 'silent !echo -n "' . s:pos . '" | xsel'
+  exe 'redraw!'
 endfunc
 
 func! FoldIfDef()
