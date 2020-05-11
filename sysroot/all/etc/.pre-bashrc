@@ -5,7 +5,7 @@
 
 # Use this if you're using the super-crappy screen of y50
 # if xset q &> /dev/null; then
-	# xgamma -quiet -rgamma 0.82 -ggamma 0.86 -bgamma 0.86
+  # xgamma -quiet -rgamma 0.82 -ggamma 0.86 -bgamma 0.86
 # fi
 
 declare -A t_bg_col t_fg_col
