@@ -9,13 +9,13 @@ system ("mkexec $invocation_file");
 open(my $fh, '>', $invocation_file) or
   die "Could not open file '$invocation_file' $!";
 
-print $fh "# export PATH=$ENV{'PATH'}\n";
-if (defined $ENV{'LD_LIBRARY_PATH'}) {
-  print $fh "# export LD_LIBRARY_PATH=$ENV{'LD_LIBRARY_PATH'}\n";
-}
+my @eoi = ('PATH', 'LD_LIBRARY_PATH', 'LIBRARY_PATH',
+  'CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH');
 
-if (defined $ENV{'LIBRARY_PATH'}) {
-  print $fh "# export LIBRARY_PATH=$ENV{'LIBRARY_PATH'}\n";
+for my $env (@eoi) {
+  if (defined $ENV{$env}) {
+    print $fh "# export $env=$ENV{$env}\n";
+  }
 }
 
 print $fh "\ncmake2 \\\n";
@@ -29,4 +29,4 @@ foreach my $i (0 .. $#ARGV) {
 }
 
 splice @ARGV, 0, 0, '-DCMAKE_EXPORT_COMPILE_COMMANDS=1';
-system("/usr/bin/cmake", @ARGV);
+system("cmake", @ARGV);

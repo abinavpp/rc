@@ -297,7 +297,7 @@ inoremap <C-w> <C-o>viw
 inoremap <C-c> <esc>^"*y$i
 inoremap <C-x> <esc>^"*d$"_ddi
 inoremap <C-e> <esc>"_ddi
-inoremap <C-d> <esc>"_diwi
+inoremap <C-d> <C-o>"_diw
 " `[ and `] => beg & end of selec, final `] moves cursor to end of paste
 inoremap <C-v> <esc>p`[v`]=`]i<right>
 
