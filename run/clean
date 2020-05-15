@@ -1,0 +1,34 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+my @lines = <STDIN>;
+my @cmdlines;
+
+my $path_regex = qr/
+  (?<=[\s\nL])
+  (?<path>\/.+?)
+  (?=[\s\n])
+  /x;
+
+sub clean {
+  my ($path) = @_;
+
+  my $alias = `realpath $path`;
+  chomp($alias);
+  return $alias;
+}
+
+foreach my $line (@lines) {
+  # my @paths = $line =~ /$path_regex/g;
+  $line =~ s/$path_regex/clean($+{path})/ge;
+
+  print $line
+  # foreach my $path (@paths) {
+  #   # if (-e $path) {
+  #     $line =~ s/$path/$alias/g;
+  #     print "$path vs $alias\n";
+  #   # }
+  # }
+}

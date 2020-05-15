@@ -35,6 +35,12 @@ define sta
   del
 end
 
+define stai
+  la asm
+  starti
+  del
+end
+
 define ps
   print (char *) $arg0
 end

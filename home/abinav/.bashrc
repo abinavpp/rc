@@ -588,6 +588,7 @@ alias readelf='readelf --wide'
 alias prettyll='prettyll -simvar'
 alias dmesg='dmesg -T'
 alias dmesge='dmesg -T --level alert,crit,emerg,err'
+alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
 
 alias qtmux='tmux kill-server'
 alias tmux='tmux -u -2'
