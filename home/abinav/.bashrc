@@ -170,7 +170,7 @@ function _t_col_upd {
   fi
 }
 
-#colors this pts
+# colors this pts
 function cotty {
   [[ $# -ne 1 ]] && return
   echo $1 > ${t_col_path}
@@ -178,7 +178,7 @@ function cotty {
   # tput clear
 }
 
-#colors all pts
+# colors all pts
 function coall {
   [[ $# -ne 1 ]] && return
 
@@ -589,6 +589,8 @@ alias prettyll='prettyll -simvar'
 alias dmesg='dmesg -T'
 alias dmesge='dmesg -T --level alert,crit,emerg,err'
 alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
+alias obd='objdump -M intel -D -C'
+alias obd2='obd --visualize-jumps'
 
 alias qtmux='tmux kill-server'
 alias tmux='tmux -u -2'
