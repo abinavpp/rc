@@ -77,12 +77,16 @@ define d
   down
 end
 
+define c
+  call
+end
+
 source /usr/share/gdb/python/gdb/command/pretty_printers.py
 
 python
 import os
 gdb.execute('source ' + os.environ['LLVM_DEV'] +
-  '/main/llvm/utils/gdb-scripts/prettyprinters.py')
+  '/llvm-main/llvm/utils/gdb-scripts/prettyprinters.py')
 end
 
 skip -gfi /usr/include/c++/*/bits/*.h
@@ -91,6 +95,7 @@ set follow-fork-mode child
 set detach-on-fork off
 set confirm off
 set index-cache on
+set disassembly intel
 
 tui enable
 foc cmd
