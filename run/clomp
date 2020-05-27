@@ -107,7 +107,7 @@ function compile_bundled_x86_ir() {
 
   if [[ $(get_clang_version) -gt "9" ]]; then
     clang-offload-wrapper -target $(get_host_target $ir) \
-       -o $offload_wrapper_bitcode \
+      -o $offload_wrapper_bitcode \
       $linked_dev_obj
 
     clang $offload_wrapper_bitcode -c -o $linked_dev_obj
@@ -120,10 +120,12 @@ function compile_bundled_x86_ir() {
   # final linking
   dump_x86_dev_lk $linked_dev_obj
 
-  # Frustratingly, the below command doesn't put -T as the last ld option, so it won't work
+  # Frustratingly, the below command doesn't put -T as the last ld option, so
+  # it won't work
   clang $host_obj $omp_common -lomp -lomptarget -Wl,-T,$dev_lk -v
 
-  local final_ld_cmd=$($final_ld $host_obj $omp_common -lomp -lomptarget -v |& "llvm###")
+  local final_ld_cmd=$($final_ld $host_obj $omp_common -lomp -lomptarget -v \
+    |& trih)
   # see our snp/misc to see this and more other bash headaches.
   bash -c "$final_ld_cmd -T $dev_lk"
 }

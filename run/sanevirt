@@ -74,7 +74,7 @@ my $profile = $ARGV[0];
 my $path_vm = $ARGV[1];
 
 if ($profile eq "usual") {
-  my @virtfs_dirs = ();
+  my @virtfs_dirs = ("/var/cache/pacman/pkg");
 
   my $cmd = "qemu-system-x86_64 " . qemucl_sane_smp . qemucl_sane_mem
     . qemucl_sane_kvm . qemucl_sane_net . qemucl_sane_gpu
