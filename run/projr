@@ -1,14 +1,15 @@
 #! /bin/bash
 
-function die_no_project() {
-  echo "project doesn't exist"
+# usage: projr <project> <cmd>
+
+function die() {
+  echo $@
   exit 1
 }
 
 if [[ $# -eq 0 ]]; then
-  die_no_project
+  die "incorrect cmdline"
 fi
-
 
 proj=$1
 bin_dir="$PROJ/install/$proj/bin"
@@ -17,12 +18,24 @@ test ! -d "$bin_dir" && bin_dir="$PROJ/build/$proj/bin"
 lib_dir="$PROJ/install/$proj/lib"
 test ! -d "$lib_dir" && lib_dir="$PROJ/build/$proj/lib"
 
+inc_dir="$PROJ/install/$proj/include"
+test ! -d "$inc_dir" && inc_dir="$PROJ/build/$proj/include"
+
 if [[ ! -d "$bin_dir" ]]; then
-  die_no_project
+  bin_dir=""
 fi
 
-export PATH="$bin_dir:$PATH"
-export LD_LIBRARY_PATH="$lib_dir:$LD_LIBRARY_PATH"
+if [[ ! -d "$lib_dir" ]]; then
+  lib_dir=""
+fi
+
+if [[ ! -d "$inc_dir" ]]; then
+  inc_dir=""
+fi
+
+[[ -n $bin_dir ]] && export PATH="$bin_dir:$PATH"
+[[ -n $lib_dir ]] && export LD_LIBRARY_PATH="$lib_dir:$LD_LIBRARY_PATH"
+[[ -n $inc_dir ]] && export CPATH="$inc_dir:$CPATH"
 
 shift
 $@
