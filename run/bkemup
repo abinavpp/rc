@@ -3,9 +3,17 @@
 use strict;
 use warnings;
 use Sys::Hostname;
+use Getopt::Long;
+
+sub usage {
+  print
+  "usage: bkemup [OPTIONS] /path/to/backup.tar.gz
+  -s              dumps uncompressed size
+  -h, --help      view this help\n";
+}
 
 sub die_usage {
-  print("usage: bkemup /path/to/backup.tar.gz\n");
+  usage();
   exit 1;
 }
 
@@ -45,9 +53,21 @@ my @backup_paths = (
 
 my $dest = ".";
 
+GetOptions(
+  "s" => \my $opt_dump_size,
+  "help" => \my $opt_help)
+  or die "Error parsing cmdline";
+
+if ($opt_help) {
+  usage();
+  exit 0;
+}
+
 if (scalar @ARGV > 1) { die_usage(); }
 
 if (scalar @ARGV == 1) { $dest = $ARGV[0]; }
+
+if (! -d $dest) { die_usage(); }
 
 my @ignore_indices;
 for my $i (0 .. $#backup_paths) {
@@ -58,5 +78,11 @@ for my $i (0 .. $#backup_paths) {
 }
 
 delete_array_elements(\@backup_paths, @ignore_indices);
+
+if ($opt_dump_size) {
+  my $du = "du -ch " . join ' ', map { qq/'$_'/ } @backup_paths;
+  system("$du | sort -h | tail -n30");
+  exit 0;
+}
 
 system("tar", "-c", "-z", "-f", "$host.tar.gz", "-C", "$dest", @backup_paths);

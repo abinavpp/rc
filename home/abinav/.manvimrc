@@ -36,9 +36,8 @@ endif
 
 let mapleader=' '
 map q ZQ
-map <A-z> <C-z>
-map <Leader>h :noh<CR>
-map <Leader>w :set wrap!<CR>
+nnoremap hh :noh<CR>
+nnoremap <Leader>w :set wrap!<CR>
 set mouse=a
 set incsearch
 set hlsearch
