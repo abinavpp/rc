@@ -7,7 +7,7 @@ my @lines = <STDIN>;
 my @cmdlines;
 
 foreach my $line (@lines) {
-  if ($line !~ /^(\ \").+$/) { next; }
+  if ($line !~ /^(\ ).+$/) { next; }
   $line =~ s/\n/;\n/;
   push(@cmdlines, $line);
 }
