@@ -7,27 +7,47 @@ use File::Find;
 use Getopt::Long;
 
 my $opt_dump_info;
+my $opt_dump_maxvol;
 
-sub dump_info {
+sub dumper {
   my ($file) = @_;
   print "$file\n";
-  system('ffmpeg -af "volumedetect" -vn -sn -dn -f null /dev/null ' .
-    "-i \"$file\" |& grep max_volume");
-  system("ffmpeg -i \"$file\" |& grep Duration");
-  system("ffmpeg -i \"$file\" |& grep Stream");
+
+  my @matches;
+
+  if ($opt_dump_maxvol) {
+    push(@matches, "max_volume");
+  }
+
+  if ($opt_dump_info) {
+    push(@matches, "Duration");
+    push(@matches, "Stream");
+  }
+
+  my $match = join '|', @matches;
+
+  print $match;
+  if ($opt_dump_maxvol) {
+    # the following ffmpeg is time consuming, hence we specialize it.
+    system('ffmpeg -af "volumedetect" -vn -sn -dn -f null /dev/null ' .
+      "-i '$file' |& grep -P '($match)'");
+
+  } else {
+    system("ffmpeg -i '$file' |& grep -P '($match)'");
+  }
+
   print "\n";
 }
 
 sub process_file {
-  if ($opt_dump_info) {
-    dump_info($File::Find::name);
-  }
+  dumper($File::Find::name);
 }
 
 sub usage {
   print
   "av <cmd> /path/
   -dump-info      dumps minimal info
+  -dump-maxvol    dumps maxvol
   -h, --help      view this help\n";
 }
 
@@ -38,6 +58,7 @@ sub usage_and_die {
 
 GetOptions(
   "dump-info" => \$opt_dump_info,
+  "dump-maxvol" => \$opt_dump_maxvol,
   "help" => \my $opt_help)
   or usage_and_die();
 
@@ -50,4 +71,4 @@ if ($opt_help) {
   exit;
 }
 
-find(\&process_file, "$ARGV[0]");
+find({wanted => \&process_file, no_chdir => 1}, "$ARGV[0]");
