@@ -14,6 +14,6 @@ if (scalar @ARGV >= 1) {
   }
 }
 
-system('find ' . $dir . ' -type d -name \'.git\' -exec sh -c '
+system('find ' . $dir . ' -type d -name \'.git\' -exec bash -c '
   . '\'(cd {}; cd ..; echo -ne "\033[0;32m" ; pwd; '
   . 'echo -ne "\033[0m"; git ' . $cmd . '; echo; echo)\' \;');
