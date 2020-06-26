@@ -36,8 +36,14 @@ my @backup_paths = (
   "$ENV{HOME}/eph",
   "$ENV{HOME}/proj/my",
   "$ENV{HOME}/rc",
+  "$ENV{HOME}/sys",
   "$ENV{HOME}/test/my",
   "$ENV{HOME}/www",
+
+  "$ENV{HOME}/.pre-bashrc",
+  "$ENV{HOME}/.pre-vimrc",
+  "$ENV{HOME}/.post-bashrc",
+  "$ENV{HOME}/.post-vimrc",
 
   "$chrome_config_path/Local State",
   "$chrome_config_path/First Run",
