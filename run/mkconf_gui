@@ -1,0 +1,86 @@
+#! /bin/bash
+
+function ed_ini {
+  local run=$1 file=$2 section=$3 key=$4 val=$5
+
+  # recall sed '<range: start-address, end-address> <sed-op>' where <sed-op> will
+  # only be applied in the specified <range>
+
+  if [[ $run == "update" ]]; then
+    # TODO: append if absent
+    # use '+' as sed-op delim since $val can UNIX path. FIXME: $val having '+'
+    # char will fail.
+    sed -i "/^\[$section\]$/,/^\[/ s+^$key\s*=\s*.*+$key=$val+" $file
+
+  elif [[ $run == "delete" ]]; then
+    sed -i "/^\[$section\]$/,/^\[/ s/^$key\s*=\s*.*//" $file
+  fi
+}
+
+function ed_line {
+  local run=$1 file=$2 match=$3 sub=$4
+
+  if [[ $run == "update" ]]; then
+    grep -q "$match" $file && sed "s/$match.*/$sub/" -i $file ||
+        sed "$ a\\$sub" -i $file
+  fi
+}
+
+function set_gtk {
+  theme=$1
+
+  /bin/mkdir -p ~/.config/gtk-3.0
+  ed_ini update ~/.config/gtk-3.0/settings.ini "Settings" \
+    "gtk-theme-name" "$theme"
+
+  ed_line update ~/.gtkrc-2.0 "^gtk-theme-name" "gtk-theme-name=$theme"
+}
+
+function set_qt {
+  local style=$1 color_scheme_path=$2
+  qt5ct_conf=~/.config/qt5ct/qt5ct.conf
+
+  ed_ini update $qt5ct_conf "Appearance" "style" "$style"
+  ed_ini update $qt5ct_conf "Appearance" \
+    "color_scheme_path" "$color_scheme_path"
+}
+
+function set_zathura {
+  /bin/mkdir -p ~/.config/zathura
+
+  local zathurarc=~/.config/zathura/zathurarc
+
+  ed_line update $zathurarc \
+    "set recolor-lightcolor" "set recolor-lightcolor \"$1\""
+
+  local if_dark=false
+  [[ $1 != "#ffffff" ]] && if_dark=true
+
+  ed_line update $zathurarc \
+    "^set recolor-keephue" "set recolor-keephue $if_dark"
+  ed_line update $zathurarc "^set recolor\ " "set recolor $if_dark"
+}
+
+function set_xroot {
+  if xset q &> /dev/null; then
+    type xsetroot &> /dev/null && \
+      xsetroot -solid "$col"
+  fi
+}
+
+if [[ $# -ne 1 ]]; then
+  exit
+fi
+
+col=$1
+
+if [[ $col != "#ffffff" ]]; then
+  set_gtk Breeze-Dark
+  set_qt Breeze ~/.config/qt5ct/colors/Breeze-Dark.conf
+else
+  set_gtk Breeze
+  set_qt Breeze
+fi
+
+set_xroot $col
+set_zathura $col

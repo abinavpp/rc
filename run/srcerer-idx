@@ -1,0 +1,65 @@
+#! /bin/bash
+
+mode=$1
+
+rm tags cscope.files cscope.out &> /dev/null
+
+# llvm
+if [[ $mode == "llvm" ]]; then
+  find $PWD -type f -a \
+    \( \
+    -path "$PWD/lib*" -o \
+    -path "$PWD/include*" -o \
+    -path "$PWD/tools/clang/lib*" -o \
+    -path "$PWD/tools/clang/include*" \
+    \) \
+    -a \
+    \( \
+    -name '*.[ch]' -o \
+    -name '*.cpp' -o \
+    -name '*.cc' \
+    \) \
+    > cscope.files
+
+# linux
+elif [[ $mode == "linux" ]]; then
+  find $PWD \
+    -path "$PWD/arch*" -prune -o \
+    -path "$PWD/tmp*" -prune -o \
+    -path "$PWD/Documentation*" -prune -o \
+    -path "$PWD/scripts*" -prune -o \
+    -path "$PWD/tools*" -prune -o \
+    -path "$PWD/include/config*" -prune -o \
+    -path "$PWD/usr/include*" -prune -o \
+    -type f \
+    -not -name '*.mod.c' \
+    -name "*.[chsS]" -print > cscope.files
+
+  find $PWD/arch/x86 \
+    -path "$PWD/arch/x86/configs" -prune -o \
+    -path "$PWD/arch/x86/kvm" -prune -o \
+    -path "$PWD/arch/x86/lguest" -prune -o \
+    -path "$PWD/arch/x86/xen" -prune -o \
+    -type f \
+    -not -name '*.mod.c' \
+    -name "*.[chsS]" -print >> cscopes.files
+
+# C/C++ projects
+elif [[ $mode == "c" ]]; then
+  find $PWD -type f \
+    -name '*.[ch]' -o \
+    -name '*.cpp' -o \
+    -name '*.cc' -o \
+    -name '*.cu' \
+    > cscope.files
+
+else
+  find $PWD -type f > cscope.files
+fi
+
+cscope -b -i cscope.files
+
+ctags --c++-kinds=+p --fields=+iaS --extras=+q --language-force=C++ -L \
+  cscope.files || \
+ctags --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -L \
+  cscope.files

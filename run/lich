@@ -1,0 +1,32 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+sub file_slurp {
+  my ($file) = (@_);
+
+  open(my $fh, '<' ,$file) || die "Error $!";
+  my $file_content =  do { local $/; <$fh> };
+  close $fh;
+  return $file_content;
+}
+
+sub license_header {
+  my ($file) = (@_);
+  my $header = "/*
+  * SPDX-License-Identifier: GPL-2.0+
+  * Copyright (C) 2018 Abinav Puthan Purayil
+  * */
+
+  ";
+
+  my $file_content = file_slurp $file;
+  open(my $fh, '>' ,$file) || die "Error $!";
+  print $fh $header;
+  print $fh $file_content;
+}
+
+foreach my $file(@ARGV) {
+  license_header $file;
+}

@@ -1,0 +1,16 @@
+#! /bin/bash
+
+proj=$1
+cat <<ENDCAT
+-I$LLVM_DEV/$proj/llvm/include
+-I$LLVM_DEV/$proj/clang/include
+-I$LLVM_DEV/build/$proj/include
+-std=c++14
+-fno-exceptions
+-fno-rtti
+-D_GNU_SOURCE
+-D_DEBUG
+-D__STDC_CONSTANT_MACROS
+-D__STDC_FORMAT_MACROS
+-D__STDC_LIMIT_MACROS
+ENDCAT

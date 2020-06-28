@@ -1,0 +1,134 @@
+#! /bin/bash
+
+
+path_hwmon="/sys/class/hwmon"
+
+# write_temperature "getn" prints num of hwmons
+# else prints the cpu_temperature section
+function write_temperature {
+  local i=0
+  local hwmonx temperature
+  for hwmonx in $path_hwmon/*; do
+    if [[ -d $hwmonx  ]]; then
+      # consider only the first temp*_input
+      temperature=`/bin/ls $hwmonx/temp*_input | head -n1`
+      if [[ ! -e $temperature ]]; then
+        break
+      fi
+
+      if [[ $1 == "getn" ]]; then
+        ((++i)); continue;
+      fi
+
+      echo "cpu_temperature $i {"
+      echo -e "\tformat = \"%degrees °C\"" # echo -e "\u00B0"
+      echo -e "\tmax_threshold = \"75\""
+      echo -e "\tpath = \"$temperature\""
+      echo "}"
+      ((++i))
+    fi
+  done
+  if [[ $1 == "getn" ]]; then
+    echo $((i))
+  fi
+  unset f
+}
+
+function write_order_temperature {
+  for ((i = 0; i < $1; i++)) do
+    echo "order += \"cpu_temperature $i\""
+  done
+}
+
+
+# function main {
+if [[ $UID -ne 0 ]]; then
+  echo "Must run as root"
+  exit
+fi
+exec > /etc/i3status.conf
+cat <<ENDCAT
+# i3status configuration file.
+# see "man i3status" for documentation.
+
+# It is important that this file is edited as UTF-8.
+# The following line should contain a sharp s:
+# ß
+# If the above line is not correctly displayed, fix your editor first!
+
+general {
+  colors = true
+  interval = 1
+}
+
+order += "tztime local"
+order += "ipv6"
+order += "wireless _first_"
+order += "ethernet _first_"
+order += "disk /"
+# order += "battery all"
+order += "battery 1"
+# order += "load"
+order += "volume master"
+order += "cpu_usage"
+order += "memory"
+ENDCAT
+write_order_temperature `write_temperature getn`
+
+cat <<ENDCAT
+
+tztime local {
+  format = "%Y-%m-%d [%a] %H:%M:%S"
+}
+
+wireless _first_ {
+  format_up = "W: (%quality at %essid) %ip"
+  format_down = "W: down"
+}
+
+ethernet _first_ {
+  # if you use %speed, i3status requires root privileges
+  format_up = "E: %ip (%speed)"
+  format_down = "E: down"
+}
+
+disk "/" {
+  format = "🖴 %avail"
+}
+
+battery all {
+  format = "%status %percentage %remaining"
+}
+
+battery 1 {
+  path = "/sys/class/power_supply/BAT1/uevent"
+  format = "🔋%status %percentage %remaining"
+}
+
+load {
+  format = "%1min"
+}
+
+memory {
+  format = "MEM: %available"
+  threshold_degraded = "1G"
+  format_degraded = "MEMORY < %available"
+}
+
+volume master {
+  format = "♪: %volume"
+  format_muted = "♪: muted (%volume)"
+  device = "default"
+  mixer = "Master"
+  mixer_idx = 0
+}
+
+cpu_usage {
+  format = "CPU: %usage"
+}
+
+ENDCAT
+
+write_temperature
+
+# }

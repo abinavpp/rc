@@ -1,0 +1,97 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+use Sys::Hostname;
+use Getopt::Long;
+
+sub usage {
+  print
+  "usage: bkemup [OPTIONS] /path/to/backup.tar.gz
+  -s              dumps uncompressed size
+  -h, --help      view this help\n";
+}
+
+sub die_usage {
+  usage();
+  exit 1;
+}
+
+sub delete_array_elements {
+  my ($array_ref, @indices) = @_;
+
+  # Remove indexes from end.
+  for (sort { $b <=> $a } @indices) {
+    splice(@$array_ref, $_, 1);
+  }
+}
+
+my $host = hostname();
+
+my $chrome_config_path = "$ENV{HOME}/.config/google-chrome";
+
+my @backup_paths = (
+  "$ENV{HOME}/bkup",
+  "$ENV{HOME}/documents",
+  "$ENV{HOME}/eph",
+  "$ENV{HOME}/proj/my",
+  "$ENV{HOME}/rc",
+  "$ENV{HOME}/sys",
+  "$ENV{HOME}/test/my",
+  "$ENV{HOME}/www",
+
+  "$ENV{HOME}/.pre-bashrc",
+  "$ENV{HOME}/.pre-vimrc",
+  "$ENV{HOME}/.post-bashrc",
+  "$ENV{HOME}/.post-vimrc",
+
+  "$chrome_config_path/Local State",
+  "$chrome_config_path/First Run",
+  "$chrome_config_path/Default/Bookmarks",
+  "$chrome_config_path/Default/Extensions",
+  "$chrome_config_path/Default/Extension Rules",
+  "$chrome_config_path/Default/Extension State",
+  "$chrome_config_path/Default/Sync Extension Settings",
+  "$chrome_config_path/Default/Preferences",
+  "$chrome_config_path/Default/Secure Preferences",
+  "$chrome_config_path/Default/Local Extension Settings",
+  "$chrome_config_path/Default/Local Storage",
+
+  "$ENV{HOME}/.mozilla/",
+);
+
+my $dest = ".";
+
+GetOptions(
+  "s" => \my $opt_dump_size,
+  "help" => \my $opt_help)
+  or die "Error parsing cmdline";
+
+if ($opt_help) {
+  usage();
+  exit 0;
+}
+
+if (scalar @ARGV > 1) { die_usage(); }
+
+if (scalar @ARGV == 1) { $dest = $ARGV[0]; }
+
+if (! -d $dest) { die_usage(); }
+
+my @ignore_indices;
+for my $i (0 .. $#backup_paths) {
+  if (! -e $backup_paths[$i]) {
+    print "ignoring: $backup_paths[$i]\n";
+    push(@ignore_indices, $i);
+  }
+}
+
+delete_array_elements(\@backup_paths, @ignore_indices);
+
+if ($opt_dump_size) {
+  my $du = "du -ch " . join ' ', map { qq/'$_'/ } @backup_paths;
+  system("$du | sort -h | tail -n30");
+  exit 0;
+}
+
+system("tar", "-c", "-z", "-f", "$host.tar.gz", "-C", "$dest", @backup_paths);

@@ -1,0 +1,18 @@
+#! /bin/bash
+
+input_file=$1
+
+function darken_webfile() {
+  cat << EOT >> $1
+<style>
+  body {
+    background-color: #000000;
+    color: #ffffff;
+  }
+</style>
+EOT
+}
+
+if [[ $input_file =~ .*\.html?$ ]]; then
+  darken_webfile $input_file
+fi

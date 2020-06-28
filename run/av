@@ -1,0 +1,74 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+use File::Find;
+use Getopt::Long;
+
+my $opt_dump_info;
+my $opt_dump_maxvol;
+
+sub dumper {
+  my ($file) = @_;
+  print "$file\n";
+
+  my @matches;
+
+  if ($opt_dump_maxvol) {
+    push(@matches, "max_volume");
+  }
+
+  if ($opt_dump_info) {
+    push(@matches, "Duration");
+    push(@matches, "Stream");
+  }
+
+  my $match = join '|', @matches;
+
+  print $match;
+  if ($opt_dump_maxvol) {
+    # the following ffmpeg is time consuming, hence we specialize it.
+    system('ffmpeg -af "volumedetect" -vn -sn -dn -f null /dev/null ' .
+      "-i '$file' |& grep -P '($match)'");
+
+  } else {
+    system("ffmpeg -i '$file' |& grep -P '($match)'");
+  }
+
+  print "\n";
+}
+
+sub process_file {
+  dumper($File::Find::name);
+}
+
+sub usage {
+  print
+  "av <cmd> /path/
+  -dump-info      dumps minimal info
+  -dump-maxvol    dumps maxvol
+  -h, --help      view this help\n";
+}
+
+sub usage_and_die {
+  usage();
+  exit 1;
+}
+
+GetOptions(
+  "dump-info" => \$opt_dump_info,
+  "dump-maxvol" => \$opt_dump_maxvol,
+  "help" => \my $opt_help)
+  or usage_and_die();
+
+if (scalar @ARGV != 1) {
+  usage_and_die();
+}
+
+if ($opt_help) {
+  usage();
+  exit;
+}
+
+find({wanted => \&process_file, no_chdir => 1}, "$ARGV[0]");

@@ -1,0 +1,34 @@
+#! /bin/bash
+
+function has_gdbidx() {
+  local elfout=$(readelf -S "$1" | egrep "\.gdb_index")
+
+  if [[ -n $elfout ]]; then
+    return 0;
+  fi
+  return 1;
+}
+
+function is_elf_with_gdb() {
+  # file -b stops prepending file name (consider a text file called ELF)
+  if [[ -f "$1" && $(file -b "$1") =~ ^.*ELF.*$ ]]; then
+    if [[ $(readelf --debug-dump=info "$1" | head -n1 | wc -l) != "0" ]]; then
+      return 0;
+    fi
+  fi
+
+  return 1;
+}
+
+
+files=$(find $@)
+
+for f in $files; do
+  if is_elf_with_gdb $f && ! has_gdbidx $f; then
+    orig_ts=$(stat -c %Y "$f")
+    echo "Setting .gdb_index for $f"
+    gdb-add-index "$f" &
+    touch -m -d @${orig_ts} "$f"
+  fi
+done
+wait

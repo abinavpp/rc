@@ -1,0 +1,19 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+my $dir = ".";
+my $cmd = "status";
+
+if (scalar @ARGV >= 1) {
+  $dir = $ARGV[0];
+
+  if (scalar @ARGV >= 2) {
+    $cmd = join (' ', @ARGV[1 .. $#ARGV]);
+  }
+}
+
+system('find ' . $dir . ' -type d -name \'.git\' -exec bash -c '
+  . '\'(cd {}; cd ..; echo -ne "\033[0;32m" ; pwd; '
+  . 'echo -ne "\033[0m"; git ' . $cmd . '; echo; echo)\' \;');

@@ -1,0 +1,24 @@
+#! /bin/bash
+function set_llvm_gdbidx() {
+  bin_dir="$LLVM_DEV/build"
+  lib_dir="$LLVM_DEV/build"
+
+  if [[ $1 == "-i" ]]; then
+    shift
+    bin_dir="$LLVM_DEV/install"
+    lib_dir="$LLVM_DEV/install"
+  fi
+
+  bin_dir="${bin_dir}/$1/bin"
+  lib_dir="${bin_dir}/$1/lib"
+
+  if [[ ! -d "$bin_dir" || ! -d "$lib_dir" ]]; then
+    echo "unknown project"
+    return
+  fi
+
+  gdbi bin_dir ! -name "*.o"
+  gdbi lib_dir -maxdepth 1 ! -name "*.o"
+}
+
+set_llvm_gdbidx $@

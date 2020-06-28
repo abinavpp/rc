@@ -1,0 +1,27 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+my @lines = <STDIN>;
+my @cmdlines;
+
+my $path_regex = qr/
+  (?<=[\s\n"L])
+  (?<path>\/.+?)
+  (?=[\s\n"])
+  /x;
+
+sub clean {
+  my ($path) = @_;
+
+  my $alias = `realpath $path`;
+  chomp($alias);
+  return $alias;
+}
+
+foreach my $line (@lines) {
+  $line =~ s/$path_regex/clean($+{path})/ge;
+
+  print $line
+}
