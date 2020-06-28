@@ -1,0 +1,96 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+my @plugins = (
+  "https://github.com/Raimondi/delimitMate.git",
+  "https://github.com/scrooloose/nerdtree.git",
+  "https://github.com/vim-syntastic/syntastic.git",
+  "https://github.com/tpope/vim-commentary.git",
+  "https://github.com/tpope/vim-fugitive.git",
+  "https://github.com/tpope/vim-surround.git",
+  "https://github.com/tpope/vim-eunuch.git",
+  "https://github.com/yegappan/greplace.git",
+  "https://github.com/google/vim-searchindex.git",
+  "https://github.com/gioele/vim-autoswap.git",
+  "https://github.com/majutsushi/tagbar.git",
+  "https://github.com/prabirshrestha/vim-lsp.git",
+  "https://github.com/prabirshrestha/async.vim" # vim-lsp dependency
+);
+
+sub setup_pathogen {
+  chdir "$ENV{HOME}/.vim";
+  system("mkdir autoload/");
+  system("wget -O autoload/pathogen.vim https://tpo.pe/pathogen.vim");
+}
+
+sub setup_vimplug {
+  chdir "$ENV{HOME}/.vim";
+  system("mkdir autoload/");
+  system("wget -O autoload/plug.vim " .
+    "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim");
+}
+
+sub setup_plugins_for_pathogen {
+  chdir "$ENV{HOME}/.vim";
+  system("rm -rf bundle/ &> /dev/null");
+  system("mkdir bundle/");
+  chdir "bundle/";
+
+  foreach my $plugin(@plugins) {
+    system("git clone $plugin");
+  }
+
+  chdir "..";
+}
+
+sub setup_llvm {
+  my $llvm_repo = "https://raw.githubusercontent.com/llvm/llvm-project/master";
+
+  system("wget " .
+    "$llvm_repo/llvm/utils/vim/syntax/llvm.vim "
+    . "-P $ENV{HOME}/.vim/syntax");
+
+  system("wget " .
+    "$llvm_repo/llvm/utils/vim/syntax/tablegen.vim "
+    . "-P $ENV{HOME}/.vim/syntax");
+
+  system("wget " .
+    "$llvm_repo/mlir/utils/vim/syntax/mlir.vim "
+    . "-P $ENV{HOME}/.vim/syntax");
+}
+
+sub setup_gcc {
+  system("wget " .
+    "https://raw.githubusercontent.com/utensils/colors.vim/master/rtl.vim " .
+    "-P $ENV{HOME}/.vim/syntax")
+}
+
+sub setup_vim {
+  system("mkdir $ENV{HOME}/.vim &> /dev/null");
+  system("mkdir $ENV{HOME}/.vim/syntax &> /dev/null");
+}
+
+setup_vim;
+setup_llvm;
+setup_gcc;
+setup_vimplug;
+
+# setup_pathogen;
+# setup_plugins_for_pathogen;
+
+
+# post plugme
+# -----------
+# taglist [deprecated in favor of tagbar]
+# -------
+# comment out
+# .*map <buffer> for <Tab>
+# to enable <Ctrl-i> up navigation
+
+# vim-surround
+# ------------
+# comment out :
+# imap      <C-G>s <Plug>Isurround
+# imap      <C-G>S <Plug>ISurround
