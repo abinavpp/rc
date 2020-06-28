@@ -35,9 +35,12 @@ if has('gui_running')
 endif
 
 let mapleader=' '
+
 map q ZQ
+map <silent> c :call cursor(22,0)<CR>
 nnoremap hh :noh<CR>
 nnoremap <Leader>w :set wrap!<CR>
+
 set mouse=a
 set incsearch
 set hlsearch
@@ -45,7 +48,8 @@ set ignorecase
 set smartcase
 set noswapfile
 set scrolloff=44
+
 hi IncSearch ctermfg=black ctermbg=208
 hi Search ctermfg=black ctermbg=208
+
 so ~/.vim/plugged/vim-searchindex/plugin/searchindex.vim
-map <silent> c :call cursor(22,0)<CR>
