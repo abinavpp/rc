@@ -1,36 +1,39 @@
 #! /bin/bash
 
 function print_usage {
-cat << EOL
-Usage: rcsync [OPTION] <profile_name> <run>
-Options:
--H <profile_name> : sets profile_type=home for profile_name at
-          home/profile_name
--S <profile_name> : sets profile_type=sys for profile_name at
-          syroot/profile_name (and sysroot/all)
--d                : does a dry run (used along with -H or -S)
+cat << ENDCAT
+rcsync is a high level wrapper script that uses treesync to sync rc files
+between the system and this repo.
 
-Note: -S inclues sysroot/all as well. (sudoes all relevant execs)
+Usage: rcsync <profile-selector> <run>
+
+WARNING! Please do a dry run and/or diff before running rcsync, especially when
+running sout since it writes over all your system rc files without any prompt.
+You have been warned.
+
+<profile-selector>:
+-H <profile-name> : work on home/<profile-name>
+-S <profile-name> : work syroot/<profile-name> and sysroot/all
+
+Other options:
+-d                : does a dry run (when used with -H or -S)
+-h                : prints this help
 
 <run>:
 diff  : diff in with out
 sin   : Sync in with out
 sout  : Sync out with in
 
-where, in means this repo and
-       out means the system
-
-rcsync or wrapper for rcsync is a high level script for rcsync.
-See rcsync -h and the examples below. The option and arg sets the profile
-name/type while the final argument sets the run type.
+where, in means this repo and out means the system.  See rcsync -h and the
+examples below.
 
 Examples:
 rcsync -d -H abinav sin # dry run of sin (sync home/abinav with ~)
 rcsync -S y50 diff # does a diff with / and (sysroot/all + sysroot/y50)
-rcsync -H abinav sin # does sync in, do diff and dry before!
-rcsync -H abinav sout # does sync out, diff and dry first!
+rcsync -H abinav sin # does sync in.
+rcsync -H abinav sout # does sync out.
 
-EOL
+ENDCAT
 }
 
 while getopts "hdS:H:" opt
