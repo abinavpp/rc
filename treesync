@@ -4,29 +4,28 @@ prefix_run= # not used as of now
 run_mode= # run type (dry or nothing)
 
 function print_usage {
-cat <<EOL
+cat <<ENDCAT
 You should be using a wrapper unless you know what you're doing.
-Usage : rcsync [EXTRA_OPTIONS] -s <tree> -f <from> -t <to>
+Usage : treesync [EXTRA_OPTIONS] -s <tree> -f <from> -t <to>
 
 Options :
--s : tree-directory
+-s : tree directory
 -f : syncing from directory
 -t : syncing to directory
 -d : dry run (Always do this first!)
 -c : view diff (this too!)
 
 Brief:
-The tree-dir forms the hierarchy of files which would be
-the "tree" for synchronization from "from" to "to"
-Example :
-To "sync in" your home  : rcsync -s home/abinav -f /home/abinav -t repo/home/abinav
-To "sync out" your home : rcsync -s home/abinav -f repo/home/abinav -t /home/abinav
-Note : "sync in" mean "update the git repo from system" You should be doing
-this more often.
-And "sync out" means "update the system from the git repo". If you are
-doing this, then either you have a new system or unsynced system or you
-messed up your system big time.
-EOL
+The tree-dir forms the hierarchy of files which would be the <tree> for
+synchronization from <from> to <to>
+
+Examples:
+To "sync in" your home:
+  treesync -s home/abinav -f /home/abinav -t repo/home/abinav
+To "sync out" your home:
+  treesync -s home/abinav -f repo/home/abinav -t /home/abinav
+
+ENDCAT
 }
 
 function die {
