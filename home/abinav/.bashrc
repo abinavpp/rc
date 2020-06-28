@@ -318,25 +318,6 @@ function cd {
     return
   fi
 
-  if [[ "$PWD" =~ ^$LLVM_DEV/.*$ ]]; then
-    if [[ $arg == "inc" ]]; then
-      command cd "$srcroot/include/llvm"
-    elif [[ $arg == "x86" ]]; then
-      command cd "$srcroot/lib/Target/X86"
-    elif [[ $arg == "cg" ]]; then
-      command cd "$srcroot/lib/CodeGen"
-    elif [[ $arg == "tra" ]]; then
-      command cd "$srcroot/lib/Transforms"
-    elif [[ $arg == "tgt" ]]; then
-      command cd "$srcroot/lib/Target"
-    elif [[ $arg == "sca" ]]; then
-      command cd "$srcroot/lib/Transforms/Scalar"
-    else
-      command cd "$@"
-    fi
-    return
-  fi
-
   command cd "$@"
 }
 
