@@ -64,6 +64,8 @@ let s:trailing_space_flag = 1
 let g:qcomprun_cflags = "-lpthread -lm"
 let g:color_theme = "dark"
 
+" pre-vimrc
+" =========
 if filereadable($HOME . "/.pre-vimrc")
   source $HOME/.pre-vimrc
 endif
@@ -199,7 +201,7 @@ func! FoldIfDef()
   set foldmethod=marker
 endfunc
 
-" Commands
+" commands
 " ========
 command! Cl :call CleanMe()
 command! Gnu :call Gnu()
@@ -210,7 +212,15 @@ command! Gd :Gdiff <bar> :wincmd l <bar> :wincmd H
 
 " mappings
 " ========
+" To understand the alt keybinding headache in vim, see:
+" https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
+" https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
+"
+" Stick to xterm! Moolenaar does I guess. Nevertheless, try to minimize dependency on
+" alt key-bindings
+
 " visual
+" ------
 vmap <C-_> gc
 vnoremap <C-x> d
 vnoremap <C-c> y
@@ -218,6 +228,7 @@ vnoremap d "_d
 vnoremap / y/<C-R>"<CR>
 
 " follow the leader
+" -----------------
 nnoremap <Leader>f :set filetype
 nnoremap <Leader>l :set list!<CR>
 nnoremap <Leader>s :set spell!<CR>
@@ -232,13 +243,8 @@ nnoremap <Leader>c :call CsInv()<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
 
-" To understand the alt keybinding headache in vim, see:
-" https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
-" https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
-"
-" Stick to xterm! Moolenaar does I guess. Nevertheless, try to minimize dependency on
-" alt key-bindings
-
+" lsp
+" ---
 nmap <C-\>d :LspDefinition<CR>i
 nmap <C-\><S-d> :tab split<CR>:LspDefinition<CR>i
 nmap <C-\>s :LspDeclaration<CR>i
@@ -252,10 +258,13 @@ nmap <C-\>p :LspPeekDefinition<CR>i
 nmap <C-\>P :LspPeekDeclaration<CR>i
 nmap <C-\>f :LspWorkspaceSymbol<CR>
 
-" basic, plugins etc
+" basic, plugins etc.
+" -------------------
 nnoremap / <esc><esc>/
-nnoremap <C-o> <esc>
+
 " don't do anything
+nnoremap <C-o> <esc>
+
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-n> :on<CR>
 nnoremap <C-x> :q<CR>
@@ -292,6 +301,7 @@ nnoremap tt :TagbarToggle<CR>
 nnoremap dt :difft<CR>
 
 " cut/copy/select
+" ----------------
 inoremap <C-p> <C-x>
 inoremap <C-w> <C-o>viw
 inoremap <C-c> <esc>^"*y$i
@@ -301,18 +311,47 @@ inoremap <C-d> <C-o>"_diw
 " `[ and `] => beg & end of selec, final `] moves cursor to end of paste
 inoremap <C-v> <esc>p`[v`]=`]i<right>
 
-"cut/copy append mode(only for lines)
+" cut/copy append mode (only for lines)
+" -------------------------------------
 nnoremap <C-a><C-c> "Ayy
 nnoremap <C-a><C-v> "Ap<esc>`[v`]=`]i<right>
 nnoremap <C-a><C-r> :call setreg('a', "")<CR>
 
+" <FX> cmds
+" ---------
+inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
+inoremap <F7> <C-o>:wa <bar> call QCompRun('gdb')<CR>
+inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
+
+" au
+" --
+au filetype c,cpp,cuda nnoremap <Leader>h :call CPair()<CR>
+  \| inoremap <C-n> #include <><Left>
+au filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
+  \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
+au filetype tex inoremap <F6> <C-o>:wa <bar> exec
+  \'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
+au filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
+au filetype sh inoremap <F6> <C-o>:wa <bar> exec
+  \'!./'.shellescape('%')<CR>
+au filetype perl inoremap <F6> <C-o>:wa <bar>
+  \exec '!perl '.shellescape('%')<CR>
+au filetype python inoremap <F6> <C-o>:wa <bar>
+  \exec '!python '.shellescape('%')<CR>
+au filetype ruby inoremap <F6> <C-o>:wa <bar>
+  \exec '!ruby '.shellescape('%')<CR>
+au filetype php inoremap <F6> <C-o>:wa <bar>
+  \exec '!php '.shellescape('%')<CR>
+
 " controlled cursor movement
+" --------------------------
 call MapAll('<C-i>', '<up>', '<up>', '<up>')
 call MapAll('<C-k>', '<down>', '<down>', '<down>')
 call MapAll('<C-j>', '<left>', '<left>', '<left>')
 call MapAll('<C-l>', '<right>', '<right>', '<right>')
 
 " alternate cursor movement
+" -------------------------
 call MapAll('<A-i>', '{', '<C-o>{', '')
 call MapAll("\ei", '{', '<C-o>{', '')
 call MapAll('<A-k>', '}', '<C-o>}', '')
@@ -323,6 +362,7 @@ call MapAll('<A-l>', 'w', '<C-o>w', '<S-right>')
 call MapAll("\el", 'w', '<C-o>w', '<S-right>')
 
 " controlled alternate cursor movement
+" ------------------------------------
 call MapAll('<C-A-i>', '5k', '<C-o>5k', '')
 call MapAll("\e<C-i>", '5k', '<C-o>5k', '')
 call MapAll('<C-A-k>', '5j', '<C-o>5j', '')
@@ -333,6 +373,7 @@ call MapAll('<C-A-l>', '3w', '<C-o>3w', '')
 call MapAll("\e<C-l>", '3w', '<C-o>3w', '')
 
 " extra shift cursor binding
+" --------------------------
 call MapAll('<A-S-j>', '^', '<C-o>^', '')
 call MapAll("\eJ", '^', '<C-o>^', '')
 call MapAll('<A-S-l>', '$', '<C-o>$', '<Home>')
@@ -341,12 +382,14 @@ call MapAll('<A-S-k>', 'YP', '<C-o>Y<C-o>p', '<End>')
 call MapAll("\eK", 'YP', '<C-o>Y<C-o>p', '<End>')
 
 " tab
+" ---
 call MapAll('<A-,>', ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
 call MapAll("\e,", ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
 call MapAll('<A-.>', ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 call MapAll("\e.", ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 
 " split
+" -----
 nnoremap <C-w><C-j> <C-w>h
 nnoremap <C-w><C-l> <C-w>l
 nnoremap <C-w><C-k> <C-w>j
@@ -357,15 +400,16 @@ nnoremap <C-w>I <C-w>K
 nnoremap <C-w>K <C-w>J
 
 " The tab mess, arrrgghhh!
-"<C-i> = <Tab>, no rainbow without a little rain
-"<C-@> means <C-space>
+" ------------------------
+" <C-i> = <Tab>, no rainbow without a little rain
+" <C-@> means <C-space>
 inoremap <C-@> <tab>
 " For tab completion in command mode
 " Need to set this to make the mapping work
 set wildcharm=<tab>
 cnoremap <C-@> <tab>
 
-" set
+" abbr
 " ===
 abbr mian main
 abbr itn int
@@ -373,36 +417,42 @@ abbr tin int
 abbr fucntion function
 abbr progrma program
 
+" set
+" ===
+set t_Co=256
+set notitle
+set termguicolors " for highlight guixx in xterm
+set background=dark
+set ruler
+set noshowmode
+set nowrap
+set number
+
 set ttimeoutlen=50
-set textwidth=80
 set scrolloff=5
 set backspace=2
-set t_Co=256
+
 set tabstop=2
 set shiftwidth=2
-set laststatus=2
+set softtabstop=2
+set smartindent
+set smarttab
 set expandtab
+set textwidth=80
+
+set laststatus=2
 set pastetoggle=<F2>
 set completeopt=noselect,menuone,preview
 set autoread
 set diffopt+=vertical
 set clipboard=unnamed
 set mouse=a
-set notitle
-set nowrap
-set number
 set hlsearch
 set incsearch
-set ruler
-set smartindent
-set smarttab
 set splitright
 set ignorecase
 set smartcase
-set noshowmode
 set rtp+=~/.fzf
-set termguicolors " for highlight guixx in xterm
-set background=dark
 
 " use %#BoldStatusLine#foobar%#StatusLine to add bold texts to our
 " statusline
@@ -423,64 +473,6 @@ set statusline +=\ %v " column number
 set statusline +=\ %l " current line
 set statusline +=/%L " total lines
 
-" The following is done by vim-plug, uncomment if using another
-" plugin-manager that doesn't do so.
-" syntax on
-" filetype plugin indent on
-call CsUpd()
-
-
-" autocmds
-" ========
-autocmd vimenter * call CsUpd() | call setreg('a', "")
-  \| highlight trailingSpace ctermbg=red guibg=red
-  \| match trailingSpace /\s\+\%#\@<!$/
-au insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
-  \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
-  \. 'guifg=#000000 ctermbg=047 guibg=#00ff5f'
-au insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
-  \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
-  \. 'guifg=#000000 ctermbg=220 guibg=#ffdf00'
-au TabEnter * NERDTreeClose
-au TabLeave * if g:NERDTree.IsOpen() | wincmd p
-au! CompleteDone * if pumvisible() == 0 | pclose | endif
-
-inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
-inoremap <F7> <C-o>:wa <bar> call QCompRun('gdb')<CR>
-inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
-au filetype c,cpp,cuda nnoremap <Leader>h :call CPair()<CR>
-  \| inoremap <C-n> #include <><Left>
-  \| set softtabstop=2
-
-au filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
-  \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
-au filetype tex inoremap <F6> <C-o>:wa <bar> exec
-  \'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
-au filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
-
-au filetype sh inoremap <F6> <C-o>:wa <bar> exec
-  \'!./'.shellescape('%')<CR>
-au filetype perl inoremap <F6> <C-o>:wa <bar>
-  \exec '!perl '.shellescape('%')<CR>
-au filetype python inoremap <F6> <C-o>:wa <bar>
-  \exec '!python '.shellescape('%')<CR>
-au filetype ruby inoremap <F6> <C-o>:wa <bar>
-  \exec '!ruby '.shellescape('%')<CR>
-au filetype php inoremap <F6> <C-o>:wa <bar>
-  \exec '!php '.shellescape('%')<CR>
-
-if executable('clangd')
-  augroup lsp_clangd
-    au!
-    au User lsp_setup call lsp#register_server({
-      \ 'name': 'clangd',
-      \ 'cmd': {server_info->['clangd']},
-      \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
-      \ })
-    au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
-  augroup end
-endif
-
 au BufRead,BufNewFile *.ll set filetype=llvm
 au BufRead,BufNewFile *.mlir set filetype=mlir
 au BufRead,BufNewFile lit.*cfg set filetype=python
@@ -499,6 +491,43 @@ au FileType cpp setlocal commentstring=//\ %s
     " au FileType python setlocal ts=2 sts=2 sw=2
 " aug end
 
+" syntax
+" ======
+" The following is done by vim-plug, uncomment if using another
+" plugin-manager that doesn't do so.
+" syntax on
+" filetype plugin indent on
+call CsUpd()
+
+" other autocmds
+" ==============
+autocmd vimenter * call CsUpd() | call setreg('a', "")
+  \| highlight trailingSpace ctermbg=red guibg=red
+  \| match trailingSpace /\s\+\%#\@<!$/
+au insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
+  \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
+  \. 'guifg=#000000 ctermbg=047 guibg=#00ff5f'
+au insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
+  \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
+  \. 'guifg=#000000 ctermbg=220 guibg=#ffdf00'
+au TabEnter * NERDTreeClose
+au TabLeave * if g:NERDTree.IsOpen() | wincmd p
+au! CompleteDone * if pumvisible() == 0 | pclose | endif
+
+if executable('clangd')
+  augroup lsp_clangd
+    au!
+    au User lsp_setup call lsp#register_server({
+      \ 'name': 'clangd',
+      \ 'cmd': {server_info->['clangd']},
+      \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
+      \ })
+    au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
+  augroup end
+endif
+
+" post-vimrc
+" ==========
 if filereadable($HOME . "/.post-vimrc")
   source $HOME/.post-vimrc
 endif
