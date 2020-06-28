@@ -1,4 +1,0 @@
-#! /bin/bash
-
-# optirun /usr/bin/nvidia-settings -c :8 &
-/usr/bin/nvidia-settings &
