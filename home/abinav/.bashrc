@@ -524,15 +524,6 @@ eld -p "$HOME_LIB"
 elb -p "$HOME_LIB"
 ecpath -p "$HOME_INCLUDE"
 
-# avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
-if [[ $_saved_RESET_XXX != true ]]; then
-  export RESET_PATH=$PATH
-  export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-  export RESET_LIBRARY_PATH=$LIBRARY_PATH
-  export RESET_CPATH=$CPATH
-  export _saved_RESET_XXX=true
-fi
-
 alias grep='grep -P --color -n'
 alias ka='killall'
 alias srb='. ~/.bashrc'
@@ -573,8 +564,24 @@ alias psi="psx us --ppid=1"
 alias psk="psx ks --ppid 2 -p 2"
 alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
 
+if am_i_home; then
+  source /usr/share/fzf/key-bindings.bash &> /dev/null
+  source /usr/share/fzf/completion.bash &> /dev/null
+else
+  [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
+fi
+
 source /etc/.post-bashrc &> /dev/null
 source ${HOME}/.post-bashrc &> /dev/null
+
+# avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
+if [[ $_saved_RESET_XXX != true ]]; then
+  export RESET_PATH=$PATH
+  export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+  export RESET_LIBRARY_PATH=$LIBRARY_PATH
+  export RESET_CPATH=$CPATH
+  export _saved_RESET_XXX=true
+fi
 
 # If not running interactively
 [[ $- != *i* ]] && return
@@ -604,10 +611,3 @@ bind '"\C-d":unix-filename-rubout'
 clhome .sw? .calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo
 print_fortune
 vocutil print 1
-
-if am_i_home; then
-  source /usr/share/fzf/key-bindings.bash &> /dev/null
-  source /usr/share/fzf/completion.bash &> /dev/null
-else
-  [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
-fi
