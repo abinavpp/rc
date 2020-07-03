@@ -244,10 +244,10 @@ function vim {
 }
 
 function dis {
-  local bin=$1 asm="$bin.s"
-  # local tmp_dir=/tmp/lldis
-  # mkdir -p $tmp_dir
-  # local tmp_ir=$(mktemp $tmp_dir/$1.XXXXXX.ll)
+  local bin=$1 asm
+
+  # Note that inling this at local-decl will make $asm ".s"
+  asm="$bin.s"
 
   if file $bin | grep -iq "LLVM.*bitcode"; then
     asm="$bin.ll"
@@ -261,7 +261,6 @@ function dis {
   fi
 
   vim $asm
-  # trap "rm -rf $tmp_dir" EXIT
 }
 
 function sgrep {
