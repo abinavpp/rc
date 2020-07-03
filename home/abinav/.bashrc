@@ -523,10 +523,15 @@ epath -p "$HOME_BIN" "$EXTRA_BIN"
 eld -p "$HOME_LIB"
 elb -p "$HOME_LIB"
 ecpath -p "$HOME_INCLUDE"
-export RESET_PATH=$PATH
-export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-export RESET_LIBRARY_PATH=$LIBRARY_PATH
-export RESET_CPATH=$CPATH
+
+# avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
+if [[ $_saved_RESET_XXX != true ]]; then
+  export RESET_PATH=$PATH
+  export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+  export RESET_LIBRARY_PATH=$LIBRARY_PATH
+  export RESET_CPATH=$CPATH
+  _saved_RESET_XXX=true
+fi
 
 alias grep='grep -P --color -n'
 alias ka='killall'
