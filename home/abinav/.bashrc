@@ -530,7 +530,7 @@ if [[ $_saved_RESET_XXX != true ]]; then
   export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
   export RESET_LIBRARY_PATH=$LIBRARY_PATH
   export RESET_CPATH=$CPATH
-  _saved_RESET_XXX=true
+  export _saved_RESET_XXX=true
 fi
 
 alias grep='grep -P --color -n'
