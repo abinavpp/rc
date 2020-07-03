@@ -137,7 +137,6 @@ function cotty {
   [[ $# -ne 1 ]] && return
   echo $1 > ${t_col_path}
   _t_col_upd
-  # tput clear
 }
 
 # colors all pts
@@ -300,11 +299,6 @@ function cd {
 
 function pacdry_fresh {
   local path_tmpdb=$(mktemp -t -d pacdry_tmpdb.XXXXXX)
-
-  if [[ ! -e "$path_tmpdb" ]]; then
-    echo 1>&2 "1 in a bajillion error: tmp file not creted"
-    return 1
-  fi
 
   sudo pacman -Sy --dbpath "$path_tmpdb" --logfile /dev/null 1>&2 && \
     pacdry --dbpath "$path_tmpdb" "$@"
