@@ -492,6 +492,13 @@ function psx {
   ps -o ${fields} $@
 }
 
+function am_i_home {
+  if [[ -L /bin && $(hostname) =~ ppa\-.* ]]; then
+    return 0
+  fi
+  return 1
+}
+
 if am_i_home; then
   function before_poweroff {
     mmrc -u chrome &> /dev/null
