@@ -1,9 +1,5 @@
-#
-# ~/.bashrc
-#
-
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
+source /etc/.pre-bashrc &> /dev/null
+source ${HOME}/.pre-bashrc &> /dev/null
 
 function is_in_delimvar() {
   declare -A fields
@@ -107,34 +103,6 @@ function ecpath() {
   edelimvar ':' CPATH $opt $(realpath "$@" 2> /dev/null);
 }
 
-export TERM=xterm-256color
-export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
-export EDITOR="$VISUAL" # use $EDITOR if "our" vim creates trouble
-export ABINAV="thats my name, that name again - is Mr.Plow"
-export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
-export HISTSIZE=8192
-export HISTFILESIZE=8192
-export EXTRA_BIN="$HOME/rc/run"
-export HOME_BIN="$HOME/sys/usr/bin"
-export HOME_LIB="$HOME/sys/usr/lib"
-export HOME_INCLUDE="$HOME/sys/usr/include"
-export PROJ="$HOME/proj"
-export LLVM_DEV="$PROJ"
-export FZF_DEFAULT_OPTS="--color 16" # we're used to this :)
-
-edelimvar ':' PATH -a "."
-epath -p "$HOME_BIN" "$EXTRA_BIN"
-eld -p "$HOME_LIB"
-elb -p "$HOME_LIB"
-ecpath -p "$HOME_INCLUDE"
-export RESET_PATH=$PATH
-export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-export RESET_LIBRARY_PATH=$LIBRARY_PATH
-export RESET_CPATH=$CPATH
-
-source /etc/.pre-bashrc &> /dev/null
-source ${HOME}/.pre-bashrc &> /dev/null
-
 function ind {
   $@ &
   disown $!
@@ -144,12 +112,6 @@ function pid2jid {
   jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
     /bin/grep -oE "[[:digit:]]+"
 }
-
-t_col_path="$HOME/.t_col"
-
-# Terminal colorscheme
-t_bg_curr_col=
-t_fg_curr_col=
 
 # updates the global script vars ${t_<fg/bg>_col_cur} as per the file name
 # referred by ${t_col_path}
@@ -223,11 +185,6 @@ function prompt_command {
   PS1+="\[${t_fg_curr_col}\]\[${t_bg_curr_col}\]"
 }
 
-_t_col_upd
-mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
-
-PROMPT_COMMAND=prompt_command
-
 function in_array {
   local e match="$1"
   shift
@@ -284,6 +241,27 @@ function vim {
   else
     $cmd "$@"
   fi
+}
+
+function dis {
+  local bin=$1 asm="$bin.s"
+  # local tmp_dir=/tmp/lldis
+  # mkdir -p $tmp_dir
+  # local tmp_ir=$(mktemp $tmp_dir/$1.XXXXXX.ll)
+
+  if file $bin | grep -iq "LLVM.*bitcode"; then
+    asm="$bin.ll"
+    llvm-dis $bin -o $asm
+
+  elif file $bin | grep -iq "ELF.*x86-64"; then
+    objdump -M intel -D -C $bin > $asm
+
+  elif file $bin | grep -iq "ELF.*NVIDIA CUDA"; then
+    nvdisasm $bin > $asm
+  fi
+
+  vim $asm
+  # trap "rm -rf $tmp_dir" EXIT
 }
 
 function sgrep {
@@ -525,27 +503,30 @@ if am_i_home; then
   function reboot { before_poweroff; /bin/reboot; }
 fi
 
-. /usr/share/bash-completion/completions/man
-. /usr/share/bash-completion/completions/killall
-. /usr/share/bash-completion/completions/pacman &> /dev/null
-complete -F _man mn
-complete -F _killall ka
-complete -F _comp_nt nt
-complete -F _pacman -o default pacdry
-complete -F _pacman -o default pacdry2
+export TERM=xterm-256color
+export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
+export EDITOR="$VISUAL" # use $EDITOR if "our" vim creates trouble
+export ABINAV="thats my name, that name again - is Mr.Plow"
+export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
+export HISTSIZE=8192
+export HISTFILESIZE=8192
+export EXTRA_BIN="$HOME/rc/run"
+export HOME_BIN="$HOME/sys/usr/bin"
+export HOME_LIB="$HOME/sys/usr/lib"
+export HOME_INCLUDE="$HOME/sys/usr/include"
+export PROJ="$HOME/proj"
+export LLVM_DEV="$PROJ"
+export FZF_DEFAULT_OPTS="--color 16" # we're used to this :)
 
-bind '"\C-d":unix-filename-rubout'
-
-clhome .sw? .calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo
-print_fortune
-vocutil print 1
-
-if am_i_home; then
-  source /usr/share/fzf/key-bindings.bash &> /dev/null
-  source /usr/share/fzf/completion.bash &> /dev/null
-else
-  [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
-fi
+edelimvar ':' PATH -a "."
+epath -p "$HOME_BIN" "$EXTRA_BIN"
+eld -p "$HOME_LIB"
+elb -p "$HOME_LIB"
+ecpath -p "$HOME_INCLUDE"
+export RESET_PATH=$PATH
+export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export RESET_LIBRARY_PATH=$LIBRARY_PATH
+export RESET_CPATH=$CPATH
 
 alias grep='grep -P --color -n'
 alias ka='killall'
@@ -589,3 +570,39 @@ alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
 
 source /etc/.post-bashrc &> /dev/null
 source ${HOME}/.post-bashrc &> /dev/null
+
+# If not running interactively
+[[ $- != *i* ]] && return
+
+t_col_path="$HOME/.t_col"
+
+# Terminal colorscheme
+t_bg_curr_col=
+t_fg_curr_col=
+
+_t_col_upd
+mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
+
+PROMPT_COMMAND=prompt_command
+
+. /usr/share/bash-completion/completions/man
+. /usr/share/bash-completion/completions/killall
+. /usr/share/bash-completion/completions/pacman &> /dev/null
+complete -F _man mn
+complete -F _killall ka
+complete -F _comp_nt nt
+complete -F _pacman -o default pacdry
+complete -F _pacman -o default pacdry2
+
+bind '"\C-d":unix-filename-rubout'
+
+clhome .sw? .calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo
+print_fortune
+vocutil print 1
+
+if am_i_home; then
+  source /usr/share/fzf/key-bindings.bash &> /dev/null
+  source /usr/share/fzf/completion.bash &> /dev/null
+else
+  [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
+fi
