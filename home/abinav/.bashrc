@@ -448,7 +448,7 @@ function cdp {
 function clhome {
   local f
   for f in "$@"; do
-    [[ -n `ls ~/$f 2> /dev/null` ]] && rm -rf ~/$f
+    rm -rf ~/$f &> /dev/null
   done
 }
 
@@ -525,7 +525,6 @@ elb -p "$HOME_LIB"
 ecpath -p "$HOME_INCLUDE"
 
 alias grep='grep -P --color -n'
-alias ka='killall'
 alias srb='. ~/.bashrc'
 alias ls='ls -a --color=auto --group-directories-first'
 alias ll='/bin/ls -alih --color=auto --group-directories-first'
@@ -597,16 +596,11 @@ mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
 
 PROMPT_COMMAND=prompt_command
 
-. /usr/share/bash-completion/completions/man
-. /usr/share/bash-completion/completions/killall
+. /usr/share/bash-completion/completions/man &> /dev/null
 . /usr/share/bash-completion/completions/pacman &> /dev/null
 complete -F _man mn
-complete -F _killall ka
 complete -F _comp_nt nt
 complete -F _pacman -o default pacdry
-complete -F _pacman -o default pacdry2
-
-bind '"\C-d":unix-filename-rubout'
 
 clhome .sw? .calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo
 print_fortune
