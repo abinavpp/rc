@@ -332,8 +332,8 @@ _comp_nt() {
 # aliasing mn() unleashes hell when bashrc is sourced manually,
 # so call it with mn, bash-completion done for it below
 function mn {
-  if [[ -e ~/.manvimrc ]]; then
-    man "$@" | ${EDITOR} -u ~/.manvimrc -
+  if [[ -e ~/.man-vimrc ]]; then
+    man "$@" | ${EDITOR} -u ~/.man-vimrc -
   fi
 }
 
