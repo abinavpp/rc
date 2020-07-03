@@ -147,15 +147,16 @@ function coall {
   echo $1 > ${t_col_path}
   _t_col_upd # updates the global vars
 
-  for t in /dev/pts/*
-  do
+  for t in /dev/pts/*; do
     # skip this pts and ptmx, (the prompt will set color for this pts)
     if [[ $t == "$(tty)" || $t == "/dev/pts/ptmx" ]]; then
       continue
     fi
 
+    exec 2> /dev/null
     echo -ne "${t_fg_curr_col}" > $t
     echo -ne "${t_bg_curr_col}" > $t
+    exec 2> /dev/stdout
   done
 
   mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
