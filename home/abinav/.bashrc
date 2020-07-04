@@ -254,7 +254,7 @@ function dis {
     llvm-dis $bin -o $asm
 
   elif file $bin | grep -iq "ELF.*x86-64"; then
-    objdump -M intel -D -C $bin > $asm
+    objdump -l -S -M intel -D -C $bin > $asm
 
   elif file $bin | grep -iq "ELF.*NVIDIA CUDA"; then
     nvdisasm $bin > $asm
