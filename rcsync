@@ -77,7 +77,7 @@ fi
 
 for run_type; do true; done # gets last arg
 
-echo "Performing $run_type : "
+echo -e "\033[0;32mPerforming $run_type:\033[0m"
 
 if [[ $run_type == "sin" ]]; then
   from=$out
@@ -107,5 +107,4 @@ else
   exit
 fi
 
-echo "$sudo ./treesync $dry $diff -s $in -f $from -t $to"
 $sudo ./treesync $dry $diff -s $in -f $from -t $to

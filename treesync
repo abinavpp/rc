@@ -1,7 +1,6 @@
 #! /bin/bash
 
-prefix_run= # not used as of now
-run_mode= # run type (dry or nothing)
+run_mode="" # run type (dry or nothing)
 
 function print_usage {
 cat <<ENDCAT
@@ -57,22 +56,22 @@ function tree_sync {
 
   tree_root_len=`echo -n "$dir_tree" | wc -c`
 
-  files_tree=(`$prefix_run find $dir_tree -type f -print |  \
+  files_tree=(`find $dir_tree -type f -print |  \
     cut -c1-$(($tree_root_len + 1)) --complement `)
 
   for f in ${files_tree[@]}; do
     if [[ $run_mode == "dry" ]]; then
-      echo "$prefix_run mkdir -p `dirname ${dir_to}/$f`"
-      echo "$prefix_run cp -v ${dir_from}/$f `dirname ${dir_to}/$f`"
+      echo "mkdir -p `dirname ${dir_to}/$f`"
+      echo "cp -v ${dir_from}/$f `dirname ${dir_to}/$f`"
 
     elif [[ $run_mode == "diff" ]]; then
       echo "diff ${dir_from}/$f ${dir_to}/$f"
-      $prefix_run diff ${dir_from}/$f ${dir_to}/$f
+      diff ${dir_from}/$f ${dir_to}/$f
 
     else
       # $f can be a x/y/file so get dirname with it
-      $prefix_run mkdir -p `dirname ${dir_to}/$f`
-      $prefix_run cp -v ${dir_from}/$f `dirname ${dir_to}/$f`
+      mkdir -p `dirname ${dir_to}/$f`
+      cp -v ${dir_from}/$f `dirname ${dir_to}/$f`
     fi
   done
 }
@@ -104,6 +103,5 @@ if [[ ! -d $tree || ! -d $from || ! -d $to ]]; then
   print_usage; exit 1
 fi
 
-echo; echo "Running($prefix_run$run_mode by UID:$UID) : tree_sync $tree $from $to"
-echo;
+echo "[UID:$UID] Running: treesync -s $tree -f $from -t $to"
 tree_sync $tree $from $to
