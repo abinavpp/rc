@@ -11,7 +11,7 @@ function write_temperature {
   for hwmonx in $path_hwmon/*; do
     if [[ -d $hwmonx  ]]; then
       # consider only the first temp*_input
-      temperature=`/bin/ls $hwmonx/temp*_input | head -n1`
+      temperature=`/bin/ls $hwmonx/temp*_input 2> /dev/null | head -n1`
       if [[ ! -e $temperature ]]; then
         break
       fi
