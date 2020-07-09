@@ -308,7 +308,13 @@ inoremap <C-c> <esc>^"*y$i
 inoremap <C-x> <esc>^"*d$"_ddi
 inoremap <C-e> <esc>"_ddi
 inoremap <C-d> <C-o>"_diw
-" `[ and `] => beg & end of selec, final `] moves cursor to end of paste
+" NOTE:
+" - The <esc>`^ stops the cursor from going back in normal mode.
+" - 'P' prepends the paste.
+" FIXME: pasting at ^ pastes after ^, using 'P' fixes this, but then it wrecks
+" pasting at $. Fix this "b/w rock and hard place" situation.
+"
+" `[v`]= indents the paste. The last `] moves cursor to end of paste.
 inoremap <C-v> <esc>p`[v`]=`]i<right>
 
 " cut/copy append mode (only for lines)
