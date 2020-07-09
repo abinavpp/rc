@@ -244,20 +244,20 @@ function vim {
 }
 
 function dis {
-  local bin=$1 asm
+  local bin=$1 asm; shift
 
   # Note that inling this at local-decl will make $asm ".s"
-  asm="$bin.s"
+  asm=$(basename "$bin").s
 
   if file $bin | grep -iq "LLVM.*bitcode"; then
     asm="$bin.ll"
-    llvm-dis $bin -o $asm
+    llvm-dis $@ $bin -o $asm
 
   elif file $bin | grep -iq "ELF.*x86-64"; then
-    objdump -l -S -M intel -D -C $bin > $asm
+    objdump $@ -l -S -M intel -D -C $bin > $asm
 
   elif file $bin | grep -iq "ELF.*NVIDIA CUDA"; then
-    nvdisasm $bin > $asm
+    nvdisasm $@ $bin > $asm
   fi
 
   vim $asm
