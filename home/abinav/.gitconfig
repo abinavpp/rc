@@ -6,3 +6,4 @@
   br  = branch
   cl  = clone
   pm  = push origin master
+  them = ls-files --others --directory
