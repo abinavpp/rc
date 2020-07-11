@@ -254,7 +254,18 @@ function dis {
     llvm-dis $@ $bin -o $asm
 
   elif file $bin | grep -iq "ELF.*x86-64"; then
-    objdump $@ -l -S -M intel -D -C $bin > $asm
+
+    # .o of a c++ file can have user-defined functions in their own sections
+    # whose names are of the form ".text.<function-name>". We add them to
+    # objdump's -j. Note that the fully linked exe from c++ will have all it's
+    # user-defined functions in .text.
+    local section sections
+    for section in $(readelf -S $bin |\
+      /bin/grep -Po '(?<=\ ).text.*?(?=\ )'); do
+      sections="$sections -j $section"
+    done
+
+    objdump $@ -l -S -M intel -D -C $sections $bin > $asm
 
   elif file $bin | grep -iq "ELF.*NVIDIA CUDA"; then
     nvdisasm $@ $bin > $asm
