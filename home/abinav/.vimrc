@@ -479,7 +479,7 @@ set statusline +=\ %v " column number
 set statusline +=\ %l " current line
 set statusline +=/%L " total lines
 
-au BufRead,BufNewFile *.s set filetype=masm
+au BufRead,BufNewFile *.s set filetype=xasm
 au BufRead,BufNewFile *.ll set filetype=llvm
 au BufRead,BufNewFile *.mlir set filetype=mlir
 au BufRead,BufNewFile lit.*cfg set filetype=python
