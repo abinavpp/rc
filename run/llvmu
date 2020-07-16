@@ -7,7 +7,6 @@ fi
 
 # default output files
 fe_out="fe.ll"
-opt_out="opt.ll"
 dot_out="dot.ll"
 
 function die() {
