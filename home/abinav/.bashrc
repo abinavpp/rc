@@ -560,6 +560,7 @@ alias dmesge='dmesg -T --level alert,crit,emerg,err'
 alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
 alias obd='objdump -M intel -D -C'
 alias obd2='obd --visualize-jumps'
+alias rmtcp='rsync -avz -e ssh' # scp sucks
 
 alias qtmux='tmux kill-server'
 alias tmux='tmux -u -2'
