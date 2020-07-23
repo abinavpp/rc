@@ -321,24 +321,35 @@ function pacdry {
   sudo pacman --logfile /dev/null "$@"
 }
 
-function nt {
-  local nt_dir="$HOME/documents/notes/sys/"
-  if [[ -e "$nt_dir" ]]; then
-    if [[ $# -ne 0  ]]; then
-      vim "$nt_dir/$@"
-    else
-      ls "$nt_dir"
-    fi
+function _xnt {
+  local note_dir=$1 note=$2
+  if [[ ! -e "$note_dir" ]]; then
+    echo "$note_dir not set"
+    return
+  fi
+
+  if [[ $# -ne 0  ]]; then
+    vim "$note_dir/$note"
   else
-    echo "$nt_dir not set"
+    ls "$note_dir"
   fi
 }
 
+function nt { _xnt "$HOME/documents/notes/sys/" $1; }
+function ephnt { _xnt "$HOME/eph/notes/" $1; }
+
 _comp_nt() {
-  local nt_dir="$HOME/documents/notes/sys/"
-  local nt_comp=`ls $nt_dir | sed -r "/^\.+$/d"`
+  local note_dir="$HOME/documents/notes/sys/"
+  local note_comp=`ls $note_dir | sed -r "/^\.+$/d"`
   local cur=${COMP_WORDS[COMP_CWORD]}
-  COMPREPLY=( $(compgen -W "$nt_comp" -- $cur) )
+  COMPREPLY=( $(compgen -W "$note_comp" -- $cur) )
+}
+
+_comp_ephnt() {
+  local note_dir="$HOME/eph/notes/"
+  local note_comp=`ls $note_dir | sed -r "/^\.+$/d"`
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  COMPREPLY=( $(compgen -W "$note_comp" -- $cur) )
 }
 
 # aliasing mn() unleashes hell when bashrc is sourced manually,
@@ -613,6 +624,7 @@ PROMPT_COMMAND=prompt_command
 . /usr/share/bash-completion/completions/pacman &> /dev/null
 complete -F _man mn
 complete -F _comp_nt nt
+complete -F _comp_ephnt ephnt
 complete -F _pacman -o default pacdry
 
 clhome .sw? .calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo
