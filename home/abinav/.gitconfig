@@ -1,9 +1,10 @@
 [alias]
-  sh  = show --stat --oneline
-  st  = status
-  cm  = commit
-  ch  = checkout
-  br  = branch
-  cl  = clone
-  pm  = push origin master
+  lg = log --no-merges
+  sh = show --stat --oneline
+  st = status
+  cm = commit
+  ch = checkout
+  br = branch
+  cl = clone
+  pm = push origin master
   them = ls-files --others --directory
