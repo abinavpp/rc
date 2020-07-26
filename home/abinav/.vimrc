@@ -242,6 +242,7 @@ nnoremap <Leader>b :call CopyAsBreakpoint()<cr>
 nnoremap <Leader>c :call CsInv()<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
+au filetype c,cpp,cuda nnoremap <Leader>h :call CPair()<CR>
 
 " lsp
 " ---
@@ -331,8 +332,7 @@ inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
 
 " au
 " --
-au filetype c,cpp,cuda nnoremap <Leader>h :call CPair()<CR>
-  \| inoremap <C-n> #include <><Left>
+au filetype c,cpp,cuda inoremap <C-n> #include <><Left>
 au filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
 au filetype tex inoremap <F6> <C-o>:wa <bar> exec
@@ -479,6 +479,7 @@ set statusline +=\ %v " column number
 set statusline +=\ %l " current line
 set statusline +=/%L " total lines
 
+au BufRead,BufNewFile *.hip set filetype=cpp
 au BufRead,BufNewFile *.s set filetype=xasm
 au BufRead,BufNewFile *.ll set filetype=llvm
 au BufRead,BufNewFile *.mlir set filetype=mlir
