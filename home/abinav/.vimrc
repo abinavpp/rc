@@ -300,6 +300,7 @@ nnoremap zz :call Save()<CR>
 nnoremap hh :noh<CR>
 nnoremap tt :TagbarToggle<CR>
 nnoremap dt :difft<CR>
+au filetype c,cpp,cuda inoremap <C-n> #include <><Left>
 
 " cut/copy/select
 " ----------------
@@ -329,10 +330,6 @@ nnoremap <C-a><C-r> :call setreg('a', "")<CR>
 inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
 inoremap <F7> <C-o>:wa <bar> call QCompRun('gdb')<CR>
 inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
-
-" au
-" --
-au filetype c,cpp,cuda inoremap <C-n> #include <><Left>
 au filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
 au filetype tex inoremap <F6> <C-o>:wa <bar> exec
