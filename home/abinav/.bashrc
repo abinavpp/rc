@@ -243,6 +243,9 @@ function vim {
   fi
 }
 
+function obd { objdump -l -S -M intel -D -C $@; }
+function obd2 { obd --visualize-jumps; }
+
 function dis {
   local bin=$1 asm; shift
 
@@ -569,8 +572,6 @@ alias pll='prettyll -simvar -gepin'
 alias dmesg='dmesg -T'
 alias dmesge='dmesg -T --level alert,crit,emerg,err'
 alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
-alias obd='objdump -l -S -M intel -D -C'
-alias obd2='obd --visualize-jumps'
 alias rmtcp='rsync -avz -e ssh' # scp sucks
 
 alias qtmux='tmux kill-server'
