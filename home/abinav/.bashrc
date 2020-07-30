@@ -244,6 +244,7 @@ function vim {
 }
 
 function obd { objdump -l -S -M intel -D -C $@; }
+
 function obd2 { obd --visualize-jumps; }
 
 function dis {
@@ -339,6 +340,7 @@ function _xnt {
 }
 
 function nt { _xnt "$HOME/documents/notes/sys/" $1; }
+
 function ephnt { _xnt "$HOME/eph/notes/" $1; }
 
 _comp_nt() {
