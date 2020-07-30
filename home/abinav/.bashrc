@@ -199,7 +199,7 @@ function vim {
   [[ -x $HOME_BIN/vim ]] && vim_bin="$HOME_BIN/vim"
 
   # if $vim_bin has no client-server feature, then no fancy stuff
-  if ! $vim_bin --version | /bin/grep -P '\+clientserver' 1> /dev/null; then
+  if ! $vim_bin --version | /bin/grep -q -P '\+clientserver'; then
     $vim_bin -i NONE -p $@
     return
   fi
@@ -252,11 +252,11 @@ function dis {
   # Note that inling this at local-decl will make $asm ".s"
   asm=$(basename "$bin").s
 
-  if file $bin | grep -iq "LLVM.*bitcode"; then
+  if file $bin | /bin/grep -iq "LLVM.*bitcode"; then
     asm="$bin.ll"
     llvm-dis $@ $bin -o $asm
 
-  elif file $bin | grep -iq "ELF.*x86-64"; then
+  elif file $bin | /bin/grep -iq "ELF.*x86-64"; then
 
     # .o of a c++ file can have user-defined functions in their own sections
     # whose names are of the form ".text.<function-name>". We add them to
@@ -270,7 +270,7 @@ function dis {
 
     obd $@ $sections $bin > $asm
 
-  elif file $bin | grep -iq "ELF.*NVIDIA CUDA"; then
+  elif file $bin | /bin/grep -iq "ELF.*NVIDIA CUDA"; then
     nvdisasm $@ $bin > $asm
   fi
 
@@ -281,12 +281,12 @@ function sgrep {
   local exclude=""
   if git status &> /dev/null; then
     exclude+="--exclude-dir=.git "
-    if test -f tags && file tags | grep "Ctags tag file" &> /dev/null; then
+    if test -f tags && file tags | /bin/grep -q "Ctags tag file"; then
       exclude+="--exclude=tags "
     fi
 
     if test -f cscope.out && file cscope.out | \
-      grep "cscope reference data" &> /dev/null; then
+      /bin/grep -q "cscope reference data"; then
           exclude+="--exclude=cscope.out --exclude=cscope.files "
     fi
 
@@ -404,7 +404,7 @@ function vocutil {
 
   if [[ $run == "def" ]]; then
     if [[ -e ${voc_db}  && $# -eq 1 ]]; then
-      grep -inr --color $1 ${voc_db}/ 2> /dev/null
+      /bin/grep -inr --color $1 ${voc_db}/ 2> /dev/null
     fi
     return
   fi
@@ -427,7 +427,7 @@ function vimj {
 
   # Apr 24 20:42:21 localhost sudo[5336]:
   sudo journalctl --no-pager $* |
-    grep -Pv  "^\w{3}\ \d{2}\ \d{2}:\d{2}:\d{2}\ $hst\ sudo\[\d+\].*$" | \
+    /bin/grep -Pv  "^\w{3}\ \d{2}\ \d{2}:\d{2}:\d{2}\ $hst\ sudo\[\d+\].*$" | \
     ${EDITOR} -c "set filetype=messages" - "+normal G"
 }
 
