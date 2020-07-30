@@ -265,7 +265,7 @@ function dis {
       sections="$sections -j $section"
     done
 
-    objdump $@ -l -S -M intel -D -C $sections $bin > $asm
+    obd $@ $sections $bin > $asm
 
   elif file $bin | grep -iq "ELF.*NVIDIA CUDA"; then
     nvdisasm $@ $bin > $asm
@@ -569,7 +569,7 @@ alias pll='prettyll -simvar -gepin'
 alias dmesg='dmesg -T'
 alias dmesge='dmesg -T --level alert,crit,emerg,err'
 alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
-alias obd='objdump -M intel -D -C'
+alias obd='objdump -l -S -M intel -D -C'
 alias obd2='obd --visualize-jumps'
 alias rmtcp='rsync -avz -e ssh' # scp sucks
 
