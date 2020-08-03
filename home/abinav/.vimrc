@@ -503,6 +503,19 @@ au FileType cpp setlocal commentstring=//\ %s
 " syntax on
 " filetype plugin indent on
 call CsUpd()
+hi link llvmKeyword Special
+
+if executable('clangd')
+  augroup lsp_clangd
+    au!
+    au User lsp_setup call lsp#register_server({
+      \ 'name': 'clangd',
+      \ 'cmd': {server_info->['clangd']},
+      \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
+      \ })
+    au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
+  augroup end
+endif
 
 " other autocmds
 " ==============
@@ -518,18 +531,6 @@ au insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
 au TabEnter * NERDTreeClose
 au TabLeave * if g:NERDTree.IsOpen() | wincmd p
 au! CompleteDone * if pumvisible() == 0 | pclose | endif
-
-if executable('clangd')
-  augroup lsp_clangd
-    au!
-    au User lsp_setup call lsp#register_server({
-      \ 'name': 'clangd',
-      \ 'cmd': {server_info->['clangd']},
-      \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
-      \ })
-    au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
-  augroup end
-endif
 
 " post-vimrc
 " ==========
