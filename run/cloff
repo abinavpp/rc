@@ -130,7 +130,7 @@ function compile_bundled_x86_ir() {
   bash -c "$final_ld_cmd -T $dev_lk"
 }
 
-function clean_iromp_leftovers() {
+function clean_iroff_leftovers() {
   rm $unbundle_host_ir $unbundle_dev_ir $host_obj $dev_obj\
     $linked_dev_obj $dev_lk $offload_wrapper_bitcode &> /dev/null
 }
@@ -145,12 +145,12 @@ if [[ $this == "cluda" ]]; then
     --cuda-gpu-arch=sm_$(nvsm) -lcudart $@
   exit $?
 
-elif [[ $this == "iromp" ]]; then
+elif [[ $this == "iroff" ]]; then
   if [[ $1 == "ub" ]]; then
     shift; unbundle_x86_ir $1
   else
     compile_bundled_x86_ir $@
-    clean_iromp_leftovers
+    clean_iroff_leftovers
   fi
   exit $?
 fi
