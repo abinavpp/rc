@@ -118,6 +118,7 @@ function pid2jid {
 function _t_col_upd {
   local cur
   cur=`cat ${t_col_path} 2> /dev/null`
+
   if [[ ! $cur ]]; then
     cur="bl"
     echo $cur > "${t_col_path}"
@@ -280,6 +281,7 @@ function dis {
 
 function sgrep {
   local exclude=""
+
   if git status &> /dev/null; then
     exclude+="--exclude-dir=.git "
     if test -f tags && file tags | /bin/grep -q "Ctags tag file"; then
@@ -299,6 +301,7 @@ function sgrep {
 
 function cd {
   local srcroot=$(srcerer 2> /dev/null)
+
   if [[ -z "$srcroot" ]]; then
     command cd "$@"
     return
@@ -315,7 +318,6 @@ function cd {
 
 function pacdry_fresh {
   local path_tmpdb=$(mktemp -t -d pacdry_tmpdb.XXXXXX)
-
   sudo pacman -Sy --dbpath "$path_tmpdb" --logfile /dev/null 1>&2 && \
     pacdry --dbpath "$path_tmpdb" "$@"
   sudo rm -rf "$path_tmpdb" &> /dev/null
@@ -327,6 +329,7 @@ function pacdry {
 
 function _xnt {
   local note_dir=$1 note=$2
+
   if [[ ! -e "$note_dir" ]]; then
     echo "$note_dir not set"
     return
@@ -339,12 +342,12 @@ function _xnt {
   fi
 }
 
-function nt { _xnt "$HOME/documents/notes/sys/" $1; }
+function nt { _xnt "$HOME/documents/cs/notes/sys" $1; }
 
 function ephnt { _xnt "$HOME/eph/notes/" $1; }
 
 _comp_nt() {
-  local note_dir="$HOME/documents/notes/sys/"
+  local note_dir="$HOME/documents/cs/notes/sys/"
   local note_comp=`ls $note_dir | sed -r "/^\.+$/d"`
   local cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$note_comp" -- $cur) )
@@ -367,6 +370,7 @@ function mn {
 
 function rn {
   local tempfile="$(mktemp -t tmp.XXXXXX)"
+
   ranger --choosedir="$tempfile" "${@:-$(pwd)}"
   test -f "$tempfile" &&
     if [[ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]]; then
@@ -397,7 +401,7 @@ function print_batstat {
 }
 
 function vocutil {
-  local voc_db="$HOME/documents/notes/voc_db/"
+  local voc_db="$HOME/documents/voc-db/"
   local run=$1; shift
 
   if [[ ! -d $voc_db ]]; then
@@ -410,7 +414,6 @@ function vocutil {
     fi
     return
   fi
-
 
   if [[ $run == "print" ]]; then
     local n=1
@@ -436,13 +439,13 @@ function vimj {
 function crynt {
   local cry_dir="$HOME/eph/_x/"
   local gpg="gpg --batch --yes"
+
   if [[ $# -ne 1 || ! -d $cry_dir ]]; then
     return
   fi
 
   local enc=$cry_dir/$1 dec="$cry_dir/_d_$1"
   local pass
-
 
   read -s -p "Speak friend and enter : " pass
   echo
@@ -464,10 +467,13 @@ function cdp {
   if [[ $# -ne 1 ]]; then
     return
   fi
+
   local pid=`pgrep $1 | head -n1`
+
   if [[ $pid == "" ]]; then
     return
   fi
+
   echo -n "cmdline: "
   echo `tr -d '\0' < /proc/$pid/cmdline` # else null bytes throw warn
   cd /proc/$pid
@@ -492,6 +498,7 @@ function cltex {
     f=${f%.tex}
     rm ${f}.pdf ${f}.log ${f}.aux ${f}.pgf ${f}.toc &> /dev/null
   done
+
   rm missfont.log &> /dev/null
 }
 
