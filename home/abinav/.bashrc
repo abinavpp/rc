@@ -160,7 +160,7 @@ function coall {
     exec 2> /dev/stdout
   done
 
-  mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
+  mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
   unset t
 }
 
@@ -626,7 +626,7 @@ t_bg_curr_col=
 t_fg_curr_col=
 
 _t_col_upd
-mkconf_gui $(echo $t_bg_curr_col | cut -c7-13)
+mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
 
 PROMPT_COMMAND=prompt_command
 
