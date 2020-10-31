@@ -39,10 +39,6 @@ let s:darkestgrey   = "#262626"
 let s:lightblack    = "#121212"
 let s:black         = "#000000"
 
-" Basic:
-let s:foreground   = s:white
-let s:background   = s:black
-
 if g:color_theme == 'light'
   let s:pink        = "#d700af"
   let s:orange      = "#d75f00"
@@ -55,9 +51,6 @@ if g:color_theme == 'light'
 
   let s:darkgrey      = "#626262"
   let s:lightgrey     = "#c6c6c6"
-
-  let s:foreground  = s:black
-  let s:background  = s:white
 endif
 
 " Returns an approximate grey index for the given grey level
@@ -170,6 +163,7 @@ endfunction
 
 " Sets the highlighting for the given group
 function <SID>X(group, fg, bg, attr)
+    exec "hi clear " . a:group
     if a:fg != ""
         exec "hi " . a:group . " guifg=" . a:fg . " ctermfg=" . <SID>rgb(a:fg)
     endif
@@ -209,7 +203,7 @@ call <SID>X("Question", s:orange, "", "none")
 call <SID>X("WarningMsg", s:green, "", "none")
 call <SID>X("MatchParen", s:black, s:darkgreen, "none")
 call <SID>X("Folded", s:white, s:purple, "none")
-call <SID>X("FoldColumn", "", s:background, "none")
+call <SID>X("FoldColumn", "", "", "none")
 call <SID>X("Cursor", s:black, s:pink, "none")
 call <SID>X("CursorIM", s:black, s:aqua, "none")
 call <SID>X("CursorColumn", "", "", "none")
@@ -219,7 +213,7 @@ if g:color_theme == "dark"
   call <SID>X("CursorLineNR", s:yellow, "", "none")
 
   call <SID>X("DiffAdd", "", s:_darkestgreen, "none")
-  call <SID>X("DiffDelete", s:darkred, s:background, "none")
+  call <SID>X("DiffDelete", s:darkred, "", "none")
   call <SID>X("DiffChange", "", s:darkestgrey, "none")
   call <SID>X2("DiffText", "", s:darkestgrey, "underline", s:violet)
 else
@@ -227,11 +221,11 @@ else
   call <SID>X("CursorLineNR", s:cheddar, "", "none")
 
   call <SID>X("DiffAdd", "", s:lightgreen, "none")
-  call <SID>X("DiffDelete", s:red, s:background, "none")
+  call <SID>X("DiffDelete", s:red, "", "none")
   call <SID>X("DiffChange", "", s:lightgrey, "none")
   call <SID>X2("DiffText", "", s:lightgrey, "underline", s:violet)
 endif
-call <SID>X("SignColumn", "", s:background, "none")
+call <SID>X("SignColumn", "", "", "none")
 call <SID>X("PMenu", s:white, s:black, "none")
 call <SID>X("PMenuSel", s:white, s:teal, "none")
 call <SID>X("PMenuSBar", "", s:teal, "none")
@@ -247,12 +241,12 @@ call <SID>X("Constant", s:red, "", "none")
 call <SID>X("Debug", s:red, "", "none")
 call <SID>X("Define", s:blue, "", "none")
 call <SID>X("Delimiter", s:aqua, "", "none")
-call <SID>X("Error", s:red, s:background, "none")
+call <SID>X("Error", s:red, "", "none")
 call <SID>X("Exception", s:pink, "", "none")
 call <SID>X("Float", s:red, "", "none")
-call <SID>X("Function", s:foreground, "", "none")
+call <SID>X("Function", "", "", "none")
 call <SID>X("Global", s:aqua, "", "none")
-call <SID>X("Identifier", s:foreground, "", "none")
+call <SID>X("Identifier", "", "", "none")
 call <SID>X("Include", s:pink, "", "none")
 call <SID>X("Keyword", s:blue, "", "none")
 call <SID>X("Label", s:aqua, "", "none")
@@ -265,17 +259,17 @@ call <SID>X("Special", s:pink, "", "none")
 call <SID>X("Statement", s:blue, "", "none")
 call <SID>X("String", s:orange, "", "none")
 call <SID>X("Tag", s:blue, "", "none")
-call <SID>X("Todo", s:darkgreen, s:background, "none")
+call <SID>X("Todo", s:darkgreen, "", "none")
 call <SID>X("Title", s:darkgrey, "", "none")
 call <SID>X("Type", s:green, "", "none")
 call <SID>X("Typedef", s:blue, "", "none")
 call <SID>X("PreCondit", s:blue, "", "none")
-call <SID>X("SpecialChar", s:foreground, "", "none")
+call <SID>X("SpecialChar", "", "", "none")
 call <SID>X("StorageClass", s:green, "", "none")
 call <SID>X("Structure", s:aqua, "", "none")
 call <SID>X("SpecialComment", s:darkgrey, "", "none")
-call <SID>X("SpellBad", s:red, s:background, "underline")
-call <SID>X("SpellCap", s:blue, s:background, "underline")
+call <SID>X("SpellBad", s:red, "", "underline")
+call <SID>X("SpellCap", s:blue, "", "underline")
 
 " C Highlighting
 call <SID>X("cType", s:green, "", "none")
@@ -311,7 +305,7 @@ call <SID>X("htmlTagName", s:green, "", "none")
 call <SID>X("htmlEndTag", s:green, "", "none")
 call <SID>X("htmlArg", s:aqua, "", "none")
 call <SID>X("htmlScriptTag", s:green, "", "none")
-call <SID>X("htmlBold", s:foreground, "", "none")
+call <SID>X("htmlBold", "", "", "none")
 call <SID>X("htmlItalic", s:darkgrey, "", "none")
 call <SID>X("htmlBoldItalic", s:orange, "", "none")
 call <SID>X("htmlSpecialTagName", s:red, "", "none")
@@ -335,7 +329,7 @@ call <SID>X("makeIdent", s:green, "", "none")
 call <SID>X("makeSpecTarget", s:orange, "", "none")
 call <SID>X("makeTarget", s:aqua, "", "none")
 call <SID>X("makeStatement", s:blue, "", "none")
-call <SID>X("makeCommands", s:foreground, "", "none")
+call <SID>X("makeCommands", "", "", "none")
 call <SID>X("makeSpecial", s:pink, "", "none")
 
 " Markdown Highlighting
@@ -343,11 +337,11 @@ call <SID>X("markdownH1", s:green, "", "none")
 call <SID>X("markdownBlockquote", s:green, "", "none")
 call <SID>X("markdownCodeBlock", s:purple, "", "none")
 call <SID>X("markdownLink", s:aqua, "", "none")
-call <SID>X("mkdCode", s:foreground, s:lightgrey, "none")
+call <SID>X("mkdCode", "", s:lightgrey, "none")
 call <SID>X("mkdLink", s:aqua, "", "none")
 call <SID>X("mkdURL", s:darkgrey, "", "none")
-call <SID>X("mkdString", s:foreground, "", "none")
-call <SID>X("mkdBlockQuote", s:foreground, s:lightgrey, "none")
+call <SID>X("mkdString", "", "", "none")
+call <SID>X("mkdBlockQuote", "", s:lightgrey, "none")
 call <SID>X("mkdLinkTitle", s:green, "", "none")
 call <SID>X("mkdDelimiter", s:blue, "", "none")
 call <SID>X("mkdRule", s:green, "", "none")
@@ -363,7 +357,7 @@ call <SID>X("perlStatementInclude", s:pink, "", "none")
 call <SID>X("perlSpecialString", s:pink, "", "none")
 
 " PHP Highlighting
-call <SID>X("phpIdentifier", s:foreground, "", "none")
+call <SID>X("phpIdentifier", "", "", "none")
 call <SID>X("phpVarSelector", s:green, "", "none")
 call <SID>X("phpKeyword", s:blue, "", "none")
 call <SID>X("phpStatement", s:blue, "", "none")
@@ -381,7 +375,7 @@ call <SID>X("pythonInclude", s:pink, "", "none")
 call <SID>X("pythonStatement", s:green, "", "none")
 call <SID>X("pythonConditional", s:purple, "", "none")
 call <SID>X("pythonRepeat", s:purple, "", "none")
-call <SID>X("pythonFunction", s:foreground, "", "none")
+call <SID>X("pythonFunction", "", "", "none")
 call <SID>X("pythonOperator", s:blue, "", "none")
 call <SID>X("pythonBuiltin", s:blue, "", "none")
 call <SID>X("pythonDecorator", s:red, "", "none")
@@ -417,7 +411,7 @@ call <SID>X("sqlType", s:green, "", "none")
 call <SID>X("sqlKeyword", s:blue, "", "none")
 call <SID>X("sqlOperator", s:blue, "", "none")
 call <SID>X("sqlSpecial", s:pink, "", "none")
-call <SID>X("mysqlVariable", s:foreground, "", "none")
+call <SID>X("mysqlVariable", "", "", "none")
 call <SID>X("mysqlType", s:green, "", "none")
 call <SID>X("mysqlKeyword", s:blue, "", "none")
 call <SID>X("mysqlOperator", s:blue, "", "none")
@@ -431,25 +425,25 @@ call <SID>X("texItalBoldStyle", s:purple, "", "none")
 
 " Vim Highlighting
 call <SID>X("vimCommand", s:green, "", "none")
-call <SID>X("vimVar", s:foreground, "", "none")
+call <SID>X("vimVar", "", "", "none")
 call <SID>X("vimFuncKey", s:green, "", "none")
-call <SID>X("vimFunction", s:foreground, "", "none")
+call <SID>X("vimFunction", "", "", "none")
 call <SID>X("vimNotFunc", s:green, "", "none")
 call <SID>X("vimMap", s:pink, "", "none")
 call <SID>X("vimAutoEvent", s:blue, "", "none")
 call <SID>X("vimMapModKey", s:blue, "", "none")
 call <SID>X("vimFuncName", s:blue, "", "none")
-call <SID>X("vimIsCommand", s:foreground, "", "none")
-call <SID>X("vimFuncVar", s:foreground, "", "none")
+call <SID>X("vimIsCommand", "", "", "none")
+call <SID>X("vimFuncVar", "", "", "none")
 call <SID>X("vimLet", s:pink, "", "none")
-call <SID>X("vimMapRhsExtend", s:foreground, "", "none")
+call <SID>X("vimMapRhsExtend", "", "", "none")
 call <SID>X("vimCommentTitle", s:darkgrey, "", "none")
 call <SID>X("vimBracket", s:blue, "", "none")
 call <SID>X("vimParenSep", s:blue, "", "none")
 call <SID>X("vimSynType", s:orange, "", "none")
 call <SID>X("vimNotation", s:blue, "", "none")
-call <SID>X("vimOper", s:foreground, "", "none")
-call <SID>X("vimOperParen", s:foreground, "", "none")
+call <SID>X("vimOper", "", "", "none")
+call <SID>X("vimOperParen", "", "", "none")
 
 " XML Highlighting
 call <SID>X("xmlTag", s:green, "", "none")
