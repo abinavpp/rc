@@ -1,3 +1,5 @@
+source ~/.pre-gdbinit
+
 python
 class LLDump(gdb.Function):
   def __init__(self):
@@ -94,8 +96,9 @@ skip -gfi /usr/include/c++/*/bits/*.h
 set follow-fork-mode child
 set detach-on-fork off
 set confirm off
-set index-cache on
 set disassembly intel
+
+source ~/.post-gdbinit
 
 tui enable
 foc cmd
