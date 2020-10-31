@@ -3,11 +3,6 @@
 # To be sourced initially in ~/.bashrc
 #
 
-# Use this if you're using the super-crappy screen of y50
-# if xset q &> /dev/null; then
-  # xgamma -quiet -rgamma 0.82 -ggamma 0.86 -bgamma 0.86
-# fi
-
 declare -A t_bg_col t_fg_col
 
 t_bg_col[bl]="\e]11;#000000\007"
