@@ -1,22 +1,22 @@
 #! /bin/bash
 
-
 path_hwmon="/sys/class/hwmon"
 
-# write_temperature "getn" prints num of hwmons
+# write_temperature "get_n" prints num of hwmons
 # else prints the cpu_temperature section
 function write_temperature {
   local i=0
-  local hwmonx temperature
-  for hwmonx in $path_hwmon/*; do
-    if [[ -d $hwmonx  ]]; then
+  local hwmon_i temperature
+
+  for hwmon_i in $path_hwmon/*; do
+    if [[ -d $hwmon_i  ]]; then
       # consider only the first temp*_input
-      temperature=`/bin/ls $hwmonx/temp*_input 2> /dev/null | head -n1`
+      temperature=`/bin/ls $hwmon_i/temp*_input 2> /dev/null | head -n1`
       if [[ ! -e $temperature ]]; then
         break
       fi
 
-      if [[ $1 == "getn" ]]; then
+      if [[ $1 == "get_n" ]]; then
         ((++i)); continue;
       fi
 
@@ -28,10 +28,10 @@ function write_temperature {
       ((++i))
     fi
   done
-  if [[ $1 == "getn" ]]; then
+
+  if [[ $1 == "get_n" ]]; then
     echo $((i))
   fi
-  unset f
 }
 
 function write_order_temperature {
@@ -40,13 +40,9 @@ function write_order_temperature {
   done
 }
 
+mkdir -p $HOME/.config/i3status
+exec > $HOME/.config/i3status/config
 
-# function main {
-if [[ $UID -ne 0 ]]; then
-  echo "Must run as root"
-  exit
-fi
-exec > /etc/i3status.conf
 cat <<ENDCAT
 # i3status configuration file.
 # see "man i3status" for documentation.
@@ -73,10 +69,10 @@ order += "volume master"
 order += "cpu_usage"
 order += "memory"
 ENDCAT
-write_order_temperature `write_temperature getn`
+
+write_order_temperature `write_temperature get_n`
 
 cat <<ENDCAT
-
 tztime local {
   format = "%Y-%m-%d [%a] %H:%M:%S"
 }
@@ -130,5 +126,3 @@ cpu_usage {
 ENDCAT
 
 write_temperature
-
-# }
