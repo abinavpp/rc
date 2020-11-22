@@ -437,7 +437,7 @@ function vimj {
 }
 
 function crynt {
-  local cry_dir="$HOME/eph/_x/"
+  local cry_dir="$HOME/documents/cry/"
   local gpg="gpg --batch --yes"
 
   if [[ $# -ne 1 || ! -d $cry_dir ]]; then
