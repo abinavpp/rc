@@ -1,38 +1,27 @@
 #! /bin/bash
 
-primary_output=$(xrandr | /bin/grep -w "connected primary"  | \
+primary_output=$(xrandr | grep -w "connected primary"  | \
   awk -F' +' '{print $1}')
 
-if [[ ! -n $primary_output ]]; then
-  echo "Unable to determine primary output"
+function die() {
+  echo $@ 1>&2
   exit 1
-fi
+}
 
-run=$1
-shift
+[[ ! -n $primary_output ]] && die "Unable to determine primary output"
 
-if [[ $run == "hdmiproj" ]]; then
-  if [[ $1 == "on" ]]; then
-    xrandr --output HDMI1 --auto --same-as $primary_output
-  elif [[ $1 == "off" ]]; then
-    xrandr --output HDMI1 --auto --off
-  fi
+run=$1; output=$2
 
-elif [[ $run == "primary" ]]; then
-  if [[ $1 == "on" ]]; then
-    xrandr --output $primary_output --auto
-  elif [[ $1 == "off" ]]; then
-    xrandr --output $primary_output --off
-  fi
+[[ $output == "primary" ]] && output=$primary_output
 
-elif [[ $run == "res" ]]; then
+if [[ $run == "on" ]]; then
+  xrandr --output $output --auto --same-as $primary_output
+elif [[ $run == "off" ]]; then
+  xrandr --output $output --off
+elif [[ $run == "mode" ]]; then
   xrandr --output $primary_output --mode $1
-
-# sometimes switching xrandr --output screws up the font, try this then.
 elif [[ $run == "fixfont" ]]; then
   xrandr --dpi 96
-
 else
-  echo "Primary output is $primary_output"
+  xrandr | grep "connected"
 fi
-
