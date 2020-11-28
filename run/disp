@@ -15,7 +15,11 @@ run=$1; output=$2
 [[ $output == "primary" ]] && output=$primary_output
 
 if [[ $run == "on" ]]; then
-  xrandr --output $output --auto --same-as $primary_output
+  if [[ $output == $primary_output ]]; then
+    xrandr --output $output --auto
+  else
+    xrandr --output $output --auto --same-as $primary_output
+  fi
 elif [[ $run == "off" ]]; then
   xrandr --output $output --off
 elif [[ $run == "mode" ]]; then
