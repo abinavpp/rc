@@ -14,7 +14,7 @@ host_obj="host.o"
 offload_wrapper_bitcode="offload_wrapper.bc"
 
 run=$1
-omp_common="-fopenmp -I $LLVM_DEV/build/llvm-main/projects/openmp/runtime/src"
+omp_common="-fopenmp -I $LLVM_DEV/build/llvm-project/projects/openmp/runtime/src"
 omp_common+=" -target x86_64-pc-linux-gnu"
 
 function dump_x86_dev_lk() {
@@ -141,10 +141,10 @@ if [[ $this == "cluda" ]]; then
 
   [[ ! -d $cuda_path ]] && cuda_path="/usr/lib/cuda"
 
+  set -x
   # Why --cuda-gpu-arch=sm_xx is an unused option ?
   clang++ -L ${cuda_path}/lib64 -I ${cuda_path}/include \
     --cuda-gpu-arch=sm_$(nvsm) -lcudart $@
-  exit $?
 
 elif [[ $this == "iroff" ]]; then
   if [[ $1 == "ub" ]]; then
@@ -153,20 +153,21 @@ elif [[ $this == "iroff" ]]; then
     compile_bundled_x86_ir $@
     clean_iroff_leftovers
   fi
-  exit $?
-fi
 
-if [[ $run == "nv" ]]; then
+elif [[ $run == "nv" ]]; then
   shift
+  set -x
   clang $omp_common -fopenmp-targets=nvptx64-nvidia-cuda -Xopenmp-target \
     -march=sm_$(nvsm) $@
 
 # FIXME! remove the -march hard-coding
 elif [[ $run == "gcn" ]]; then
   shift
+  set -x
   clang $omp_common -fopenmp-targets=amdgcn-amd-amdhsa \
     -Xopenmp-target=amdgcn-amd-amdhsa -march=gfx900 $@
 
 else
+  set -x
   clang $omp_common -fopenmp-targets=x86_64-pc-linux-gnu $@
 fi
