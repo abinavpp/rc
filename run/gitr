@@ -27,7 +27,7 @@ sub find_visitor {
   return unless -d;
 
   if ($File::Find::name =~ /.*\/\.git$/) {
-    if ($this eq 'gitrc') {
+    if ($this eq 'gitrq') {
 
       # git suppresses esc-codes if stdout is not a terminal so we force it
       my $git_out = `git -c color.status=always $cmd`;
