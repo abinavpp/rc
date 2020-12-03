@@ -3,8 +3,13 @@
 use strict;
 use warnings;
 
+use File::Find;
+use File::Basename;
+use Term::ANSIColor;
+
 my $dir = ".";
 my $cmd = "status";
+my $this = basename($0);
 
 if (scalar @ARGV >= 1) {
   $dir = $ARGV[0];
@@ -14,6 +19,28 @@ if (scalar @ARGV >= 1) {
   }
 }
 
-system('find ' . $dir . ' -type d -name \'.git\' -exec bash -c '
-  . '\'(cd {}; cd ..; echo -ne "\033[0;32m" ; pwd; '
-  . 'echo -ne "\033[0m"; git ' . $cmd . ';)\' \;');
+# system('find ' . $dir . ' -type d -name \'.git\' -exec bash -c '
+#   . '\'(cd {}; cd ..; echo -ne "\033[0;32m" ; pwd; '
+#   . 'echo -ne "\033[0m"; git ' . $cmd . ';)\' \;');
+
+sub find_visitor {
+  return unless -d;
+
+  if ($File::Find::name =~ /.*\/\.git$/) {
+    if ($this eq 'gitrc') {
+
+      # git suppresses esc-codes if stdout is not a terminal so we force it
+      my $git_out = `git -c color.status=always $cmd`;
+      if (length($git_out)) {
+        print color('green'); system('pwd'); print color('reset');
+        print $git_out;
+      }
+
+    } else {
+      print color('green'); system('pwd'); print color('reset');
+      system("git $cmd");
+    }
+  }
+}
+
+find({wanted => \&find_visitor}, $dir);
