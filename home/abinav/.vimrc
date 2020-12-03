@@ -188,11 +188,10 @@ function! Save()
   endif
 endfunction
 
-func! CopyAsBreakpoint()
-  let s:pos = expand('%:p') . ':' . line('.')
+func! CopyToClipboard(str)
   " TODO: why the following fails in Ubuntu 18.04 vim build.
-  " call system("xsel", s:pos)
-  exe 'silent !echo -n "' . s:pos . '" | xsel'
+  " call system("xsel", a:str)
+  exe 'silent !echo -n "' . a:str . '" | xsel'
   exe 'redraw!'
 endfunc
 
@@ -234,11 +233,11 @@ nnoremap <Leader>l :set list!<CR>
 nnoremap <Leader>s :set spell!<CR>
 nnoremap <Leader>w :set wrap!<CR>
 nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
-nnoremap <Leader>n :call NTToggle()<CR>
 nnoremap <Leader>m :SyntasticToggleMode<CR>
 nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
 nnoremap <Leader>p :FZF
-nnoremap <Leader>b :call CopyAsBreakpoint()<cr>
+nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<cr>
+nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>c :call CsInv()<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
