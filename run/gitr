@@ -7,21 +7,13 @@ use File::Find;
 use File::Basename;
 use Term::ANSIColor;
 
-my $dir = ".";
-my $cmd = "status";
+my $dir = '.';
+my $git_cmd = 'status';
 my $this = basename($0);
 
 if (scalar @ARGV >= 1) {
-  $dir = $ARGV[0];
-
-  if (scalar @ARGV >= 2) {
-    $cmd = join (' ', @ARGV[1 .. $#ARGV]);
-  }
+  $git_cmd = join (' ', @ARGV[0 .. $#ARGV]);
 }
-
-# system('find ' . $dir . ' -type d -name \'.git\' -exec bash -c '
-#   . '\'(cd {}; cd ..; echo -ne "\033[0;32m" ; pwd; '
-#   . 'echo -ne "\033[0m"; git ' . $cmd . ';)\' \;');
 
 sub find_visitor {
   return unless -d;
@@ -30,7 +22,7 @@ sub find_visitor {
     if ($this eq 'gitrq') {
 
       # git suppresses esc-codes if stdout is not a terminal so we force it
-      my $git_out = `git -c color.status=always $cmd`;
+      my $git_out = `git -c color.status=always $git_cmd`;
       if (length($git_out)) {
         print color('green'); system('pwd'); print color('reset');
         print $git_out;
@@ -38,7 +30,7 @@ sub find_visitor {
 
     } else {
       print color('green'); system('pwd'); print color('reset');
-      system("git $cmd");
+      system("git $git_cmd");
     }
   }
 }
