@@ -189,10 +189,14 @@ function! Save()
 endfunction
 
 func! CopyToClipboard(str)
-  " TODO: why the following fails in Ubuntu 18.04 vim build.
-  " call system("xsel", a:str)
-  exe 'silent !echo -n "' . a:str . '" | xsel'
-  exe 'redraw!'
+  if has('xterm_clipboard')
+    let @* = a:str
+  else
+    " TODO: why the following fails in Ubuntu 18.04.
+    " call system("xsel", a:str)
+    exe 'silent !echo -n "' . a:str . '" | xsel'
+    exe 'redraw!'
+  endif
 endfunc
 
 func! FoldIfDef()
