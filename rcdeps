@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 
+use Term::ANSIColor;
+
 my @deps = (
   "dot",
   "pdfunite",
@@ -13,11 +15,14 @@ my @deps = (
   "fzf",
   "ranger",
 
-  "xclip"
+  "xsel",
 );
 
 for my $dep(@deps) {
-  if (system("which $dep &> /dev/null")) {
-    print "$dep not installed!\n";
+  print color('green');
+  if (system("which $dep 2> /dev/null") != 0) {
+    print color('red'); print "Can't find $dep\n";
   }
 }
+
+print color('reset');
