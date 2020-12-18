@@ -493,6 +493,7 @@ au BufNewFile,BufRead *.c.* set filetype=rtl
 au FileType llvm setlocal commentstring=;\ %s
 au FileType mlir setlocal commentstring=//\ %s
 au FileType cpp setlocal commentstring=//\ %s
+  \| set comments^=:///
 " see https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
 " aug python
     " ftype/python.vim overwrites this
