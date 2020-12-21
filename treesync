@@ -33,11 +33,13 @@ function die {
 }
 
 function sanitize_path_string {
-  dir=`echo $1 | tr -s /`
+  local dir=`echo $1 | tr -s /`
 
   if [[ $dir == '/' ]]; then
     echo -n '/'
+    return
   fi
+
   echo -n $dir | sed 's:/$::' # remove the trailing /
 }
 
@@ -46,19 +48,18 @@ function tree_sync {
     die "tree_sync() must be called with exactly 3 args"
   fi
 
-  dir_tree="$1"
-  dir_from="$2"
-  dir_to="$3"
+  local dir_tree="$1" dir_from="$2" dir_to="$3"
 
   if [[ ! -d $dir_tree || ! -d $dir_from || ! -d $dir_to ]]; then
     print_usage; exit
   fi
 
-  tree_root_len=`echo -n "$dir_tree" | wc -c`
+  local tree_root_len=`echo -n "$dir_tree" | wc -c`
 
-  files_tree=(`find $dir_tree -type f -print |  \
+  local files_tree=(`find $dir_tree -type f -print |  \
     cut -c1-$(($tree_root_len + 1)) --complement `)
 
+  local f
   for f in ${files_tree[@]}; do
     if [[ $run_mode == "dry" ]]; then
       echo "mkdir -p `dirname ${dir_to}/$f`"
