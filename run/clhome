@@ -1,6 +1,7 @@
 #! /bin/bash
 
-files=(.calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo .wget-hsts)
+files=(.calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo \
+  .wget-hsts .xsel.log)
 
 for i in ${!files[@]}; do
    rm -rf ~/${files[$i]} &> /dev/null
