@@ -479,27 +479,10 @@ function cdp {
   cd /proc/$pid
 }
 
-function clhome {
-  local f
-  for f in "$@"; do
-    rm -rf ~/$f &> /dev/null
-  done
-}
-
 function 256col {
   echo -e "\e]10;#$1\007"
   ps -efl
   read
-}
-
-function cltex {
-  local f
-  for f in *.tex; do
-    f=${f%.tex}
-    rm ${f}.pdf ${f}.log ${f}.aux ${f}.pgf ${f}.toc &> /dev/null
-  done
-
-  rm missfont.log &> /dev/null
 }
 
 function harakiri {
@@ -637,6 +620,6 @@ complete -F _comp_nt nt
 complete -F _comp_ephnt ephnt
 complete -F _pacman -o default pacdry
 
-clhome .sw? .calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo
+clhome
 print_fortune
 vocutil print 1

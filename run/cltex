@@ -1,0 +1,8 @@
+#! /bin/bash
+
+for f in *.tex; do
+  f=${f%.tex}
+  rm ${f}.pdf ${f}.log ${f}.aux ${f}.pgf ${f}.toc &> /dev/null
+done
+
+rm missfont.log &> /dev/null

@@ -1,0 +1,8 @@
+#! /bin/bash
+
+files=(.sw? .calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo \
+  .wget-hsts)
+
+for i in ${!files[@]}; do
+   rm -rf ~/${files[$i]} &> /dev/null
+done
