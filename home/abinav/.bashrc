@@ -165,24 +165,27 @@ function coall {
 }
 
 function prompt_command {
-  # \e] are xterm OSC \e[ are VT100 ctrl seq
+  # Refer `man console_codes`
 
-  # to set title
-  echo -ne "\033]0; ${USER}@${HOSTNAME}[$(tty)]    ${PWD}\007"
+  # Recall that:
+  # - \e[ is the CSI (Control Sequence Introducer) and the sequence following
+  #   it is the CSI-sequence. The CSI-sequence ending in 'm' is the ECMA-48-SGR
+  #   (Set Graphics Rendition)
+  # - \e] is the OSC (Operating System Command) and the sequence following it
+  #   is the OSC-sequence.
 
-  # VT100 sequences MUST be within \[ and \] in the PS1 string, same
-  # applies for xterm OSC or any non printable stuff in PS1 string.
+  # set title
+  echo -ne "\e]0; ${USER}@${HOSTNAME}[$(tty)]    ${PWD}\007" # \007 is BEL
 
-  # Using xterm OSC seems to create issues such as flickering, so I have
-  # only used it once at the last line of PS1.
-  PS1='\[\e[38;5;76m\]\u' # VT100 ctrl seq works here
-  PS1+='@\[\e[0m\]' # VT100 ctrl seq that reset all attributes
-  PS1+='\h '
-  PS1+='\W '
-  PS1+='\$ ' # note that we NEED single quotes here!
+  # Any non printable must be within \[ and \] in the PS1 string
+
+  PS1='\[\e[38;5;76m\]\u@' # <user-name>@ in ECMA-48-SGR green foreground
+  PS1+='\[\e[0m\]' # ECMA-48-SGR reset
+  PS1+='\h ' # <host-name>
+  PS1+='\W ' # <PWD>
+  PS1+='\$ '
 
   _t_col_upd
-  # this line forces the terminal colorscheme
   PS1+="\[${t_fg_curr_col}\]\[${t_bg_curr_col}\]"
 }
 
