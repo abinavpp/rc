@@ -40,11 +40,6 @@ my @backup_paths = (
   "$ENV{HOME}/test/my",
   "$ENV{HOME}/www",
 
-  "$ENV{HOME}/.pre-bashrc",
-  "$ENV{HOME}/.pre-vimrc",
-  "$ENV{HOME}/.post-bashrc",
-  "$ENV{HOME}/.post-vimrc",
-
   "$chrome_config_path/Local State",
   "$chrome_config_path/First Run",
   "$chrome_config_path/Default/Bookmarks",
@@ -58,6 +53,11 @@ my @backup_paths = (
   "$chrome_config_path/Default/Local Storage",
 
   "$ENV{HOME}/.mozilla/",
+);
+
+my @backup_globs = (
+  "$ENV{HOME}/.pre-*",
+  "$ENV{HOME}/.post-*"
 );
 
 my $dest = ".";
@@ -77,6 +77,16 @@ if (scalar @ARGV > 1) { die_usage(); }
 if (scalar @ARGV == 1) { $dest = $ARGV[0]; }
 
 if (! -d $dest) { die_usage(); }
+
+for my $backup_glob (@backup_globs) {
+  my @glob_files = glob($backup_glob);
+
+  if (!@glob_files) { print "ignoring: $backup_glob\n"; }
+
+  for my $glob_file (@glob_files) {
+    push(@backup_paths, $glob_file);
+  }
+}
 
 my @ignore_indices;
 for my $i (0 .. $#backup_paths) {
