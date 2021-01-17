@@ -40,17 +40,25 @@ let g:syntastic_mode_map = {
   \ "passive_filetypes": ["c", "cpp", "cuda", "tex"] }
 let g:syntastic_c_compiler_options = '-Wparentheses'
 
+" lsp debug
+" ---------
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 " let g:asyncomplete_log_file = expand('~/asyncomplete.log')
-let g:lsp_signature_help_enabled = 1
+
+" lsp deprecated
+" --------------
 let g:lsp_signs_enabled = 0
 let g:lsp_highlights_enabled = 0 " for neovim
 let g:lsp_textprop_enabled = 0
 let g:lsp_highlight_references_enabled = 1
+
+let g:lsp_signature_help_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_peek_alignment = 'center'
 let g:lsp_preview_keep_focus = 0
+let g:lsp_diagnostics_highlights_enabled = 0
+let g:lsp_diagnostics_signs_enabled = 0
 
 let g:tagbar_left = 1
 
