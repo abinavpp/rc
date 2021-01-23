@@ -2,40 +2,36 @@
 
 path_hwmon="/sys/class/hwmon"
 
-# write_temperature "get_n" prints num of hwmons
-# else prints the cpu_temperature section
 function write_temperature {
-  local i=0
+  local count=0
   local hwmon_i temperature
 
   for hwmon_i in $path_hwmon/*; do
-    if [[ -d $hwmon_i  ]]; then
+    if [[ -d $hwmon_i ]]; then
       # consider only the first temp*_input
-      temperature=`/bin/ls $hwmon_i/temp*_input 2> /dev/null | head -n1`
-      if [[ ! -e $temperature ]]; then
-        break
+      temp_input=`ls $hwmon_i/temp*_input 2> /dev/null | head -n1`
+      if [[ ! -e $temp_input ]]; then
+        continue;
       fi
 
-      if [[ $1 == "get_n" ]]; then
-        ((++i)); continue;
-      fi
+      ((++count))
+      [[ $1 == "get_count" ]] && continue;
 
-      echo "cpu_temperature $i {"
+      echo "cpu_temperature $((count - 1)) {"
       echo -e "\tformat = \"%degrees °C\"" # echo -e "\u00B0"
       echo -e "\tmax_threshold = \"75\""
-      echo -e "\tpath = \"$temperature\""
-      echo "}"
-      ((++i))
+      echo -e "\tpath = \"$temp_input\""
+      echo -e "}\n"
     fi
   done
 
-  if [[ $1 == "get_n" ]]; then
-    echo $((i))
+  if [[ $1 == "get_count" ]]; then
+    echo $((count))
   fi
 }
 
 function write_order_temperature {
-  local n=$(write_temperature get_n)
+  local n=$(write_temperature get_count)
   for ((i = 0; i < $n; i++)) do
     echo "order += \"cpu_temperature $i\""
   done
