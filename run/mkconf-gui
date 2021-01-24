@@ -65,6 +65,8 @@ function set_xroot {
   if xset q &> /dev/null; then
     type xsetroot &> /dev/null && \
       xsetroot -solid "$col"
+    type hsetroot &> /dev/null && \
+      hsetroot -solid $col
   fi
 }
 
