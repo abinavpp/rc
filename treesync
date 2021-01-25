@@ -20,9 +20,9 @@ synchronization from <from> to <to>
 
 Examples:
 To "sync in" your home:
-  treesync -s home/abinav -f /home/abinav -t repo/home/abinav
+  treesync -s home/abinavpp -f /home/abinavpp -t repo/home/abinavpp
 To "sync out" your home:
-  treesync -s home/abinav -f repo/home/abinav -t /home/abinav
+  treesync -s home/abinavpp -f repo/home/abinavpp -t /home/abinavpp
 
 ENDCAT
 }

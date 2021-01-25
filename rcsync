@@ -33,10 +33,10 @@ or unsynchronized system or you messed up your system big time.
 See rcsync -h and the examples below.
 
 Examples:
-rcsync -d -H abinav sin # dry run of sin (sync home/abinav with ~)
+rcsync -d -H abinavpp sin # dry run of sin (sync home/abinavpp with ~)
 rcsync -S y50 diff # does a diff with / and sysroot/y50
-rcsync -H abinav sin # does a sync in.
-rcsync -H abinav sout # does a sync out.
+rcsync -H abinavpp sin # does a sync in.
+rcsync -H abinavpp sout # does a sync out.
 
 ENDCAT
 }
