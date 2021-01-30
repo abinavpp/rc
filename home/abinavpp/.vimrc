@@ -19,7 +19,6 @@ call plug#end()
 " variables
 " =========
 let mapleader = " "
-let sys = substitute(system('uname -r'), '\n\+$', '', '')
 
 let delimitMate_expand_cr = 1
 
@@ -40,23 +39,11 @@ let g:syntastic_mode_map = {
   \ "passive_filetypes": ["c", "cpp", "cuda", "tex"] }
 let g:syntastic_c_compiler_options = '-Wparentheses'
 
-" lsp debug
-" ---------
-" let g:lsp_log_verbose = 1
-" let g:lsp_log_file = expand('~/vim-lsp.log')
-" let g:asyncomplete_log_file = expand('~/asyncomplete.log')
-
-" lsp deprecated
-" --------------
-let g:lsp_signs_enabled = 0
-let g:lsp_highlights_enabled = 0 " for neovim
-let g:lsp_textprop_enabled = 0
-let g:lsp_highlight_references_enabled = 1
-
 let g:lsp_signature_help_enabled = 1
-let g:lsp_diagnostics_echo_cursor = 1
-let g:lsp_peek_alignment = 'center'
 let g:lsp_preview_keep_focus = 0
+let g:lsp_document_highlight_delay = 0
+let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_diagnostics_echo_delay = 0
 let g:lsp_diagnostics_highlights_enabled = 0
 let g:lsp_diagnostics_signs_enabled = 0
 
@@ -64,12 +51,11 @@ let g:tagbar_left = 1
 
 let fortran_free_source = 1
 let fortran_have_tabs = 1
-" let fortran_more_precise = 1
+let fortran_more_precise = 1
 let fortran_do_enddo = 1
 
-" for functions in this file
-let s:trailing_space_flag = 1
-let g:qcomprun_cflags = "-lpthread -lm"
+let s:trailing_space_state = 1
+let s:qcomprun_cflags = "-lpthread -lm"
 let g:color_theme = "dark"
 
 " pre-vimrc
@@ -90,12 +76,14 @@ function! CleanMe()
 endfunction
 
 function! TrailingSpaceMatch()
-  if s:trailing_space_flag == 0
-    let s:trailing_space_flag = 1
+  if s:trailing_space_state == 0
+    let s:trailing_space_state = 1
     match trailingSpace /\s\+\%#\@<!$/
+    echo "Trailing-space match on"
   else
-    let s:trailing_space_flag = 0
+    let s:trailing_space_state = 0
     match none
+    echo "Trailing-space match off"
   endif
 endfunction
 
@@ -107,7 +95,7 @@ endfunction
 function! QCompRun(cmdline)
   if filereadable("Makefile")
     exec '!make &&
-          \ find . -maxdepth 1 -type f -perm /0100 -exec ' . a:cmdline . ' {} \;'
+      \ find . -maxdepth 1 -type f -perm /0100 -exec ' . a:cmdline . ' {} \;'
   else
     let l:ft = &filetype
     if ft == "c"
@@ -121,7 +109,7 @@ function! QCompRun(cmdline)
     endif
 
     exec '!' . l:compiler . g:qcomprun_cflags . ' -g ' . shellescape('%') . ';' .
-          \a:cmdline . " ./a.out"
+      \a:cmdline . " ./a.out"
   endif
 endfunction
 
@@ -149,7 +137,7 @@ function! Cds()
   endif
 endfunction
 
-function! CsInv()
+function! CSInv()
   if g:color_theme == "light"
     let g:color_theme = 'dark'
   else
@@ -177,13 +165,13 @@ function! NTToggle()
   endif
 endfunction
 
-function! MapAll(keys, nrhs, irhs, crhs)
-  execute 'nnoremap' a:keys a:nrhs
-  execute 'vnoremap' a:keys a:nrhs
-  execute 'inoremap' a:keys a:irhs
+function! MapAll(lhs, n_rhs, i_rhs, c_rhs)
+  execute 'nnoremap' a:lhs a:n_rhs
+  execute 'vnoremap' a:lhs a:n_rhs
+  execute 'inoremap' a:lhs a:i_rhs
 
-  if a:crhs != ""
-    execute 'cnoremap' a:keys a:crhs
+  if a:c_rhs != ""
+    execute 'cnoremap' a:lhs a:c_rhs
   endif
 endfunction
 
@@ -220,6 +208,8 @@ command! Fif :call FoldIfDef()
 command! Cdb :lcd %:p:h
 command! Cds :call Cds()
 command! Gd :Gdiff <bar> :wincmd l <bar> :wincmd H
+command! CSInv :call CSInv()
+au filetype c,cpp,cuda command! CPair :call CPair()
 
 " mappings
 " ========
@@ -247,13 +237,10 @@ nnoremap <Leader>w :set wrap!<CR>
 nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
 nnoremap <Leader>m :SyntasticToggleMode<CR>
 nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
-nnoremap <Leader>p :FZF
 nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<cr>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
-nnoremap <Leader>c :call CsInv()<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
-au filetype c,cpp,cuda nnoremap <Leader>h :call CPair()<CR>
 
 " lsp
 " ---
@@ -263,7 +250,7 @@ nmap <C-\>s :LspDeclaration<CR>i
 nmap <C-\>r :LspReference<CR>i
 nmap <C-\><S-R> :LspRename<CR>
 nmap <C-\>i :LspHover<CR>i
-nmap <C-\>e :LspNextError<CR>i
+nmap <C-\>e :LspNextError<CR>
 nmap <C-\>l :LspNextReference<CR><Right>i
 nmap <C-\><S-l> :LspPreviousReference<CR><Right>i
 nmap <C-\>p :LspPeekDefinition<CR>i
