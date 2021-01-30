@@ -208,6 +208,7 @@ command! Fif :call FoldIfDef()
 command! Cdb :lcd %:p:h
 command! Cds :call Cds()
 command! Gd :Gdiff <bar> :wincmd l <bar> :wincmd H
+command! GD :Gdiff <bar> :wincmd l <bar> :wincmd H
 command! CSInv :call CSInv()
 au filetype c,cpp,cuda command! CPair :call CPair()
 
