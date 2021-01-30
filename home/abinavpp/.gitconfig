@@ -9,5 +9,8 @@
   pm = push origin master
   them = ls-files --others --directory
 
+[pull]
+  rebase = true
+
 [include]
   path = ~/.post-gitconfig
