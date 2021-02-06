@@ -411,14 +411,6 @@ inoremap <C-@> <tab>
 set wildcharm=<tab>
 cnoremap <C-@> <tab>
 
-" abbr
-" ===
-abbr mian main
-abbr itn int
-abbr tin int
-abbr fucntion function
-abbr progrma program
-
 " set
 " ===
 set t_Co=256
