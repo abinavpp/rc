@@ -564,8 +564,6 @@ alias perlpi='perl -lpe '
 alias perl1='perl -ne '
 alias readelf='readelf --wide'
 alias pll='prettyll -simvar -gepin'
-alias dmesg='dmesg -T'
-alias dmesge='dmesg -T --level alert,crit,emerg,err'
 alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
 alias rmtcp='rsync -avz -e ssh' # scp sucks
 

@@ -1,0 +1,21 @@
+#! /usr/bin/perl
+
+use File::Basename;
+
+my $this = basename($0);
+
+my $dmesg_cmd = "/bin/dmesg -T ";
+
+if ($this eq 'dmesge') {
+  $dmesg_cmd .= "--level alert,crit,emerg,err "
+}
+
+my $dmesg_restrict = `sysctl -n kernel.dmesg_restrict`;
+chomp($dmesg_restrict);
+
+my $cmd = $dmesg_cmd;
+if ($dmesg_restrict eq "1") {
+  $cmd = "sudo " . $cmd;
+}
+
+system($cmd);
