@@ -21,7 +21,7 @@ call plug#end()
 let mapleader = " "
 
 let delimitMate_expand_cr = 1
-
+au filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
 " this is defaulted to comment, below will enable delimitMate
 " within comments
 let delimitMate_excluded_regions = ""
@@ -55,7 +55,6 @@ let fortran_more_precise = 1
 let fortran_do_enddo = 1
 
 let s:trailing_space_state = 1
-let s:qcomprun_cflags = "-lpthread -lm"
 let g:color_theme = "dark"
 
 " pre-vimrc
@@ -66,10 +65,6 @@ endif
 
 " functions
 " =========
-function! Chomp(string)
-  return substitute(a:string, '\n\+$', '', '')
-endfunction
-
 function! CleanMe()
   silent! exec '%s/\v\ +$//g'
   silent! exec '%s/\v[^\x00-\x7F]+//g'
@@ -79,38 +74,17 @@ function! TrailingSpaceMatch()
   if s:trailing_space_state == 0
     let s:trailing_space_state = 1
     match trailingSpace /\s\+\%#\@<!$/
-    echo "Trailing-space match on"
+    echo "Trailing-space-match on"
   else
     let s:trailing_space_state = 0
     match none
-    echo "Trailing-space match off"
+    echo "Trailing-space-match off"
   endif
 endfunction
 
 function! Gnu()
   set tabstop=8
   match none
-endfunction
-
-function! QCompRun(cmdline)
-  if filereadable("Makefile")
-    exec '!make &&
-      \ find . -maxdepth 1 -type f -perm /0100 -exec ' . a:cmdline . ' {} \;'
-  else
-    let l:ft = &filetype
-    if ft == "c"
-      let l:compiler = "gcc "
-    elseif ft == "cpp"
-      let l:compiler = "g++ "
-    elseif ft == "fortran"
-      let l:compiler = "gfortran "
-    else
-      return
-    endif
-
-    exec '!' . l:compiler . g:qcomprun_cflags . ' -g ' . shellescape('%') . ';' .
-      \a:cmdline . " ./a.out"
-  endif
 endfunction
 
 function! CPair()
@@ -146,7 +120,7 @@ function! CSInv()
   colo CandyPaper2
 endfunction
 
-function! CsUpd()
+function! CSUpd()
   for l:line in readfile($HOME . "/.t_col", '', 2)
     if line =~ 'wh'
       let g:color_theme = 'light'
@@ -200,6 +174,15 @@ func! FoldIfDef()
   set foldmethod=marker
 endfunc
 
+function! SpellToggle()
+  set spell!
+  if &spell == 1
+    echo "Spell-check on"
+  else
+    echo "Spell-check off"
+  endif
+endfunction
+
 " commands
 " ========
 command! Cl :call CleanMe()
@@ -209,7 +192,7 @@ command! Cdb :lcd %:p:h
 command! Cds :call Cds()
 command! Gd :Gdiff <bar> :wincmd l <bar> :wincmd H
 command! GD :Gdiff <bar> :wincmd l <bar> :wincmd H
-command! CSInv :call CSInv()
+command! Csi :call CSInv()
 au filetype c,cpp,cuda command! CPair :call CPair()
 
 " mappings
@@ -218,8 +201,8 @@ au filetype c,cpp,cuda command! CPair :call CPair()
 " https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
 " https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
 "
-" Stick to xterm! Moolenaar does I guess. Nevertheless, try to minimize dependency on
-" alt key-bindings
+" Stick to xterm! Moolenaar does I guess. Nevertheless, try to minimize
+" dependency on alt key-bindings
 
 " visual
 " ------
@@ -227,18 +210,17 @@ vmap <C-_> gc
 vnoremap <C-x> d
 vnoremap <C-c> y
 vnoremap d "_d
-vnoremap / y/<C-R>"<CR>
 
-" follow the leader
-" -----------------
+" leader
+" ------
 nnoremap <Leader>f :set filetype
 nnoremap <Leader>l :set list!<CR>
-nnoremap <Leader>s :set spell!<CR>
+nnoremap <Leader>s :call SpellToggle()<CR>
 nnoremap <Leader>w :set wrap!<CR>
 nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
 nnoremap <Leader>m :SyntasticToggleMode<CR>
 nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
-nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<cr>
+nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
@@ -299,7 +281,6 @@ nnoremap zz :call Save()<CR>
 nnoremap hh :noh<CR>
 nnoremap tt :TagbarToggle<CR>
 nnoremap dt :difft<CR>
-au filetype c,cpp,cuda inoremap <C-n> #include <><Left>
 
 " cut/copy/select
 " ----------------
@@ -326,24 +307,10 @@ nnoremap <C-a><C-r> :call setreg('a', "")<CR>
 
 " <FX> cmds
 " ---------
-inoremap <F6> <C-o>:wa <bar> call QCompRun('')<CR>
-inoremap <F7> <C-o>:wa <bar> call QCompRun('gdb')<CR>
-inoremap <F8> <C-o>:wa <bar> call QCompRun('valgrind')<CR>
 au filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
 au filetype tex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
-au filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
-au filetype sh inoremap <F6> <C-o>:wa <bar> exec
-  \'!./'.shellescape('%')<CR>
-au filetype perl inoremap <F6> <C-o>:wa <bar>
-  \exec '!perl '.shellescape('%')<CR>
-au filetype python inoremap <F6> <C-o>:wa <bar>
-  \exec '!python '.shellescape('%')<CR>
-au filetype ruby inoremap <F6> <C-o>:wa <bar>
-  \exec '!ruby '.shellescape('%')<CR>
-au filetype php inoremap <F6> <C-o>:wa <bar>
-  \exec '!php '.shellescape('%')<CR>
 
 " controlled cursor movement
 " --------------------------
@@ -494,7 +461,7 @@ au FileType cpp setlocal commentstring=//\ %s
 " plugin-manager that doesn't do so.
 " syntax on
 " filetype plugin indent on
-call CsUpd()
+call CSUpd()
 hi link llvmKeyword Special
 
 if executable('clangd')
@@ -511,7 +478,7 @@ endif
 
 " other autocmds
 " ==============
-autocmd vimenter * call CsUpd() | call setreg('a', "")
+autocmd vimenter * call CSUpd() | call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
 au insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
