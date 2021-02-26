@@ -48,10 +48,16 @@ sub setup_plugins_for_pathogen {
 }
 
 sub setup_llvm {
-  my $llvm_repo = "https://raw.githubusercontent.com/llvm/llvm-project/master";
+  my $llvm_repo = "https://raw.githubusercontent.com/llvm/llvm-project/main";
 
   system("$wget -O $ENV{HOME}/.vim/syntax/llvm.vim"
-    . " $llvm_repo/llvm/utils/vim/syntax/llvm.vim ");
+    . " $llvm_repo/llvm/utils/vim/syntax/llvm.vim");
+
+  system("$wget -O $ENV{HOME}/.vim/syntax/mir.vim"
+    . " $llvm_repo/llvm/utils/vim/syntax/mir.vim");
+
+  system("$wget -O $ENV{HOME}/.vim/syntax/machine-ir.vim"
+    . " $llvm_repo/llvm/utils/vim/syntax/machine-ir.vim");
 
   system("$wget -O $ENV{HOME}/.vim/syntax/tablegen.vim"
     . " $llvm_repo/llvm/utils/vim/syntax/tablegen.vim");
