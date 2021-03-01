@@ -179,7 +179,8 @@ function prompt_command {
 
   # Any non printable must be within \[ and \] in the PS1 string
 
-  PS1='\[\e[38;5;76m\]\u@' # <user-name>@ in ECMA-48-SGR green foreground
+  PS1='[\j] ' # <num-jobs>
+  PS1+='\[\e[38;5;76m\]\u@' # <user-name>@ in ECMA-48-SGR green foreground
   PS1+='\[\e[0m\]' # ECMA-48-SGR reset
   PS1+='\h ' # <host-name>
   PS1+='\W ' # <PWD>
