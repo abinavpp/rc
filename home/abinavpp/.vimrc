@@ -441,8 +441,7 @@ au BufRead,BufNewFile *.ll set filetype=llvm
 au BufRead,BufNewFile *.mlir set filetype=mlir
 au BufRead,BufNewFile lit.*cfg set filetype=python
 au BufRead,BufNewFile *.td set filetype=tablegen
-au BufRead,BufNewFile *.cpp.inc set filetype=cpp
-au BufRead,BufNewFile *.h.inc set filetype=cpp
+au BufRead,BufNewFile *.inc set filetype=cpp
 au BufRead,BufNewFile *.def set filetype=cpp
 au BufNewFile,BufRead *.c.* set filetype=rtl
 
