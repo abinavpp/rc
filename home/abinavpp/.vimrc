@@ -42,6 +42,7 @@ let g:syntastic_c_compiler_options = '-Wparentheses'
 let g:lsp_signature_help_enabled = 1
 let g:lsp_preview_keep_focus = 0
 let g:lsp_document_highlight_delay = 0
+let g:lsp_document_code_action_signs_enabled = 0
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_diagnostics_echo_delay = 0
 let g:lsp_diagnostics_highlights_enabled = 0
