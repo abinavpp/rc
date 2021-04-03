@@ -1,13 +1,5 @@
 set output_plugin=alsa
 
-# set dsp.alsa.device=plug:dmixer
-# set mixer.alsa.device=plug:dmixer
-# set dsp.alsa.device=default
-# set mixer.alsa.device=default
-# set dsp.alsa.device=plug:dmixer_zoomg5
-# set mixer.alsa.device=plug:dmixer_zoomg5
-
-
 set mixer.alsa.channel=Master
 set softvol=true
 set mouse=true
