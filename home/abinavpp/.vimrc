@@ -94,15 +94,6 @@ function! CPair()
   if l:pair != ""
     exec 'vsp ' . l:pair
   endif
-  return
-
-  let l:ft = &filetype
-  if ft == "c"
-    let l:header = l:buf[:-2] . 'h'
-  else
-    let l:header = l:buf[:-4] . 'h'
-  endif
-  exe 'vsp ' . l:header
 endfunction
 
 function! Cds()
