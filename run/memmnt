@@ -1,8 +1,7 @@
 #! /bin/bash
 
 path_memfs=/dev/shm/
-mntpt="memmnt"
-path_mntpt=$path_memfs$mntpt
+path_mntpt=$path_memfs/memmnt
 
 function die() { echo "$*" 1>&2 ; exit 1; }
 
@@ -27,8 +26,6 @@ function mntpt_nexti {
 }
 
 function is_ifile {
-  # can't just check if it's i-file, cuz other apps can write a ^[0-9]+$
-  # file sometimes (remember chrome)
   if [[ -w "$1" && "$1" =~ $path_mntpt.+ ]]; then
     return 0
   fi
@@ -97,8 +94,8 @@ function memmnt_umnt {
 
   rm -rf "$path_target"
 
-  case "$opt" in # none of the opts fully removes target
-    -d) # discard ifile, but keep target's meta
+  case "$opt" in
+    -d)
       if [[ -d "$path_ifile" ]]; then
         mkdir "$path_target"
       else
@@ -135,24 +132,24 @@ fi
 while getopts "chlu:d:" opt
 do
   case "$opt" in
-    c)
-      memmnt_clear;;
+  c)
+    memmnt_clear;;
 
-    l)
-      memmnt_list;;
+  l)
+    memmnt_list;;
 
-    d) # discard ifile
-      memmnt_umnt -d "$OPTARG";;
+  d) # discard ifile
+    memmnt_umnt -d "$OPTARG";;
 
-    u) # restore ifile to target
-      memmnt_umnt "$OPTARG";;
+  u) # restore ifile to target
+    memmnt_umnt "$OPTARG";;
 
-    h)
-      print_usage
-      exit;;
+  h)
+    print_usage
+    exit;;
 
-    ?)
-      print_usage
-      exit;;
+  ?)
+    print_usage
+    exit;;
   esac
 done
