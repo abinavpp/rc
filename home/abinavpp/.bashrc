@@ -508,23 +508,6 @@ function psx {
   ps -o ${fields} $@
 }
 
-function am_i_home {
-  if [[ -L /bin && $(hostname) =~ ppa\-.* ]]; then
-    return 0
-  fi
-  return 1
-}
-
-if am_i_home; then
-  function before_poweroff {
-    mmrc -u chrome &> /dev/null
-  }
-
-  function poweroff { before_poweroff; /bin/poweroff; }
-
-  function reboot { before_poweroff; /bin/reboot; }
-fi
-
 export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
 export EDITOR="$VISUAL" # use $EDITOR if "our" vim creates trouble
@@ -582,12 +565,9 @@ alias psi="psx us --ppid=1"
 alias psk="psx ks --ppid 2 -p 2"
 alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
 
-if am_i_home; then
-  source /usr/share/fzf/key-bindings.bash &> /dev/null
-  source /usr/share/fzf/completion.bash &> /dev/null
-else
-  [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
-fi
+source /usr/share/fzf/key-bindings.bash &> /dev/null
+source /usr/share/fzf/completion.bash &> /dev/null
+source ~/.fzf.bash &> /dev/null
 
 source /etc/.post-bashrc &> /dev/null
 source ${HOME}/.post-bashrc &> /dev/null
