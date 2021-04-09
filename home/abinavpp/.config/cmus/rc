@@ -10,23 +10,24 @@ bind -f common right win-next
 bind -f common mouse_scroll_down win-scroll-down
 bind -f common mouse_scroll_up win-scroll-up
 
-# Color chart
-# ===========
-# 33   sky_blue
-# 71   dull_green
-# 89   deep_pink
-# 108  dark_dull_green
-# 22   leaf_green
-# 124  red
-# 240  light_grey
-# 184  yellow
-# 208  orange
-
-set color_error=124
-set color_info=208
-set color_separator=240
+set color_win_bg=default
+set color_win_fg=default
 set color_win_dir=default
 set color_win_cur=89
+
+set color_win_title_bg=default
+set color_win_title_fg=22
+set color_titleline_bg=default
+set color_titleline_fg=89
+
+set color_win_cur_sel_bg=71
+set color_win_cur_sel_fg=89
+set color_win_sel_bg=71
+set color_win_sel_fg=black
+set color_win_inactive_cur_sel_bg=default
+set color_win_inactive_cur_sel_fg=89
+set color_win_inactive_sel_bg=default
+set color_win_inactive_sel_fg=108
 
 set color_cmdline_bg=default
 set color_cmdline_fg=default
@@ -34,21 +35,6 @@ set color_cmdline_fg=default
 set color_statusline_bg=33
 set color_statusline_fg=black
 
-set color_titleline_bg=default
-set color_titleline_fg=89
-
-set color_win_title_bg=default
-set color_win_title_fg=22
-
-set color_win_cur_sel_bg=71
-set color_win_cur_sel_fg=89
-set color_win_sel_bg=71
-set color_win_sel_fg=black
-
-set color_win_inactive_cur_sel_bg=default
-set color_win_inactive_cur_sel_fg=89
-set color_win_inactive_sel_bg=default
-set color_win_inactive_sel_fg=108
-
-set color_win_bg=default
-set color_win_fg=default
+set color_error=124
+set color_info=208
+set color_separator=240
