@@ -1,5 +1,5 @@
-source /etc/.pre-bashrc &> /dev/null
-source ${HOME}/.pre-bashrc &> /dev/null
+. /etc/.pre-bashrc &> /dev/null
+. ${HOME}/.pre-bashrc &> /dev/null
 
 function is_in_delimvar() {
   declare -A fields
@@ -565,12 +565,12 @@ alias psi="psx us --ppid=1"
 alias psk="psx ks --ppid 2 -p 2"
 alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
 
-source /usr/share/fzf/key-bindings.bash &> /dev/null
-source /usr/share/fzf/completion.bash &> /dev/null
-source ~/.fzf.bash &> /dev/null
+. /usr/share/fzf/key-bindings.bash &> /dev/null
+. /usr/share/fzf/completion.bash &> /dev/null
+. ~/.fzf.bash &> /dev/null
 
-source /etc/.post-bashrc &> /dev/null
-source ${HOME}/.post-bashrc &> /dev/null
+. /etc/.post-bashrc &> /dev/null
+. ${HOME}/.post-bashrc &> /dev/null
 
 # avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
 if [[ $_saved_RESET_XXX != true ]]; then
