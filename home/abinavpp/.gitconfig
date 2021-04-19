@@ -9,6 +9,9 @@
   pm = push origin master
   them = ls-files --others --directory
 
+[init]
+  defaultBranch = main
+
 [pull]
   rebase = true
 
