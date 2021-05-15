@@ -348,7 +348,7 @@ function _xnt {
 
 function nt { _xnt "$HOME/documents/cs/notes/sys" $1; }
 
-function ephnt { _xnt "$HOME/eph/notes/" $1; }
+function ephnt { _xnt "$HOME/documents/eph/notes/" $1; }
 
 _comp_nt() {
   local note_dir="$HOME/documents/cs/notes/sys/"
@@ -358,7 +358,7 @@ _comp_nt() {
 }
 
 _comp_ephnt() {
-  local note_dir="$HOME/eph/notes/"
+  local note_dir="$HOME/documents/eph/notes/"
   local note_comp=`ls $note_dir | sed -r "/^\.+$/d"`
   local cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$note_comp" -- $cur) )
