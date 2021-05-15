@@ -1,13 +1,12 @@
 [Default Applications]
-text/html=google-chrome.desktop;firefox.desktop
 application/pdf=org.pwmt.zathura-pdf-mupdf.desktop;org.pwmt.zathura.desktop;libreoffice-startcenter.desktop
-x-scheme-handler/html=google-chrome.desktop
-x-scheme-handler/msteams=teams.desktop
-
 audio/flac=vlc.desktop
 audio/mp3=vlc.desktop
+audio/x-m4a=vlc.desktop
+audio/x-hx-aac-adts=vlc.desktop
 image/gif=smplayer.desktop
 image/jpeg=feh.desktop
+text/html=google-chrome.desktop;firefox.desktop
 video/avi=vlc.desktop
 video/mp4=vlc.desktop
 video/quicktime=vlc.desktop
@@ -16,3 +15,9 @@ video/x-flv=vlc.desktop
 video/x-matroska=vlc.desktop
 video/x-ms-asf=vlc.desktop
 video/x-msvideo=vlc.desktop
+x-scheme-handler/html=google-chrome.desktop
+x-scheme-handler/msteams=teams.desktop
+audio/aac=vlc.desktop
+
+[Added Associations]
+audio/aac=vlc.desktop;
