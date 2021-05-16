@@ -345,20 +345,25 @@ function xnt {
     ls "$dir"
   fi
 }
-function nt { xnt "$HOME/documents/cs/notes/sys" $1; }
-function cmpnt { xnt "$HOME/documents/cs/notes/comp" $1; }
-function scrnt { xnt "$HOME/documents/misc/notes/scratch" $1; }
+function nt { xnt "$HOME/documents/cs/sys" $1; }
+function cmpnt { xnt "$HOME/documents/cs/comp" $1; }
+function scrnt { xnt "$HOME/documents/misc/scratch" $1; }
 function culnt { xnt "$HOME/documents/culinary" $1; }
 
 function _comp_xnt() {
   local dir=$1
-  cd $dir; local words=`find * -type f -print`; cd - &> /dev/null
+
+  cd $dir;
+  local words=`git ls-files 2> /dev/null`
+  [[ -z $words ]] && words=`find * -type f -print`
+  cd - &> /dev/null
+
   local cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$words" -- $cur) )
 }
-function _comp_nt() { _comp_xnt $HOME/documents/cs/notes/sys; }
-function _comp_cmpnt() { _comp_xnt $HOME/documents/cs/notes/comp; }
-function _comp_scrnt() { _comp_xnt $HOME/documents/misc/notes/scratch; }
+function _comp_nt() { _comp_xnt $HOME/documents/cs/sys; }
+function _comp_cmpnt() { _comp_xnt $HOME/documents/cs/comp; }
+function _comp_scrnt() { _comp_xnt $HOME/documents/misc/scratch; }
 function _comp_culnt() { _comp_xnt $HOME/documents/culinary; }
 
 # aliasing mn() unleashes hell when bashrc is sourced manually,
