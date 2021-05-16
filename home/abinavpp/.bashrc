@@ -115,7 +115,7 @@ function pid2jid {
 
 # updates the global script vars ${t_<fg/bg>_col_cur} as per the file name
 # referred by ${t_col_path}
-function _t_col_upd {
+function t_col_upd {
   local cur
   cur=`cat ${t_col_path} 2> /dev/null`
 
@@ -137,7 +137,7 @@ function _t_col_upd {
 function cotty {
   [[ $# -ne 1 ]] && return
   echo $1 > ${t_col_path}
-  _t_col_upd
+  t_col_upd
 }
 
 # colors all pts
@@ -146,7 +146,7 @@ function coall {
 
   [[ ! -e "${t_col_path}" ]] || touch "${t_col_path}"
   echo $1 > ${t_col_path}
-  _t_col_upd # updates the global vars
+  t_col_upd # updates the global vars
 
   for t in /dev/pts/*; do
     # skip this pts and ptmx, (the prompt will set color for this pts)
@@ -186,7 +186,7 @@ function prompt_command {
   PS1+='\W ' # <PWD>
   PS1+='\$ '
 
-  _t_col_upd
+  t_col_upd
   PS1+="\[${t_fg_curr_col}\]\[${t_bg_curr_col}\]"
 }
 
@@ -592,7 +592,7 @@ t_col_path="$HOME/.t_col"
 t_bg_curr_col=
 t_fg_curr_col=
 
-_t_col_upd
+t_col_upd
 mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
 
 PROMPT_COMMAND=prompt_command
