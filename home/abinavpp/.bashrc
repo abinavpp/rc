@@ -331,38 +331,35 @@ function pacdry {
   sudo pacman --logfile /dev/null "$@"
 }
 
-function _xnt {
-  local note_dir=$1 note=$2
+function xnt {
+  local dir=$1 note=$2
 
-  if [[ ! -e "$note_dir" ]]; then
-    echo "$note_dir not set"
+  if [[ ! -e "$dir" ]]; then
+    echo "$dir not set"
     return
   fi
 
   if [[ $# -ne 0  ]]; then
-    vim "$note_dir/$note"
+    vim "$dir/$note"
   else
-    ls "$note_dir"
+    ls "$dir"
   fi
 }
+function nt { xnt "$HOME/documents/cs/notes/sys" $1; }
+function cmpnt { xnt "$HOME/documents/cs/notes/comp" $1; }
+function scrnt { xnt "$HOME/documents/misc/notes/scratch" $1; }
+function culnt { xnt "$HOME/documents/culinary" $1; }
 
-function nt { _xnt "$HOME/documents/cs/notes/sys" $1; }
-
-function ephnt { _xnt "$HOME/documents/eph/notes/" $1; }
-
-_comp_nt() {
-  local note_dir="$HOME/documents/cs/notes/sys/"
-  local note_comp=`ls $note_dir | sed -r "/^\.+$/d"`
+function _comp_xnt() {
+  local dir=$1
+  cd $dir; local words=`find * -type f -print`; cd - &> /dev/null
   local cur=${COMP_WORDS[COMP_CWORD]}
-  COMPREPLY=( $(compgen -W "$note_comp" -- $cur) )
+  COMPREPLY=( $(compgen -W "$words" -- $cur) )
 }
-
-_comp_ephnt() {
-  local note_dir="$HOME/documents/eph/notes/"
-  local note_comp=`ls $note_dir | sed -r "/^\.+$/d"`
-  local cur=${COMP_WORDS[COMP_CWORD]}
-  COMPREPLY=( $(compgen -W "$note_comp" -- $cur) )
-}
+function _comp_nt() { _comp_xnt $HOME/documents/cs/notes/sys; }
+function _comp_cmpnt() { _comp_xnt $HOME/documents/cs/notes/comp; }
+function _comp_scrnt() { _comp_xnt $HOME/documents/misc/notes/scratch; }
+function _comp_culnt() { _comp_xnt $HOME/documents/culinary; }
 
 # aliasing mn() unleashes hell when bashrc is sourced manually,
 # so call it with mn, bash-completion done for it below
@@ -599,7 +596,9 @@ PROMPT_COMMAND=prompt_command
 . /usr/share/bash-completion/completions/pacman &> /dev/null
 complete -F _man mn
 complete -F _comp_nt nt
-complete -F _comp_ephnt ephnt
+complete -F _comp_cmpnt cmpnt
+complete -F _comp_scrnt scrnt
+complete -F _comp_culnt culnt
 complete -F _pacman -o default pacdry
 
 clhome
