@@ -345,10 +345,10 @@ function xnt {
     ls "$dir"
   fi
 }
-function nt { xnt "$HOME/documents/cs/sys" $1; }
-function cmpnt { xnt "$HOME/documents/cs/comp" $1; }
-function scrnt { xnt "$HOME/documents/misc/scratch" $1; }
-function culnt { xnt "$HOME/documents/culinary" $1; }
+function nt { xnt "$HOME/doc/cs/sys" $1; }
+function cmpnt { xnt "$HOME/doc/cs/comp" $1; }
+function scrnt { xnt "$HOME/doc/misc/scratch" $1; }
+function culnt { xnt "$HOME/doc/culinary" $1; }
 
 function _comp_xnt() {
   local dir=$1
@@ -361,10 +361,10 @@ function _comp_xnt() {
   local cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$words" -- $cur) )
 }
-function _comp_nt() { _comp_xnt $HOME/documents/cs/sys; }
-function _comp_cmpnt() { _comp_xnt $HOME/documents/cs/comp; }
-function _comp_scrnt() { _comp_xnt $HOME/documents/misc/scratch; }
-function _comp_culnt() { _comp_xnt $HOME/documents/culinary; }
+function _comp_nt() { _comp_xnt $HOME/doc/cs/sys; }
+function _comp_cmpnt() { _comp_xnt $HOME/doc/cs/comp; }
+function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scratch; }
+function _comp_culnt() { _comp_xnt $HOME/doc/culinary; }
 
 # aliasing mn() unleashes hell when bashrc is sourced manually,
 # so call it with mn, bash-completion done for it below
@@ -407,7 +407,7 @@ function print_batstat {
 }
 
 function vocutil {
-  local voc_db="$HOME/documents/voc-db/"
+  local voc_db="$HOME/doc/voc-db/"
   local run=$1; shift
 
   if [[ ! -d $voc_db ]]; then
@@ -443,7 +443,7 @@ function vimj {
 }
 
 function crynt {
-  local cry_dir="$HOME/documents/cry/"
+  local cry_dir="$HOME/doc/cry/"
   local gpg="gpg --batch --yes"
 
   if [[ $# -ne 1 || ! -d $cry_dir ]]; then

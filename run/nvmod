@@ -2,7 +2,7 @@
 
 run=$1
 
-stash=~/documents/eph
+stash=~/doc/eph
 mkdir -p "$stash"
 
 if [[ $run == "on" ]]; then
