@@ -1,6 +1,6 @@
 #! /bin/bash
 
-files=(.calc_history .lesshst Desktop .texlive .elinks .rnd .viminfo \
+files=(Desktop Downloads .calc_history .elinks .lesshst .rnd .texlive .viminfo \
   .wget-hsts .xsel.log)
 
 for i in ${!files[@]}; do
