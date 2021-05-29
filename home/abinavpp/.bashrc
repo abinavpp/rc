@@ -390,22 +390,6 @@ function print_fortune {
     && echo -e "\e[00;36m$(fortune)\e[00m")
 }
 
-function print_batstat {
-  [[ -e ${HOME}/.bat ]] && \
-    (echo -ne "Capacity then : \e[0;31m"; cat ${HOME}/.bat)
-
-  local batdir=/sys/class/power_supply/BAT*
-  local batfull="${batdir}/*(energy_full|charge_full)"
-
-  if [[ -n `dir ${batdir}` ]]; then
-    if [[ -n `ls ${batfull}` ]]; then
-      echo -ne "\e[00mCapacity now  : \e[0;32m"
-      cat ${batfull}; echo -ne "\e[00m"
-      cat ${batfull}  > ~/.bat
-    fi
-  fi
-}
-
 function vimj {
   local hst=$(cat /etc/hostname)
 
