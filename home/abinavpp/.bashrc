@@ -519,12 +519,12 @@ alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
 . ${HOME}/.post-bashrc &> /dev/null
 
 # avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
-if [[ $_saved_RESET_XXX != true ]]; then
+if [[ $SAVED_RESET_XXX != true ]]; then
   export RESET_PATH=$PATH
   export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
   export RESET_LIBRARY_PATH=$LIBRARY_PATH
   export RESET_CPATH=$CPATH
-  export _saved_RESET_XXX=true
+  export SAVED_RESET_XXX=true
 fi
 
 # If not running interactively
