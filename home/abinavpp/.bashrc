@@ -456,7 +456,7 @@ function psx {
 
 export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
-export EDITOR="$VISUAL" # use $EDITOR if "our" vim creates trouble
+export EDITOR="$VISUAL" # use $EDITOR if `function vim` creates trouble
 export ABINAV="thats my name, that name again - is Mr.Plow"
 export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
 export HISTSIZE=32768
