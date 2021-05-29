@@ -382,7 +382,7 @@ function rn {
     if [[ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]]; then
       cd -- "$(cat "$tempfile")"
     fi
-    rm -f -- "$tempfile"
+  rm -f -- "$tempfile"
 }
 
 function print_fortune {
@@ -442,17 +442,9 @@ function cdp {
   cd /proc/$pid
 }
 
-function 256col {
-  echo -e "\e]10;#$1\007"
-  ps -efl
-  read
-}
+function 256col { echo -e "\e]10;#$1\007"; ps -efl; read; }
 
-function harakiri {
-  echo "pkill -u ${USER} ?"
-  read
-  pkill -u ${USER}
-}
+function harakiri { echo "pkill -u ${USER} ?"; read; pkill -u ${USER}; }
 
 function psx {
   local type=$1; shift
