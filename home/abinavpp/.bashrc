@@ -406,33 +406,6 @@ function print_batstat {
   fi
 }
 
-function vocutil {
-  local voc_db="$HOME/doc/voc-db/"
-  local run=$1; shift
-
-  if [[ ! -d $voc_db ]]; then
-    return
-  fi
-
-  if [[ $run == "def" ]]; then
-    if [[ -e ${voc_db}  && $# -eq 1 ]]; then
-      /bin/grep -inr --color $1 ${voc_db}/ 2> /dev/null
-    fi
-    return
-  fi
-
-  if [[ $run == "print" ]]; then
-    local n=1
-    if [[ $# -eq 1 ]]; then
-      n=$1
-    fi
-
-    echo -e "\e[00;35m";
-    type voc &> /dev/null && voc -r $n ${voc_db}
-    echo -e "\e[0m";
-  fi
-}
-
 function vimj {
   local hst=$(cat /etc/hostname)
 
@@ -608,4 +581,3 @@ complete -F _pacman -o default pacdry
 
 clhome
 print_fortune
-vocutil print 1
