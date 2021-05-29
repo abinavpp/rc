@@ -391,12 +391,7 @@ function print_fortune {
 }
 
 function vimj {
-  local hst=$(cat /etc/hostname)
-
-  # Apr 24 20:42:21 localhost sudo[5336]:
-  sudo journalctl --no-pager $* |
-    /bin/grep -Pv  "^\w{3}\ \d{2}\ \d{2}:\d{2}:\d{2}\ $hst\ sudo\[\d+\].*$" | \
-    ${EDITOR} -c "set filetype=messages" - "+normal G"
+  sudo journalctl --no-pager $* | ${EDITOR} -c 'set ft=messages | +normal G' -
 }
 
 function crynt {
