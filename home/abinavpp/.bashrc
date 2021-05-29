@@ -108,7 +108,7 @@ function ind {
   disown $!
 }
 
-function pid2jid {
+function pid_to_jid {
   jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
     /bin/grep -oE "[[:digit:]]+"
 }
@@ -240,7 +240,7 @@ function vim {
       # won't look ugly)
       $cmd --remote-send "<esc>:tabnew ${arg##$bg_pwd} <CR>"
     done
-    fg $(pid2jid $bg_pid)
+    fg $(pid_to_jid $bg_pid)
     return
 
   else
