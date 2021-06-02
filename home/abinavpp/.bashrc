@@ -515,21 +515,6 @@ alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
 . /usr/share/fzf/completion.bash &> /dev/null
 . ~/.fzf.bash &> /dev/null
 
-. /etc/.post-bashrc &> /dev/null
-. ${HOME}/.post-bashrc &> /dev/null
-
-# avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
-if [[ $SAVED_RESET_XXX != true ]]; then
-  export RESET_PATH=$PATH
-  export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-  export RESET_LIBRARY_PATH=$LIBRARY_PATH
-  export RESET_CPATH=$CPATH
-  export SAVED_RESET_XXX=true
-fi
-
-# If not running interactively
-[[ $- != *i* ]] && return
-
 # Terminal colorscheme
 declare -A t_bg_col t_fg_col
 t_bg_col[bl]="\e]11;#000000\007"
@@ -547,10 +532,25 @@ t_col_path="$HOME/.t_col"
 t_bg_curr_col=
 t_fg_curr_col=
 
+PROMPT_COMMAND=prompt_command
+
+. /etc/.post-bashrc &> /dev/null
+. ${HOME}/.post-bashrc &> /dev/null
+
+# avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
+if [[ $SAVED_RESET_XXX != true ]]; then
+  export RESET_PATH=$PATH
+  export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+  export RESET_LIBRARY_PATH=$LIBRARY_PATH
+  export RESET_CPATH=$CPATH
+  export SAVED_RESET_XXX=true
+fi
+
+# If not running interactively
+[[ $- != *i* ]] && return
+
 t_col_upd
 mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
-
-PROMPT_COMMAND=prompt_command
 
 . /usr/share/bash-completion/completions/man &> /dev/null
 . /usr/share/bash-completion/completions/pacman &> /dev/null
