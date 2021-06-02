@@ -534,6 +534,15 @@ t_fg_curr_col=
 
 PROMPT_COMMAND=prompt_command
 
+. /usr/share/bash-completion/completions/man &> /dev/null
+. /usr/share/bash-completion/completions/pacman &> /dev/null
+complete -F _man mn
+complete -F _comp_nt nt
+complete -F _comp_cmpnt cmpnt
+complete -F _comp_scrnt scrnt
+complete -F _comp_culnt culnt
+complete -F _pacman -o default pacdry
+
 . /etc/.post-bashrc &> /dev/null
 . ${HOME}/.post-bashrc &> /dev/null
 
@@ -551,15 +560,5 @@ fi
 
 t_col_upd
 mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
-
-. /usr/share/bash-completion/completions/man &> /dev/null
-. /usr/share/bash-completion/completions/pacman &> /dev/null
-complete -F _man mn
-complete -F _comp_nt nt
-complete -F _comp_cmpnt cmpnt
-complete -F _comp_scrnt scrnt
-complete -F _comp_culnt culnt
-complete -F _pacman -o default pacdry
-
 clhome
 print_fortune
