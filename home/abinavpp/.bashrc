@@ -25,20 +25,20 @@ function edelimvar() {
   local delim=$1 delimvar=$2 opt=$3; shift 3
   local arg i
 
-  # print the delimvar
+  # Print the delimvar
   if [[ $opt == "-o" ]]; then
     echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}'
     return
   fi
 
-  # resets delimvar to it's $RESET_XXX var
+  # Resets delimvar to it's $RESET_XXX var
   if [[ $opt == "-r" ]]; then
     local reset_delimvar="RESET_$delimvar"
     export $delimvar=${!reset_delimvar}
     return
   fi
 
-  # edit delimvar in vim with newlines as "temporary separators". :wq to save
+  # Edit delimvar in vim with newlines as "temporary separators". :wq to save
   # changes, :q to discard changes
   if [[ $opt == "-e" ]]; then
     local temp=$(mktemp -t md_delimvar.XXXXXX)
@@ -49,12 +49,12 @@ function edelimvar() {
     return
   fi
 
-  # prepend/append needs atleast one argument
+  # Prepend/append needs atleast one argument
   if [[ $# -lt 1 ]]; then
     return
   fi
 
-  # if delimvar is blank or not set
+  # If delimvar is blank or not set
   if [[ ! $(echo ${!delimvar}) =~ [[:print:]]+ ]]; then
     if ! is_in_delimvar $delim $delimvar $1; then
       export $delimvar="$1"
@@ -63,7 +63,7 @@ function edelimvar() {
     opt="-a" # XXX: Faking the option to force appending
   fi
 
-  # prepend $@'s in reverse
+  # Prepend $@ in reverse
   if [[ $opt == "-p" ]]; then
     for (( i=$#; i > 0; i-- )); do
       arg="${!i}"
@@ -73,7 +73,7 @@ function edelimvar() {
     done
   fi
 
-  # appends $@'s as it is.
+  # Appends $@ as it is.
   if [[ $opt == "-a" ]]; then
     for arg in "$@"; do
       if ! is_in_delimvar $delim $delimvar $arg; then
@@ -113,7 +113,7 @@ function pid_to_jid {
     /bin/grep -oE "[[:digit:]]+"
 }
 
-# updates the global script vars ${t_<fg/bg>_col_cur} as per the file name
+# Updates the global script vars ${t_<fg/bg>_curr_col} as per the file name
 # referred by ${t_col_path}
 function t_col_upd {
   local cur
@@ -133,23 +133,23 @@ function t_col_upd {
   fi
 }
 
-# colors this pts
+# Colors this pts
 function cotty {
   [[ $# -ne 1 ]] && return
   echo $1 > ${t_col_path}
   t_col_upd
 }
 
-# colors all pts
+# Colors all pts
 function coall {
   [[ $# -ne 1 ]] && return
 
   [[ ! -e "${t_col_path}" ]] || touch "${t_col_path}"
   echo $1 > ${t_col_path}
-  t_col_upd # updates the global vars
+  t_col_upd # Updates the global vars
 
   for t in /dev/pts/*; do
-    # skip this pts and ptmx, (the prompt will set color for this pts)
+    # Skip this pts and ptmx, (the prompt will set color for this pts)
     if [[ $t == "$(tty)" || $t == "/dev/pts/ptmx" ]]; then
       continue
     fi
@@ -174,7 +174,7 @@ function prompt_command {
   # - \e] is the OSC (Operating System Command) and the sequence following it
   #   is the OSC-sequence.
 
-  # set title
+  # Set title
   echo -ne "\e]0; ${USER}@${HOSTNAME}[$(tty)]    ${PWD}\007" # \007 is BEL
 
   # Any non printable must be within \[ and \] in the PS1 string
@@ -198,12 +198,11 @@ function in_array {
 }
 
 function vim {
-  # we must hardcode /usr/bin/vim else we recurse!
   local vim_bin="/usr/bin/vim"
 
   [[ -x $HOME_BIN/vim ]] && vim_bin="$HOME_BIN/vim"
 
-  # if $vim_bin has no client-server feature, then no fancy stuff
+  # If $vim_bin has no client-server feature, then no fancy stuff
   if ! $vim_bin --version | /bin/grep -q -P '\+clientserver'; then
     $vim_bin -i NONE -p $@
     return
@@ -222,7 +221,7 @@ function vim {
 
   local args="" arg=""
 
-  # if we have a non file arg and we have a bg_vim then run a new vim.
+  # If we have a non file arg and we have a bg_vim then run a new vim.
   for arg in "$@"; do
     if [[ ! -e $arg  && $bg_pid ]]; then
       $vim_bin "$@"
@@ -236,8 +235,8 @@ function vim {
     for arg in "$@"; do
       arg=$(realpath "$arg")
 
-      # if path is under bg_pwd, then access it relative (so that tab heading
-      # won't look ugly)
+      # If path is under bg_pwd, then access it relative so that tab heading
+      # won't look ugly
       $cmd --remote-send "<esc>:tabnew ${arg##$bg_pwd} <CR>"
     done
     fg $(pid_to_jid $bg_pid)
@@ -255,7 +254,7 @@ function obd2 { obd --visualize-jumps; }
 function dis {
   local bin=$1 asm; shift
 
-  # Note that inling this at local-decl will make $asm ".s"
+  # Note that inlining this at local declaration will make $asm ".s"
   asm=$(basename "$bin").s
 
   if file $bin | /bin/grep -iq "LLVM.*bitcode"; then
@@ -264,9 +263,9 @@ function dis {
 
   elif file $bin | /bin/grep -iq "ELF.*x86-64"; then
 
-    # .o of a c++ file can have user-defined functions in their own sections
+    # .o of a C++ file can have user-defined functions in their own sections
     # whose names are of the form ".text.<function-name>". We add them to
-    # objdump's -j. Note that the fully linked exe from c++ will have all it's
+    # objdump's -j. Note that the fully linked exe from C++ will have all it's
     # user-defined functions in .text.
     local section sections
     for section in $(readelf -S $bin |\
@@ -366,8 +365,6 @@ function _comp_cmpnt() { _comp_xnt $HOME/doc/cs/comp; }
 function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scratch; }
 function _comp_culnt() { _comp_xnt $HOME/doc/cul; }
 
-# aliasing mn() unleashes hell when bashrc is sourced manually,
-# so call it with mn, bash-completion done for it below
 function mn {
   if [[ -e ~/.man-vimrc ]]; then
     man "$@" | ${EDITOR} -u ~/.man-vimrc -
@@ -407,7 +404,7 @@ function crynt {
 
   read -s -p "Speak friend and enter : " pass
   echo
-  if [[ -e $enc ]]; then # doesn't decrypt non existent file
+  if [[ -e $enc ]]; then
     $gpg --output $dec --passphrase $pass --decrypt $enc
     if [[ $? -ne 0 ]]; then
       return
@@ -416,7 +413,6 @@ function crynt {
   ${EDITOR} $dec
   $gpg --output $enc --passphrase $pass --symmetric --cipher-algo AES256 $dec
 
-  # clean up section
   rm $dec
   pkill gpg-agent
 }
@@ -433,7 +429,7 @@ function cdp {
   fi
 
   echo -n "cmdline: "
-  echo `tr -d '\0' < /proc/$pid/cmdline` # else null bytes throw warn
+  echo `tr -d '\0' < /proc/$pid/cmdline`
   cd /proc/$pid
 }
 
@@ -455,8 +451,8 @@ function psx {
 }
 
 export TERM=xterm-256color
-export VISUAL="/usr/bin/vim -i NONE" # disables ~/.viminfo
-export EDITOR="$VISUAL" # use $EDITOR if `function vim` creates trouble
+export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo
+export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble
 export ABINAV="thats my name, that name again - is Mr.Plow"
 export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
 export HISTSIZE=32768
@@ -467,7 +463,7 @@ export HOME_LIB="$HOME/sys/usr/lib"
 export HOME_INCLUDE="$HOME/sys/usr/include"
 export PROJ="$HOME/proj"
 export LLVM_DEV="$PROJ"
-export FZF_DEFAULT_OPTS="--color 16" # we're used to this :)
+export FZF_DEFAULT_OPTS="--color 16"
 
 edelimvar ':' PATH -a "."
 epath -p "$HOME_BIN" "$EXTRA_BIN"
@@ -515,7 +511,7 @@ alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
 . /usr/share/fzf/completion.bash &> /dev/null
 . ~/.fzf.bash &> /dev/null
 
-# Terminal colorscheme
+# Terminal color-scheme
 declare -A t_bg_col t_fg_col
 t_bg_col[bl]="\e]11;#000000\007"
 t_bg_col[dk]="\e]11;#3a3a3a\007"
@@ -546,7 +542,7 @@ complete -F _pacman -o default pacdry
 . /etc/.post-bashrc &> /dev/null
 . ${HOME}/.post-bashrc &> /dev/null
 
-# avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
+# Avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
 if [[ $SAVED_RESET_XXX != true ]]; then
   export RESET_PATH=$PATH
   export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
@@ -555,8 +551,7 @@ if [[ $SAVED_RESET_XXX != true ]]; then
   export SAVED_RESET_XXX=true
 fi
 
-# If not running interactively
-[[ $- != *i* ]] && return
+[[ $- != *i* ]] && return # If not running interactively
 
 t_col_upd
 mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
