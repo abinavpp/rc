@@ -1,0 +1,4 @@
+#! /bin/bash
+
+mkconf-i3status
+i3 &
