@@ -1,3 +1,5 @@
+[[ $- != *i* ]] && return # If not running interactively
+
 . /etc/.pre-bashrc &> /dev/null
 . ${HOME}/.pre-bashrc &> /dev/null
 
@@ -25,7 +27,7 @@ function edelimvar() {
   local delim=$1 delimvar=$2 opt=$3; shift 3
   local arg i
 
-  # Print the delimvar
+  # Prints the delimvar
   if [[ $opt == "-o" ]]; then
     echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}'
     return
@@ -539,6 +541,11 @@ complete -F _comp_scrnt scrnt
 complete -F _comp_culnt culnt
 complete -F _pacman -o default pacdry
 
+t_col_upd
+mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
+clhome
+print_fortune
+
 . /etc/.post-bashrc &> /dev/null
 . ${HOME}/.post-bashrc &> /dev/null
 
@@ -550,10 +557,3 @@ if [[ $SAVED_RESET_XXX != true ]]; then
   export RESET_CPATH=$CPATH
   export SAVED_RESET_XXX=true
 fi
-
-[[ $- != *i* ]] && return # If not running interactively
-
-t_col_upd
-mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
-clhome
-print_fortune
