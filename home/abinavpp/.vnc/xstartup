@@ -1,4 +1,5 @@
 #! /bin/bash
 
+xrdb ~/.Xresources
 mkconf-i3status
 i3 &
