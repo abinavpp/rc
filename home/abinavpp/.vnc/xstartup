@@ -1,5 +1,5 @@
 #! /bin/bash
 
-xrdb ~/.Xresources
+[ -r ~/.Xresources ] && xrdb -merge ~/.Xresources
 mkconf-i3status
-i3 &
+exec i3
