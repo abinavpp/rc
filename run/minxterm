@@ -1,12 +1,12 @@
 #! /bin/bash
 
 xterm \
-  +dc `# xterm*dynamicColors` \
-  -sl 4096 `# xterm*saveLines` \
-  -font '*-fixed-*-*-*-20-*' `# xterm*font` \
-  -u8 `# xterm*utf8` \
+  -u8 \
+  -xrm 'xterm*dynamicColors: true' \
+  -xrm 'xterm*saveLines: 4096' \
+  -xrm 'xterm*font: *-fixed-*-*-*-20-*' \
   -xrm 'xterm*vt100.utf8Fonts: true' \
   -xrm 'xterm*vt100.allowBoldFonts: false' \
   -xrm 'xterm*vt100.utf8: true' \
   -xrm 'xterm*vt100.utf8Title: true' \
-  -geometry '159x41' # xterm*vt100.geometry
+  -xrm 'xterm*vt100.geometry 159x41'
