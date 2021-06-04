@@ -1,12 +1,16 @@
 #! /bin/bash
 
-xterm \
+path_xterm='/usr/bin/xterm'
+[ -x $HOME_BIN/xterm ] && path_xterm=$HOME_BIN/xterm
+
+exec $path_xterm \
   -u8 \
+  -xrm 'xterm*background: black' \
   -xrm 'xterm*dynamicColors: true' \
   -xrm 'xterm*saveLines: 4096' \
-  -xrm 'xterm*font: *-fixed-*-*-*-20-*' \
-  -xrm 'xterm*vt100.utf8Fonts: true' \
-  -xrm 'xterm*vt100.allowBoldFonts: false' \
+  -xrm 'xterm*vt100.geometry 159x41' \
   -xrm 'xterm*vt100.utf8: true' \
+  -xrm 'xterm*vt100.utf8Fonts: true' \
   -xrm 'xterm*vt100.utf8Title: true' \
-  -xrm 'xterm*vt100.geometry 159x41'
+  -xrm 'xterm*font: *-fixed-*-*-*-20-*' \
+  -xrm 'xterm*vt100.allowBoldFonts: false'
