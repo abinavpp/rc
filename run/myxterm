@@ -1,13 +1,9 @@
 #! /bin/bash
 
+run=$1
+
 # See https://unix4lyfe.org/xterm/
-
-this=`basename $0`
-
-path_xterm='/usr/bin/xterm'
-[ -x $HOME_BIN/xterm ] && path_xterm=$HOME_BIN/xterm
-
-cmd="$path_xterm
+cmd="xterm
   -u8
   -xrm 'xterm*background: black'
   -xrm 'xterm*foreground: white'
@@ -31,7 +27,7 @@ cmd="$path_xterm
 # To make the font size 13 fit better
 # -xrm 'xterm*scaleHeight: 0.9'
 
-if [ $this == 'minxterm' ]; then
+if [[ $run == 'min' ]]; then
   cmd+="
     -xrm 'xterm*font: *-fixed-*-*-*-20-*'
     -xrm 'xterm*vt100.allowBoldFonts: false'"
