@@ -1,4 +1,4 @@
-" plugins
+" Plugins
 " =======
 call plug#begin('~/.vim/plugged')
 Plug 'https://github.com/Raimondi/delimitMate.git'
@@ -16,14 +16,13 @@ Plug 'https://github.com/prabirshrestha/vim-lsp.git'
 Plug 'https://github.com/prabirshrestha/async.vim'
 call plug#end()
 
-" variables
+" Variables
 " =========
 let mapleader = " "
 
 let delimitMate_expand_cr = 1
 au filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
-" this is defaulted to comment, below will enable delimitMate
-" within comments
+" Enable delimitMate within comments
 let delimitMate_excluded_regions = ""
 
 let NERDTreeShowHidden = 1
@@ -58,13 +57,13 @@ let fortran_do_enddo = 1
 let s:trailing_space_state = 1
 let g:color_theme = "dark"
 
-" pre-vimrc
-" =========
+" .pre-vimrc
+" ==========
 if filereadable($HOME . "/.pre-vimrc")
   source $HOME/.pre-vimrc
 endif
 
-" functions
+" Functions
 " =========
 function! CleanMe()
   silent! exec '%s/\v\ +$//g'
@@ -142,7 +141,7 @@ function! MapAll(lhs, n_rhs, i_rhs, c_rhs)
 endfunction
 
 function! Save()
-  " writable or non-existent file
+  " If writable or non-existent file
   if filewritable(bufname('%')) || empty(glob(bufname('%')))
     exe 'w'
   else
@@ -154,8 +153,6 @@ func! CopyToClipboard(str)
   if has('xterm_clipboard')
     let @* = a:str
   else
-    " TODO: why the following fails in Ubuntu 18.04.
-    " call system("xsel", a:str)
     exe 'silent !echo -n "' . a:str . '" | xsel'
     exe 'redraw!'
   endif
@@ -175,7 +172,7 @@ function! SpellToggle()
   endif
 endfunction
 
-" commands
+" Commands
 " ========
 command! Cl :call CleanMe()
 command! Gnu :call Gnu()
@@ -188,23 +185,16 @@ command! GD :Gdiff <bar> :wincmd l <bar> :wincmd H
 command! Csi :call CSInv()
 au filetype c,cpp,cuda command! CPair :call CPair()
 
-" mappings
+" Mappings
 " ========
 " To understand the alt keybinding headache in vim, see:
-" https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
-" https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
+" - https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
+" - https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
 "
-" Stick to xterm! Moolenaar does I guess. Nevertheless, try to minimize
-" dependency on alt key-bindings
+" Stick to xterm! Moolenaar does I guess. Nevertheless, we must minimize
+" dependency on alt key-bindings.
 
-" visual
-" ------
-vmap <C-_> gc
-vnoremap <C-x> d
-vnoremap <C-c> y
-vnoremap d "_d
-
-" leader
+" Leader
 " ------
 nnoremap <Leader>f :set filetype
 nnoremap <Leader>l :set list!<CR>
@@ -218,7 +208,7 @@ nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
 
-" lsp
+" Lsp
 " ---
 nmap <C-\>d :LspDefinition<CR>i
 nmap <C-\><S-d> :tab split<CR>:LspDefinition<CR>i
@@ -233,69 +223,72 @@ nmap <C-\>p :LspPeekDefinition<CR>i
 nmap <C-\>P :LspPeekDeclaration<CR>i
 nmap <C-\>f :LspWorkspaceSymbol<CR>
 
-" basic, plugins etc.
-" -------------------
-nnoremap / <esc><esc>/
+" Misc
+" ----
+vmap <C-_> gc
+vnoremap <C-x> d
+vnoremap <C-c> y
+vnoremap d "_d
 
-" don't do anything
-nnoremap <C-o> <esc>
+" Double escape forces command mode from <C-o> mode
+nnoremap / <Esc><Esc>/
+nnoremap <C-o> <Esc>
 
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-n> :on<CR>
 nnoremap <C-x> :q<CR>
-imap <C-_> <esc>gcci
+imap <C-_> <Esc>gcci
 nnoremap <C-]> g<C-]>
 inoremap <C-z> <C-o>u
 inoremap <C-r> <C-o><C-r>
-" sometimes C-] is not enough (TODO why?)
 nnoremap <C-]> g<C-]>
 nnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
 
-" FIXME! This is a workaround! The problem:
+" FIXME! This is a workaround. The problem:
 " for (...)<CR>
 "   |
 "
 " for (...)
 " {|
 "
-" ie. braces always shift left in a new line in c/c++/java etc. files. This is
-" some weird vim default non-sense for c-style source. I disabled all the
-" plugins and verified.
+" I.e. braces always shift left in a new line in C, C++, Java etc. files. This
+" might be a vim default behaviour for C-style source.
+"
 " FIXME! This is for GNU indent style, but adding under our Gnu() function
 " doesn't work due to delimitMate.
-" Yes, the d is just a random character.
-inoremap { d{<left><bs><right>}<left>
-" Similarly for # in c/c++
-inoremap # d#<left><bs><right>
+"
+" Note that the d is just a random character.
+inoremap { d{<Left><bs><Right>}<Left>
+" Similarly for # in C/C++
+inoremap # d#<Left><bs><Right>
 
-" double escape forces command mode from <C-o> mode
-nnoremap gg <esc><esc>mxgg
+nnoremap gg <Esc><Esc>mxgg
 nnoremap zz :call Save()<CR>
 nnoremap hh :noh<CR>
 nnoremap tt :TagbarToggle<CR>
 nnoremap dt :difft<CR>
 
-" cut/copy/select
-" ----------------
+" Cut, copy, select
+" -----------------
 inoremap <C-p> <C-x>
 inoremap <C-w> <C-o>viw
-inoremap <C-c> <esc>^"*y$i
-inoremap <C-x> <esc>^"*d$"_ddi
-inoremap <C-e> <esc>"_ddi
+inoremap <C-c> <Esc>^"*y$i
+inoremap <C-x> <Esc>^"*d$"_ddi
+inoremap <C-e> <Esc>"_ddi
 inoremap <C-d> <C-o>"_diw
 " NOTE:
-" - The <esc>`^ stops the cursor from going back in normal mode.
+" - The <Esc>`^ stops the cursor from going back in normal mode.
 " - 'P' prepends the paste.
 " FIXME: pasting at ^ pastes after ^, using 'P' fixes this, but then it wrecks
 " pasting at $. Fix this "b/w rock and hard place" situation.
 "
 " `[v`]= indents the paste. The last `] moves cursor to end of paste.
-inoremap <C-v> <esc>p`[v`]=`]i<right>
+inoremap <C-v> <Esc>p`[v`]=`]i<Right>
 
-" cut/copy append mode (only for lines)
-" -------------------------------------
+" Cut, copy in append mode
+" ------------------------
 nnoremap <C-a><C-c> "Ayy
-nnoremap <C-a><C-v> "Ap<esc>`[v`]=`]i<right>
+nnoremap <C-a><C-v> "Ap<Esc>`[v`]=`]i<Right>
 nnoremap <C-a><C-r> :call setreg('a', "")<CR>
 
 " <FX> cmds
@@ -305,15 +298,13 @@ au filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
 au filetype tex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
 
-" controlled cursor movement
-" --------------------------
-call MapAll('<C-i>', '<up>', '<up>', '<up>')
-call MapAll('<C-k>', '<down>', '<down>', '<down>')
-call MapAll('<C-j>', '<left>', '<left>', '<left>')
-call MapAll('<C-l>', '<right>', '<right>', '<right>')
+" Cursor movement
+" ---------------
+call MapAll('<C-i>', '<Up>', '<Up>', '<Up>')
+call MapAll('<C-k>', '<Down>', '<Down>', '<Down>')
+call MapAll('<C-j>', '<Left>', '<Left>', '<Left>')
+call MapAll('<C-l>', '<Right>', '<Right>', '<Right>')
 
-" alternate cursor movement
-" -------------------------
 call MapAll('<A-i>', '{', '<C-o>{', '')
 call MapAll("\ei", '{', '<C-o>{', '')
 call MapAll('<A-k>', '}', '<C-o>}', '')
@@ -323,8 +314,6 @@ call MapAll("\ej", 'b', '<C-o>b', '<S-left>')
 call MapAll('<A-l>', 'w', '<C-o>w', '<S-right>')
 call MapAll("\el", 'w', '<C-o>w', '<S-right>')
 
-" controlled alternate cursor movement
-" ------------------------------------
 call MapAll('<C-A-i>', '5k', '<C-o>5k', '')
 call MapAll("\e<C-i>", '5k', '<C-o>5k', '')
 call MapAll('<C-A-k>', '5j', '<C-o>5j', '')
@@ -334,8 +323,6 @@ call MapAll("\e<C-j>", '3b', '<C-o>3b', '')
 call MapAll('<C-A-l>', '3w', '<C-o>3w', '')
 call MapAll("\e<C-l>", '3w', '<C-o>3w', '')
 
-" extra shift cursor binding
-" --------------------------
 call MapAll('<A-S-j>', '^', '<C-o>^', '')
 call MapAll("\eJ", '^', '<C-o>^', '')
 call MapAll('<A-S-l>', '$', '<C-o>$', '<Home>')
@@ -343,14 +330,14 @@ call MapAll("\eL", '$', '<C-o>$', '<Home>')
 call MapAll('<A-S-k>', 'YP', '<C-o>Y<C-o>p', '<End>')
 call MapAll("\eK", 'YP', '<C-o>Y<C-o>p', '<End>')
 
-" tab
+" Tab
 " ---
 call MapAll('<A-,>', ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
 call MapAll("\e,", ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
 call MapAll('<A-.>', ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 call MapAll("\e.", ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 
-" split
+" Split
 " -----
 nnoremap <C-w><C-j> <C-w>h
 nnoremap <C-w><C-l> <C-w>l
@@ -371,7 +358,7 @@ inoremap <C-@> <tab>
 set wildcharm=<tab>
 cnoremap <C-@> <tab>
 
-" set
+" Set
 " ===
 set t_Co=256
 set notitle
@@ -408,24 +395,24 @@ set ignorecase
 set smartcase
 set rtp+=~/.fzf
 
-" use %#BoldStatusLine#foobar%#StatusLine to add bold texts to our
+" Use %#BoldStatusLine#foobar%#StatusLine to add bold texts to our
 " statusline
 set statusline =
 set statusline +=\ %{mode()}
-" set statusline +=\ %{expand('%:p:h:t')}/%t " short path
-set statusline +=\ %<%F " full path, '<' truncates the path
+" Set statusline +=\ %{expand('%:p:h:t')}/%t " Short path
+set statusline +=\ %<%F " Full path; '<' truncates the path
 set statusline +=\ \ %{tagbar#currenttag('%s','','%f')}
-set statusline +=%m " modified flag
-set statusline +=\ %r " readonly flag
+set statusline +=%m " Modified flag
+set statusline +=\ %r " Readonly flag
 
 set statusline +=%=
-silent! set statusline +=\ %{fugitive#statusline()} " current git branch
-set statusline +=\ %{&ff} " file format
-set statusline +=%y " file type
-set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " file encoding
-set statusline +=\ %v " column number
-set statusline +=\ %l " current line
-set statusline +=/%L " total lines
+silent! set statusline +=\ %{fugitive#statusline()} " Current git branch
+set statusline +=\ %{&ff} " File format
+set statusline +=%y " File type
+set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " File encoding
+set statusline +=\ %v " Column number
+set statusline +=\ %l " Current line
+set statusline +=/%L " Total lines
 
 au BufRead,BufNewFile *.hip set filetype=cpp
 au BufRead,BufNewFile *.s set filetype=xasm
@@ -441,13 +428,13 @@ au FileType llvm setlocal commentstring=;\ %s
 au FileType mlir setlocal commentstring=//\ %s
 au FileType cpp setlocal commentstring=//\ %s
   \| set comments^=:///
-" see https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
+" See https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
 " aug python
     " ftype/python.vim overwrites this
     " au FileType python setlocal ts=2 sts=2 sw=2
 " aug end
 
-" syntax
+" Syntax
 " ======
 " The following is done by vim-plug, uncomment if using another
 " plugin-manager that doesn't do so.
@@ -468,7 +455,7 @@ if executable('clangd')
   augroup end
 endif
 
-" other autocmds
+" Other autocmds
 " ==============
 autocmd vimenter * call CSUpd() | call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
@@ -483,8 +470,8 @@ au TabEnter * NERDTreeClose
 au TabLeave * if g:NERDTree.IsOpen() | wincmd p
 au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
-" post-vimrc
-" ==========
+" .post-vimrc
+" ===========
 if filereadable($HOME . "/.post-vimrc")
   source $HOME/.post-vimrc
 endif
