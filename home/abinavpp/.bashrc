@@ -328,9 +328,7 @@ function pacdry_fresh {
   sudo rm -rf "$path_tmpdb" &> /dev/null
 }
 
-function pacdry {
-  sudo pacman --logfile /dev/null "$@"
-}
+function pacdry { sudo pacman --logfile /dev/null "$@"; }
 
 function xnt {
   local dir=$1 note=$2
@@ -367,11 +365,7 @@ function _comp_cmpnt() { _comp_xnt $HOME/doc/cs/comp; }
 function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scratch; }
 function _comp_culnt() { _comp_xnt $HOME/doc/cul; }
 
-function mn {
-  if [[ -e ~/.man-vimrc ]]; then
-    man "$@" | ${EDITOR} -u ~/.man-vimrc -
-  fi
-}
+function mn { [[ -e ~/.man-vimrc ]] && man "$@" | ${EDITOR} -u ~/.man-vimrc -; }
 
 function rn {
   local tempfile="$(mktemp -t tmp.XXXXXX)"
@@ -473,13 +467,10 @@ elb -p "$HOME_LIB"
 ecpath -p "$HOME_INCLUDE"
 
 alias grep='grep -P --color -n'
-alias srb='. ~/.bashrc'
 alias ls='ls -a --color=auto --group-directories-first'
 alias ll='/bin/ls -alih --color=auto --group-directories-first'
 alias lt='/bin/ls -alihrt --color=auto'
-alias j='jobs -l'
 alias lsblk='lsblk -o +FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC,MODEL,UUID'
-alias cl='clear'
 alias rm='rm -rfv'
 alias cp='cp -vr'
 alias tree='tree -aC'
@@ -490,7 +481,6 @@ alias sudo='sudo '
 alias perlpi='perl -lpe '
 alias perl1='perl -ne '
 alias readelf='readelf --wide'
-alias pll='prettyll -simvar -gepin'
 alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
 alias rmtcp='rsync -avz -e ssh' # scp sucks
 
