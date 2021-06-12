@@ -88,7 +88,7 @@ source /usr/share/gdb/python/gdb/command/pretty_printers.py
 python
 import os
 gdb.execute('source ' + os.environ['LLVM_DEV'] +
-  '/llvm-main/llvm/utils/gdb-scripts/prettyprinters.py')
+  '/llvm-project/llvm/utils/gdb-scripts/prettyprinters.py')
 end
 
 skip -gfi /usr/include/c++/*/bits/*.h
