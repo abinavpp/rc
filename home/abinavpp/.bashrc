@@ -482,7 +482,8 @@ alias perlpi='perl -lpe '
 alias perl1='perl -ne '
 alias readelf='readelf --wide'
 alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
-alias rmtcp='rsync -avz -e ssh' # scp sucks
+alias rmtcp='rsync -avz -e ssh'
+alias gdb='gdb -q --args'
 
 alias qtmux='tmux kill-server'
 alias tmux='tmux -u -2'
