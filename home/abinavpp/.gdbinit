@@ -1,14 +1,22 @@
-source ~/.pre-gdbinit
-
 python
+
+import os
+
+def src(file):
+  if os.path.isfile(file):
+    gdb.execute('source ' + file)
+
+src(os.environ['HOME'] + '~/.pre-gdbinit')
+src('/usr/share/gdb/python/gdb/command/pretty_printers.py')
+src(os.environ['LLVM_DEV'] +
+    '/llvm-project/llvm/utils/gdb-scripts/prettyprinters.py')
+
 class LLDump(gdb.Function):
   def __init__(self):
     super(LLDump, self).__init__("llDump")
 
   def invoke(self, var, name):
-    # sym = gdb.lookup_symbol(name)[0]
     if var.type.code == gdb.TYPE_CODE_PTR:
-      # gdb.execute('call %s->dump()' % sym.name)
       return 'TODO'
     else:
       return 'TODO'
@@ -25,7 +33,10 @@ class IsPointer(gdb.Function):
 
 LLDump()
 IsPointer()
+
 end
+
+skip -gfi /usr/include/c++/*/bits/*.h
 
 define asm
   la asm
@@ -47,7 +58,6 @@ define ps
   print (char *) $arg0
 end
 
-
 define ub
   b $arg0
   cont
@@ -67,10 +77,6 @@ define dm
   end
 end
 
-define llgetpass
-  p *getContainedPass($arg0)
-end
-
 define u
   up
 end
@@ -83,22 +89,18 @@ define c
   call
 end
 
-source /usr/share/gdb/python/gdb/command/pretty_printers.py
-
-python
-import os
-gdb.execute('source ' + os.environ['LLVM_DEV'] +
-  '/llvm-project/llvm/utils/gdb-scripts/prettyprinters.py')
-end
-
-skip -gfi /usr/include/c++/*/bits/*.h
-
 set follow-fork-mode child
 set detach-on-fork off
 set confirm off
 set disassembly intel
 
-source ~/.post-gdbinit
-
 tui enable
 foc cmd
+
+python
+
+src(os.environ['HOME'] + '/.post-gdbinit')
+
+end
+
+# vim: ft=python
