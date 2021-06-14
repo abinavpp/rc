@@ -459,6 +459,7 @@ export HOME_INCLUDE="$HOME/sys/usr/include"
 export PROJ="$HOME/proj"
 export LLVM_DEV="$PROJ"
 export FZF_DEFAULT_OPTS="--color 16"
+export LESSHISTFILE=/dev/null
 
 edelimvar ':' PATH -a "."
 epath -p "$HOME_BIN" "$EXTRA_BIN"
