@@ -1,5 +1,8 @@
 [Default Applications]
 application/pdf=org.pwmt.zathura-pdf-mupdf.desktop;org.pwmt.zathura.desktop;libreoffice-startcenter.desktop
+application/vnd.citrix.receiver.configure=new_store.desktop
+application/x-ica=wfica.desktop
+audio/aac=vlc.desktop
 audio/flac=vlc.desktop
 audio/mp3=vlc.desktop
 audio/x-m4a=vlc.desktop
@@ -17,9 +20,6 @@ video/x-ms-asf=vlc.desktop
 video/x-msvideo=vlc.desktop
 x-scheme-handler/html=google-chrome.desktop
 x-scheme-handler/msteams=teams.desktop
-audio/aac=vlc.desktop
-application/x-ica=wfica.desktop
-application/vnd.citrix.receiver.configure=new_store.desktop
 x-scheme-handler/receiver=receiver.desktop
 
 [Added Associations]
