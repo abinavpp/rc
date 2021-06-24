@@ -18,6 +18,9 @@ video/x-msvideo=vlc.desktop
 x-scheme-handler/html=google-chrome.desktop
 x-scheme-handler/msteams=teams.desktop
 audio/aac=vlc.desktop
+application/x-ica=wfica.desktop
+application/vnd.citrix.receiver.configure=new_store.desktop
+x-scheme-handler/receiver=receiver.desktop
 
 [Added Associations]
 audio/aac=vlc.desktop;
