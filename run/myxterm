@@ -29,7 +29,7 @@ cmd="xterm
 
 if [[ $run == 'min' ]]; then
   cmd+="
-    -xrm 'xterm*font: *-fixed-*-*-*-20-*'
+    -xrm 'xterm*vt100.faceName: *:size=12:antialias=false'
     -xrm 'xterm*vt100.allowBoldFonts: false'"
 else
   cmd+="
