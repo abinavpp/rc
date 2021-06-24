@@ -1,7 +1,7 @@
 #! /bin/bash
 
 function view_opts_full() {
-  build_dir=$(mktemp -dt cmopts_XXXXXX)
+  build_dir=$(mktemp -dt cmakeopts_XXXXXX)
 
   src_dir=$PWD
   if [[ $# -eq 1 ]]; then
