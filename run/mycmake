@@ -18,7 +18,7 @@ for my $env (@eoi) {
   }
 }
 
-print $fh "\ncmake2 \\\n";
+print $fh "\nmycmake \\\n";
 foreach my $i (0 .. $#ARGV) {
   print $fh "  \"$ARGV[$i]\"";
   if ($i == $#ARGV) {
