@@ -496,8 +496,15 @@ alias psi="psx us --ppid=1"
 alias psk="psx ks --ppid 2 -p 2"
 alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
 
-. /usr/share/fzf/key-bindings.bash &> /dev/null
+# Enable fzf for Arch Linux:
 . /usr/share/fzf/completion.bash &> /dev/null
+. /usr/share/fzf/key-bindings.bash &> /dev/null
+
+# Enable fzf for Ubuntu:
+. /usr/share/doc/fzf/examples/completion.bash &> /dev/null
+. /usr/share/doc/fzf/examples/key-bindings.bash &> /dev/null
+
+# Enable fzf for local installation:
 . ~/.fzf.bash &> /dev/null
 
 # Terminal color-scheme
