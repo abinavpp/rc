@@ -52,9 +52,7 @@ function is_memory_supported {
 }
 
 function write_memory {
-  if ! is_memory_supported; then
-    return
-  fi
+  ! is_memory_supported && return
 
 cat <<ENDCAT
 memory {
@@ -67,9 +65,24 @@ ENDCAT
 }
 
 function write_order_memory {
-  if is_memory_supported; then
-    echo "order += \"memory\""
-  fi
+  is_memory_supported && echo "order += \"memory\""
+}
+
+function write_order_volume {
+  [[ -d /proc/asound ]] && echo "order += \"volume master\""
+}
+
+function write_volume {
+  [[ ! -d /proc/asound ]] && return
+
+cat <<ENDCAT
+volume master {
+  format = "♪: %volume"
+  format_muted = "♪: muted (%volume)"
+  device = "default"
+}
+
+ENDCAT
 }
 
 mkdir -p $HOME/.config/i3status
@@ -97,11 +110,11 @@ order += "wireless _first_"
 order += "ethernet _first_"
 order += "disk /"
 order += "battery all"
-order += "volume master"
 order += "cpu_usage"
 ENDCAT
 
 write_order_memory
+write_order_volume
 write_order_temperature
 
 cat <<ENDCAT
@@ -131,14 +144,9 @@ battery all {
 ENDCAT
 
 write_memory
+write_volume
 
 cat <<ENDCAT
-volume master {
-  format = "♪: %volume"
-  format_muted = "♪: muted (%volume)"
-  device = "default"
-}
-
 cpu_usage {
   format = "CPU: %usage"
 }
