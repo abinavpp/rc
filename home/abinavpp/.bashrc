@@ -167,19 +167,15 @@ function coall {
 }
 
 function prompt_command {
-  # Refer `man console_codes`
+  # Refer `man console_codes`.
 
   # Recall that:
   # - \e[ is the CSI (Control Sequence Introducer) and the sequence following
   #   it is the CSI-sequence. The CSI-sequence ending in 'm' is the ECMA-48-SGR
-  #   (Set Graphics Rendition)
+  #   (Set Graphics Rendition).
   # - \e] is the OSC (Operating System Command) and the sequence following it
   #   is the OSC-sequence.
-
-  # Set title
-  echo -ne "\e]0; ${USER}@${HOSTNAME}[$(tty)]    ${PWD}\007" # \007 is BEL
-
-  # Any non printable must be within \[ and \] in the PS1 string
+  # - Any non printable must be within \[ and \] in the PS1 string.
 
   PS1='[\j] ' # <num-jobs>
   PS1+='\[\e[38;5;76m\]\u@' # <user-name>@ in ECMA-48-SGR green foreground
