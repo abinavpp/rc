@@ -114,8 +114,8 @@ order += "cpu_usage"
 ENDCAT
 
 write_order_memory
-write_order_volume
 write_order_temperature
+write_order_volume
 
 cat <<ENDCAT
 
@@ -141,16 +141,12 @@ battery all {
   format = "%status %percentage %remaining"
 }
 
-ENDCAT
-
-write_memory
-write_volume
-
-cat <<ENDCAT
 cpu_usage {
   format = "CPU: %usage"
 }
 
 ENDCAT
 
+write_memory
+write_volume
 write_temperature
