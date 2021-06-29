@@ -433,7 +433,7 @@ function psx {
   local type=$1; shift
 
   if [[ $type == "us" ]]; then
-    local fields="flag,stat,euser,pid,ppid,pgid,sid,%mem,%cpu,"
+    local fields="flag,stat,euser,pid,ppid,pgid,nice,%mem,%cpu,"
     fields+="wchan=WIDE-WCHAN-COLUMN,tty,cmd"
   else
     local fields="flag,stat,pid,ppid,pri,ni,class,bsdtime,cmd"
