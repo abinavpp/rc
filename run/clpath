@@ -12,7 +12,7 @@ my $path_regex = qr/
   (?=[\s\n"])
   /x;
 
-sub clean {
+sub clean_path {
   my ($path) = @_;
 
   my $alias = `realpath $path`;
@@ -21,7 +21,7 @@ sub clean {
 }
 
 foreach my $line (@lines) {
-  $line =~ s/$path_regex/clean($+{path})/ge;
+  $line =~ s/$path_regex/clean_path($+{path})/ge;
 
   print $line
 }
