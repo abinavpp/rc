@@ -24,3 +24,4 @@ x-scheme-handler/receiver=receiver.desktop
 
 [Added Associations]
 audio/aac=vlc.desktop;
+image/gif=vlc.desktop;
