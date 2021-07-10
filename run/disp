@@ -10,7 +10,7 @@ function die() {
 
 [[ ! -n $primary_output ]] && die "Unable to determine primary output"
 
-run=$1; output=$2
+run=$1; output=$2; shift 2
 
 [[ $output == "primary" ]] && output=$primary_output
 
@@ -20,12 +20,23 @@ if [[ $run == "on" ]]; then
   else
     xrandr --output $output --auto --same-as $primary_output
   fi
+
 elif [[ $run == "off" ]]; then
   xrandr --output $output --off
+
 elif [[ $run == "mode" ]]; then
-  xrandr --output $primary_output --mode $1
-elif [[ $run == "fixfont" ]]; then
+  xrandr --output $output --mode $1
+
+elif [[ $run == "fix-font" ]]; then
   xrandr --dpi 96
+
+elif [[ $run == "fix-intel-rgb" ]]; then
+  # See
+  # - https://wiki.archlinux.org/title/Intel_graphics#Weathered_colors_(color_range_problems)
+  # - https://bugs.freedesktop.org/show_bug.cgi?id=108821
+  # - https://bbs.archlinux.org/viewtopic.php?id=259929
+  xrandr --output $output --set "Broadcast RGB" "Full"
+
 else
-  xrandr | grep "connected"
+  xrandr --output $output $@
 fi
