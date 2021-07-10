@@ -1,3 +1,4 @@
+set output_plugin=pulse
 set softvol=true
 set mouse=true
 set display_artist_sort_name=false
