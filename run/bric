@@ -4,8 +4,8 @@
 
 dir="/sys/class/backlight/"
 
-for f in `/bin/ls "${dir}"`; do
-  if [[ `/bin/ls "${dir}${f}" | /bin/grep brightness` ]]; then
+for f in `ls "${dir}"`; do
+  if [[ `ls "${dir}${f}" | grep brightness` ]]; then
     file_cur="${dir}${f}/brightness"
     file_max="${dir}${f}/max_brightness"
     break
@@ -16,16 +16,17 @@ if [[ ! -e "${file_cur}" || ! -e "${file_max}" ]]; then
   exit
 fi
 
-cur=`sudo /bin/cat "${file_cur}"`
-max=`sudo /bin/cat "${file_max}"`
-min=0 # I guess...
+cur=`sudo cat "${file_cur}"`
+max=`sudo cat "${file_max}"`
+min=0
 sign=`echo $val | cut -c1`
 val=$1
 
-if [[ $val == "+" || $val == "-" ]]; then # find scale factor
-  scale_factor=$((max / 20)) # 20 bri levels
+if [[ $val == "+" || $val == "-" ]]; then # Find scale factor
+  scale_factor=$((max / 20)) # I.e. 20 brightness levels
   [[ $scale_factor -eq 0 ]] && scale_factor=1
   val=${val}${scale_factor}
+
 elif [[ "${sign}" != "+" ]] && [[ "${sign}" != "-" ]]; then
   val=+$val
 fi
@@ -35,4 +36,4 @@ new=$(($cur $val))
 [[ "${new}" -lt "${min}" ]] && new=$min
 [[ "${new}" -gt "${max}" ]] && new=$max
 
-sudo /bin/tee "${file_cur}" <<< "${new}"
+sudo tee "${file_cur}" <<< "${new}"
