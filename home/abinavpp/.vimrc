@@ -395,6 +395,7 @@ set splitright
 set ignorecase
 set smartcase
 set rtp+=~/.fzf
+set directory=~/.cache/vim/swap//
 
 " Use %#BoldStatusLine#foobar%#StatusLine to add bold texts to our
 " statusline
