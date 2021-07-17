@@ -32,6 +32,8 @@ client.urgent $red $black $white $black
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
+workspace_layout tabbed
+
 bindsym $mod+Return exec myxterm
 bindsym $mod+Shift+Return exec myxterm min
 
