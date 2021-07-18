@@ -348,9 +348,11 @@ function culnt { xnt "$HOME/doc/cul" $1; }
 function _comp_xnt() {
   local dir=$1
 
+  [[ ! -d $dir ]] && return
+
   cd $dir;
   local words=`git ls-files 2> /dev/null`
-  [[ -z $words ]] && words=`find * -type f -print`
+  [[ -z $words ]] && words=`find * -type f -print 2> /dev/null`
   cd - &> /dev/null
 
   local cur=${COMP_WORDS[COMP_CWORD]}
