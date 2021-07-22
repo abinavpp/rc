@@ -493,10 +493,12 @@ alias vimb="vim ~/.bashrc"
 alias vimv="vim ~/.vimrc"
 alias vimm="vim -u /etc/vimrc"
 
-alias psu="psx us --ppid 2 -p 2 -N"
-alias psi="psx us --ppid=1"
-alias psk="psx ks --ppid 2 -p 2"
-alias pss='ps -o unit,cmd --ppid 2 -p 2 -N'
+alias ptm="pstree -T $USER"
+alias psm="psx us --user $USER"
+alias psu='psx us --ppid 2 --pid 2 -N'
+alias psi='psx us --ppid=1'
+alias psk='psx ks --ppid 2 --pid 2'
+alias pss='ps -o unit,cmd --ppid 2 --pid 2 -N'
 
 # Enable fzf for Arch Linux:
 . /usr/share/fzf/completion.bash &> /dev/null
