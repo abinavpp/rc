@@ -1,4 +1,3 @@
-[Default Applications]
 application/pdf=org.pwmt.zathura-pdf-mupdf.desktop;org.pwmt.zathura.desktop;libreoffice-startcenter.desktop
 application/vnd.citrix.receiver.configure=new_store.desktop
 application/x-ica=wfica.desktop
@@ -21,8 +20,3 @@ video/x-msvideo=mpv.desktop
 x-scheme-handler/html=google-chrome.desktop
 x-scheme-handler/msteams=teams.desktop
 x-scheme-handler/receiver=receiver.desktop
-
-[Added Associations]
-audio/aac=mpv.desktop;
-image/gif=mpv.desktop;
-application/x-partial-download=mpv.desktop;
