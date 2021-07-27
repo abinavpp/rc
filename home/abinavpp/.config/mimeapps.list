@@ -1,3 +1,4 @@
+[Default Applications]
 application/pdf=org.pwmt.zathura-pdf-mupdf.desktop;org.pwmt.zathura.desktop;libreoffice-startcenter.desktop
 application/vnd.citrix.receiver.configure=new_store.desktop
 application/x-ica=wfica.desktop
