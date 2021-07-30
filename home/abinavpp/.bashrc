@@ -547,7 +547,7 @@ print_fortune
 . /etc/.post-bashrc &> /dev/null
 . ${HOME}/.post-bashrc &> /dev/null
 
-# Avoid re-setting RESET_XXX vars if sourcing .bashrc more than once
+# Avoid resetting RESET_XXX variables if sourcing .bashrc more than once.
 if [[ $SAVED_RESET_XXX != true ]]; then
   export RESET_PATH=$PATH
   export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
