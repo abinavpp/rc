@@ -1,3 +1,9 @@
+" Environment variables
+" =====================
+let $PATH = $RESET_PATH
+let $LIBRARY_PATH = $RESET_LIBRARY_PATH
+let $LD_LIBRARY_PATH = $RESET_LD_LIBRARY_PATH
+
 " Plugins
 " =======
 call plug#begin('~/.vim/plugged')
