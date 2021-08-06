@@ -5,8 +5,6 @@
   cm = commit
   ch = checkout
   br = branch
-  cl = clone
-  pm = push origin master
   them = ls-files --others --directory
 
 [init]
