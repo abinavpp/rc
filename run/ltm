@@ -1,0 +1,3 @@
+#! /bin/bash
+
+ls -alihd --color=auto --group-directories-first $(find /tmp -maxdepth 1 -user $USER)
