@@ -28,7 +28,7 @@ call plug#end()
 let mapleader = " "
 
 let delimitMate_expand_cr = 1
-au filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
+au! filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
 " Enable delimitMate within comments
 let delimitMate_excluded_regions = ""
 
@@ -202,7 +202,7 @@ com! Gr :Gedit
 com! Gd :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
 com! GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
 com! Csi :call CSInv()
-au filetype c,cpp,cuda com! Cp :call CPair()
+au! filetype c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
 " ========
@@ -312,9 +312,9 @@ nnoremap <C-a><C-r> :call setreg('a', "")<CR>
 
 " <FX> cmds
 " ---------
-au filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
+au! filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
-au filetype tex inoremap <F6> <C-o>:wa <bar> exec
+au! filetype tex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
 
 " Cursor movement
@@ -434,25 +434,25 @@ set statusline +=\ %v " Column number
 set statusline +=\ %l " Current line
 set statusline +=/%L " Total lines
 
-au BufRead,BufNewFile *.hip set filetype=cpp
-au BufRead,BufNewFile *.s set filetype=xasm
-au BufRead,BufNewFile *.ll set filetype=llvm
-au BufRead,BufNewFile *.mlir set filetype=mlir
-au BufRead,BufNewFile lit.*cfg set filetype=python
-au BufRead,BufNewFile *.td set filetype=tablegen
-au BufRead,BufNewFile *.inc set filetype=cpp
-au BufRead,BufNewFile *.def set filetype=cpp
-au BufNewFile,BufRead *.c.* set filetype=rtl
+au! BufRead,BufNewFile *.hip set filetype=cpp
+au! BufRead,BufNewFile *.s set filetype=xasm
+au! BufRead,BufNewFile *.ll set filetype=llvm
+au! BufRead,BufNewFile *.mlir set filetype=mlir
+au! BufRead,BufNewFile lit.*cfg set filetype=python
+au! BufRead,BufNewFile *.td set filetype=tablegen
+au! BufRead,BufNewFile *.inc set filetype=cpp
+au! BufRead,BufNewFile *.def set filetype=cpp
+au! BufNewFile,BufRead *.c.* set filetype=rtl
 
-au FileType llvm setlocal commentstring=;\ %s
-au FileType mlir setlocal commentstring=//\ %s
-au FileType cpp setlocal commentstring=//\ %s
+au! FileType llvm setlocal commentstring=;\ %s
+au! FileType mlir setlocal commentstring=//\ %s
+au! FileType cpp setlocal commentstring=//\ %s
   \| set comments^=:///
 " See https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
-" aug python
+" augroup python
     " ftype/python.vim overwrites this
-    " au FileType python setlocal ts=2 sts=2 sw=2
-" aug end
+    " au! FileType python setlocal ts=2 sts=2 sw=2
+" augroup end
 
 " Syntax
 " ======
@@ -464,30 +464,32 @@ call CSUpd()
 hi link llvmKeyword Special
 
 if executable('clangd')
-  aug lsp_clangd
+  augroup lsp_clangd
+    " Remove all lsp_clangd autocommands.
     au!
+
     au User lsp_setup call lsp#register_server({
       \ 'name': 'clangd',
       \ 'cmd': {server_info->['clangd']},
       \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
       \ })
     au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
-  aug end
+  augroup end
 endif
 
 " Other autocmds
 " ==============
-au vimenter * call CSUpd() | call setreg('a', "")
+au! vimenter * call CSUpd() | call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
-au insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
+au! insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
   \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
   \. 'guifg=#000000 ctermbg=047 guibg=#00ff5f'
-au insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
+au! insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
   \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
   \. 'guifg=#000000 ctermbg=220 guibg=#ffdf00'
-au TabEnter * NERDTreeClose
-au TabLeave * if g:NERDTree.IsOpen() | wincmd p
+au! TabEnter * NERDTreeClose
+au! TabLeave * if g:NERDTree.IsOpen() | wincmd p
 au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " .post-vimrc
