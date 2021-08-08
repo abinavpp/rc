@@ -489,10 +489,6 @@ alias tmux='tmux -u -2'
 
 alias cmus='TERM=xterm-256color cmus'
 
-alias vimb="vim ~/.bashrc"
-alias vimv="vim ~/.vimrc"
-alias vimm="vim -u /etc/vimrc"
-
 alias ptm="pstree -T $USER"
 alias psm="psx us --user $USER"
 alias psu='psx us --ppid 2 --pid 2 -N'
