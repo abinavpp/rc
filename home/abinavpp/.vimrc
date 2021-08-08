@@ -188,6 +188,17 @@ function! Glg(range, line1, line2)
   endif
 endfunction
 
+function! Paste(prefix)
+  let l:paste_mode = 'p'
+  if col(".") == 1
+    let l:paste_mode = 'P'
+  endif
+
+  " `[v`]= indents the paste. The last `] moves the cursor to the end of the
+  " paste.
+  call feedkeys(a:prefix . "\<Esc>" . l:paste_mode . "`[v`]=`]i\<Right>")
+endfunction
+
 " Commands
 " ========
 com! Cl :call CleanMe()
@@ -291,17 +302,12 @@ inoremap <C-c> <Esc>^"*y$i
 inoremap <C-x> <Esc>^"*d$"_ddi
 inoremap <C-e> <Esc>"_ddi
 inoremap <C-d> <C-o>"_diw
-" NOTE:
-" FIXME: Recall that 'p' appends the paste and 'P' prepends the paste relative
-" to the cursor. <C-v> should perform 'P' at ^ and 'p' otherwise.
-"
-" `[v`]= indents the paste. The last `] moves cursor to end of paste.
-inoremap <C-v> <Esc>p`[v`]=`]i<Right>
+inoremap <C-v> <C-o>:call Paste('')<CR>
 
 " Cut, copy in append mode
 " ------------------------
 nnoremap <C-a><C-c> "Ayy
-nnoremap <C-a><C-v> "Ap<Esc>`[v`]=`]i<Right>
+nnoremap <C-a><C-v> :call Paste('"Ap')
 nnoremap <C-a><C-r> :call setreg('a', "")<CR>
 
 " <FX>
@@ -440,10 +446,8 @@ au! FileType cpp setlocal commentstring=//\ %s
 
 " Syntax
 " ======
-" The following is done by vim-plug, uncomment if using another
-" plugin-manager that doesn't do so.
-" syntax on
-" filetype plugin indent on
+syntax on
+filetype plugin indent on
 call CSUpd()
 hi link llvmKeyword Special
 
