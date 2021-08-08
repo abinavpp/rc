@@ -156,19 +156,19 @@ function! Save()
   endif
 endfunction
 
-func! CopyToClipboard(str)
+function! CopyToClipboard(str)
   if has('xterm_clipboard')
     let @* = a:str
   else
     exe 'silent !echo -n "' . a:str . '" | xsel'
     exe 'redraw!'
   endif
-endfunc
+endfunction
 
-func! FoldIfDef()
+function! FoldIfDef()
   set foldmarker=#if,#endif
   set foldmethod=marker
-endfunc
+endfunction
 
 function! SpellToggle()
   set spell!
@@ -179,7 +179,7 @@ function! SpellToggle()
   endif
 endfunction
 
-fun! Glg(range, line1, line2)
+function! Glg(range, line1, line2)
   if a:range == 0
     execute '0Gllog!'
   elseif a:range == 1
@@ -187,22 +187,22 @@ fun! Glg(range, line1, line2)
   else
     execute a:line1 . ',' . a:line2 . 'Gllog!'
   endif
-endfun
+endfunction
 
 " Commands
 " ========
-command Cl :call CleanMe()
-command Gnu :call Gnu()
-command Fif :call FoldIfDef()
-command Cdb :lcd %:p:h
-command Cds :call Cds()
-command Gbl :Git blame
-command -range Glg call Glg(<range>, <line1>, <line2>)
-command Gr :Gedit
-command Gd :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
-command GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
-command Csi :call CSInv()
-au filetype c,cpp,cuda command! CPair :call CPair()
+com! Cl :call CleanMe()
+com! Gnu :call Gnu()
+com! Fif :call FoldIfDef()
+com! Cdb :lcd %:p:h
+com! Cds :call Cds()
+com! Gbl :Git blame
+com! -range Glg call Glg(<range>, <line1>, <line2>)
+com! Gr :Gedit
+com! Gd :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
+com! GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
+com! Csi :call CSInv()
+au filetype c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
 " ========
@@ -464,7 +464,7 @@ call CSUpd()
 hi link llvmKeyword Special
 
 if executable('clangd')
-  augroup lsp_clangd
+  aug lsp_clangd
     au!
     au User lsp_setup call lsp#register_server({
       \ 'name': 'clangd',
@@ -472,12 +472,12 @@ if executable('clangd')
       \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
       \ })
     au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
-  augroup end
+  aug end
 endif
 
 " Other autocmds
 " ==============
-autocmd vimenter * call CSUpd() | call setreg('a', "")
+au vimenter * call CSUpd() | call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
 au insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
