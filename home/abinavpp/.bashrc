@@ -1,4 +1,4 @@
-[[ $- != *i* ]] && return # If not running interactively
+[[ $- != *i* ]] && return # If not running interactively.
 
 . /etc/.pre-bashrc &> /dev/null
 . ${HOME}/.pre-bashrc &> /dev/null
@@ -27,22 +27,22 @@ function edelimvar() {
   local delim=$1 delimvar=$2 opt=$3; shift 3
   local arg i
 
-  # Prints the delimvar
   if [[ $opt == "-o" ]]; then
+    # Print the delimvar.
     echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}'
     return
   fi
 
-  # Resets delimvar to it's $RESET_XXX var
   if [[ $opt == "-r" ]]; then
+    # Reset delimvar to it's $RESET_XXX var.
     local reset_delimvar="RESET_$delimvar"
     export $delimvar=${!reset_delimvar}
     return
   fi
 
-  # Edit delimvar in vim with newlines as "temporary separators". :wq to save
-  # changes, :q to discard changes
   if [[ $opt == "-e" ]]; then
+    # Edit delimvar in vim with newlines as a temporary delimiter where :wq
+    # saves changes and :q discards changes.
     local temp=$(mktemp -t md_delimvar.XXXXXX)
     echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}' > $temp
     vim $temp
@@ -51,12 +51,12 @@ function edelimvar() {
     return
   fi
 
-  # Prepend/append needs atleast one argument
+  # Prepend and append needs at least one argument.
   if [[ $# -lt 1 ]]; then
     return
   fi
 
-  # If delimvar is blank or not set
+  # If delimvar is blank or not set.
   if [[ ! $(echo ${!delimvar}) =~ [[:print:]]+ ]]; then
     if ! is_in_delimvar $delim $delimvar $1; then
       export $delimvar="$1"
@@ -65,8 +65,8 @@ function edelimvar() {
     opt="-a" # XXX: Faking the option to force appending
   fi
 
-  # Prepend $@ in reverse
   if [[ $opt == "-p" ]]; then
+    # Prepend $@ in reverse.
     for (( i=$#; i > 0; i-- )); do
       arg="${!i}"
       if ! is_in_delimvar $delim $delimvar $arg; then
@@ -75,8 +75,8 @@ function edelimvar() {
     done
   fi
 
-  # Appends $@ as it is.
   if [[ $opt == "-a" ]]; then
+    # Appends $@ as it is.
     for arg in "$@"; do
       if ! is_in_delimvar $delim $delimvar $arg; then
         export $delimvar="${!delimvar}${delim}${arg}"
@@ -115,8 +115,8 @@ function pid_to_jid {
     /bin/grep -oE "[[:digit:]]+"
 }
 
-# Updates the global script vars ${t_<fg/bg>_curr_col} as per the file name
-# referred by ${t_col_path}
+# Updates the global variables ${t_<fg/bg>_curr_col} as per the file name
+# referred by ${t_col_path}.
 function t_col_upd {
   local cur
   cur=`cat ${t_col_path} 2> /dev/null`
@@ -135,23 +135,23 @@ function t_col_upd {
   fi
 }
 
-# Colors this pts
+# Colors this pts.
 function cotty {
   [[ $# -ne 1 ]] && return
   echo $1 > ${t_col_path}
   t_col_upd
 }
 
-# Colors all pts
+# Colors all pts.
 function coall {
   [[ $# -ne 1 ]] && return
 
   [[ ! -e "${t_col_path}" ]] || touch "${t_col_path}"
   echo $1 > ${t_col_path}
-  t_col_upd # Updates the global vars
+  t_col_upd # Updates the global variables.
 
   for t in /dev/pts/*; do
-    # Skip this pts and ptmx, (the prompt will set color for this pts)
+    # Skip this pts and ptmx, (the prompt will set color for this pts).
     if [[ $t == "$(tty)" || $t == "/dev/pts/ptmx" ]]; then
       continue
     fi
@@ -200,7 +200,7 @@ function vim {
 
   [[ -x $HOME_BIN/vim ]] && vim_bin="$HOME_BIN/vim"
 
-  # If $vim_bin has no client-server feature, then no fancy stuff
+  # If $vim_bin has no client-server feature.
   if ! $vim_bin --version | /bin/grep -q -P '\+clientserver'; then
     $vim_bin -i NONE -p $@
     return
@@ -219,7 +219,8 @@ function vim {
 
   local args="" arg=""
 
-  # If we have a non file arg and we have a bg_vim then run a new vim.
+  # If we have a non-file argument and we have a background vim then run a new
+  # vim.
   for arg in "$@"; do
     if [[ ! -e $arg  && $bg_pid ]]; then
       $vim_bin "$@"
@@ -227,14 +228,13 @@ function vim {
     fi
   done
 
-  if [[ $bg_pid ]]; then # ie. bg_vim exists
+  if [[ $bg_pid ]]; then
     local bg_pwd=$(pwdx $bg_pid | awk '{print $2}')/
-    # All arg should be file(s) here.
     for arg in "$@"; do
       arg=$(realpath "$arg")
 
-      # If path is under bg_pwd, then access it relative so that tab heading
-      # won't look ugly
+      # If path is under $bg_pwd, then access it relative so that tab heading
+      # will be neater.
       $cmd --remote-send "<esc>:tabnew ${arg##$bg_pwd} <CR>"
     done
     fg $(pid_to_jid $bg_pid)
@@ -252,7 +252,7 @@ function obd2 { obd --visualize-jumps; }
 function dis {
   local bin=$1 asm; shift
 
-  # Note that inlining this at local declaration will make $asm ".s"
+  # Note that inlining this at local declaration will make $asm ".s".
   asm=$(basename "$bin").s
 
   if file $bin | /bin/grep -iq "LLVM.*bitcode"; then
@@ -261,10 +261,10 @@ function dis {
 
   elif file $bin | /bin/grep -iq "ELF.*x86-64"; then
 
-    # .o of a C++ file can have user-defined functions in their own sections
+    # .o of a C++ file can have functions definitions in their own sections
     # whose names are of the form ".text.<function-name>". We add them to
     # objdump's -j. Note that the fully linked exe from C++ will have all it's
-    # user-defined functions in .text.
+    # functions definitions in .text.
     local section sections
     for section in $(readelf -S $bin |\
       /bin/grep -Po '(?<=\ ).text.*?(?=\ )'); do
@@ -483,12 +483,9 @@ alias readelf='readelf --wide'
 alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
 alias rmtcp='rsync -avz -e ssh'
 alias gdb='gdb -q --args'
-
 alias qtmux='tmux kill-server'
 alias tmux='tmux -u -2'
-
 alias cmus='TERM=xterm-256color cmus'
-
 alias ptm="pstree -T $USER"
 alias psm="psx us --user $USER"
 alias psu='psx us --ppid 2 --pid 2 -N'
@@ -496,18 +493,18 @@ alias psi='psx us --ppid=1'
 alias psk='psx ks --ppid 2 --pid 2'
 alias pss='ps -o unit,cmd --ppid 2 --pid 2 -N'
 
-# Enable fzf for Arch Linux:
+# Enable fzf for Arch Linux.
 . /usr/share/fzf/completion.bash &> /dev/null
 . /usr/share/fzf/key-bindings.bash &> /dev/null
 
-# Enable fzf for Ubuntu:
+# Enable fzf for Ubuntu.
 . /usr/share/doc/fzf/examples/completion.bash &> /dev/null
 . /usr/share/doc/fzf/examples/key-bindings.bash &> /dev/null
 
-# Enable fzf for local installation:
+# Enable fzf for local installation.
 . ~/.fzf.bash &> /dev/null
 
-# Terminal color-scheme
+# Terminal color-scheme:
 declare -A t_bg_col t_fg_col
 t_bg_col[bl]="\e]11;#000000\007"
 t_bg_col[dk]="\e]11;#3a3a3a\007"
