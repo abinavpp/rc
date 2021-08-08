@@ -29,7 +29,7 @@ let mapleader = " "
 
 let delimitMate_expand_cr = 1
 au! filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
-" Enable delimitMate within comments
+" Enable delimitMate within comments.
 let delimitMate_excluded_regions = ""
 
 let NERDTreeShowHidden = 1
@@ -148,7 +148,6 @@ function! MapAll(lhs, n_rhs, i_rhs, c_rhs)
 endfunction
 
 function! Save()
-  " If writable or non-existent file
   if filewritable(bufname('%')) || empty(glob(bufname('%')))
     exe 'w'
   else
@@ -206,12 +205,9 @@ au! filetype c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
 " ========
-" To understand the alt keybinding headache in vim, see:
+" To understand the alt keybinding issue, see:
 " - https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
 " - https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
-"
-" Stick to xterm! Moolenaar does I guess. Nevertheless, we must minimize
-" dependency on alt key-bindings.
 
 " Leader
 " ------
@@ -249,7 +245,7 @@ vnoremap <C-x> d
 vnoremap <C-c> y
 vnoremap d "_d
 
-" Double escape forces command mode from <C-o> mode
+" Double escape forces command mode from <C-o> mode.
 nnoremap / <Esc><Esc>/
 nnoremap <C-o> <Esc>
 
@@ -296,10 +292,8 @@ inoremap <C-x> <Esc>^"*d$"_ddi
 inoremap <C-e> <Esc>"_ddi
 inoremap <C-d> <C-o>"_diw
 " NOTE:
-" - The <Esc>`^ stops the cursor from going back in normal mode.
-" - 'P' prepends the paste.
-" FIXME: pasting at ^ pastes after ^, using 'P' fixes this, but then it wrecks
-" pasting at $. Fix this "b/w rock and hard place" situation.
+" FIXME: Recall that 'p' appends the paste and 'P' prepends the paste relative
+" to the cursor. <C-v> should perform 'P' at ^ and 'p' otherwise.
 "
 " `[v`]= indents the paste. The last `] moves cursor to end of paste.
 inoremap <C-v> <Esc>p`[v`]=`]i<Right>
@@ -310,8 +304,8 @@ nnoremap <C-a><C-c> "Ayy
 nnoremap <C-a><C-v> "Ap<Esc>`[v`]=`]i<Right>
 nnoremap <C-a><C-r> :call setreg('a', "")<CR>
 
-" <FX> cmds
-" ---------
+" <FX>
+" ----
 au! filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
   \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
 au! filetype tex inoremap <F6> <C-o>:wa <bar> exec
@@ -320,6 +314,11 @@ au! filetype tex inoremap <F6> <C-o>:wa <bar> exec
 " Cursor movement
 " ---------------
 call MapAll('<C-i>', '<Up>', '<Up>', '<Up>')
+" <C-i> mimics <Tab>. <C-@> mimics ctrl + space.
+inoremap <C-@> <Tab>
+" The following 2 statements allow tab completion in command mode.
+set wildcharm=<Tab>
+cnoremap <C-@> <Tab>
 call MapAll('<C-k>', '<Down>', '<Down>', '<Down>')
 call MapAll('<C-j>', '<Left>', '<Left>', '<Left>')
 call MapAll('<C-l>', '<Right>', '<Right>', '<Right>')
@@ -367,21 +366,11 @@ nnoremap <C-w>L <C-w>L
 nnoremap <C-w>I <C-w>K
 nnoremap <C-w>K <C-w>J
 
-" The tab mess, arrrgghhh!
-" ------------------------
-" <C-i> = <Tab>, no rainbow without a little rain
-" <C-@> means <C-space>
-inoremap <C-@> <tab>
-" For tab completion in command mode
-" Need to set this to make the mapping work
-set wildcharm=<tab>
-cnoremap <C-@> <tab>
-
 " Set
 " ===
 set t_Co=256
 set notitle
-set termguicolors " for highlight guixx in xterm
+set termguicolors " For highlight guixx in xterm.
 set background=dark
 set ruler
 set noshowmode
@@ -415,12 +404,11 @@ set smartcase
 set rtp+=~/.fzf
 set directory=~/.cache/vim/swap//
 
-" Use %#BoldStatusLine#foobar%#StatusLine to add bold texts to our
-" statusline
+" Use %#BoldStatusLine#foobar%#StatusLine to add bold texts to our statusline.
 set statusline =
 set statusline +=\ %{mode()}
 " Set statusline +=\ %{expand('%:p:h:t')}/%t " Short path
-set statusline +=\ %<%F " Full path; '<' truncates the path
+set statusline +=\ %<%F " Full path; '<' truncates the path.
 set statusline +=\ \ %{tagbar#currenttag('%s','','%f')}
 set statusline +=%m " Modified flag
 set statusline +=\ %r " Readonly flag
@@ -449,10 +437,6 @@ au! FileType mlir setlocal commentstring=//\ %s
 au! FileType cpp setlocal commentstring=//\ %s
   \| set comments^=:///
 " See https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
-" augroup python
-    " ftype/python.vim overwrites this
-    " au! FileType python setlocal ts=2 sts=2 sw=2
-" augroup end
 
 " Syntax
 " ======
