@@ -179,18 +179,29 @@ function! SpellToggle()
   endif
 endfunction
 
+fun! Glg(range, line1, line2)
+  if a:range == 0
+    execute '0Gllog!'
+  elseif a:range == 1
+    execute a:line1 . 'Gllog!'
+  else
+    execute a:line1 . ',' . a:line2 . 'Gllog!'
+  endif
+endfun
+
 " Commands
 " ========
-command! Cl :call CleanMe()
-command! Gnu :call Gnu()
-command! Fif :call FoldIfDef()
-command! Cdb :lcd %:p:h
-command! Cds :call Cds()
-command! Gbl :Git blame
-command! Glg :0Gclog
-command! Gd :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
-command! GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
-command! Csi :call CSInv()
+command Cl :call CleanMe()
+command Gnu :call Gnu()
+command Fif :call FoldIfDef()
+command Cdb :lcd %:p:h
+command Cds :call Cds()
+command Gbl :Git blame
+command -range Glg call Glg(<range>, <line1>, <line2>)
+command Gr :Gedit
+command Gd :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
+command GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
+command Csi :call CSInv()
 au filetype c,cpp,cuda command! CPair :call CPair()
 
 " Mappings
