@@ -458,6 +458,7 @@ export PROJ="$HOME/proj"
 export LLVM_DEV="$PROJ"
 export FZF_DEFAULT_OPTS="--color 16"
 export LESSHISTFILE=/dev/null
+export QT_QPA_PLATFORMTHEME=qt5ct
 
 edelimvar ':' PATH -a "."
 epath -p "$HOME_BIN" "$EXTRA_BIN"
