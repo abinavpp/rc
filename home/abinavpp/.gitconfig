@@ -5,6 +5,8 @@
   cm = commit
   ch = checkout
   br = branch
+  df = diff
+  dfc = diff --cached
   them = ls-files --others --directory
 
 [init]
