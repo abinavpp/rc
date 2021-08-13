@@ -524,8 +524,11 @@ t_fg_curr_col=
 
 PROMPT_COMMAND=prompt_command
 
+. /usr/share/bash-completion/completions/git &> /dev/null
 . /usr/share/bash-completion/completions/man &> /dev/null
 . /usr/share/bash-completion/completions/pacman &> /dev/null
+__git_complete gitr git
+__git_complete gitrq git
 complete -F _man mn
 complete -F _comp_nt nt
 complete -F _comp_cmpnt cmpnt
