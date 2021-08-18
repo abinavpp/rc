@@ -1,6 +1,7 @@
 [alias]
-  lg = log --no-merges
-  sh = show --stat --oneline
+  lg0 = log --oneline
+  sh0 = show --no-patch --oneline
+  sh1 = show --stat --oneline
   st = status
   cm = commit
   ch = checkout
