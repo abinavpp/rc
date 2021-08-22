@@ -90,7 +90,7 @@ function edelimvar() {
     echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}' > $temp
     $EDITOR $temp
     export $delimvar=$(cat $temp | tr '\n' $delim | sed "s/$delim$//g")
-    rm $temp
+    /bin/rm $temp
     return
   fi
 
@@ -398,7 +398,7 @@ function pacdry_fresh {
   local path_tmpdb=$(mktemp -t -d pacdry_tmpdb.XXXXXX)
   sudo pacman -Sy --dbpath "$path_tmpdb" --logfile /dev/null 1>&2 && \
     pacdry --dbpath "$path_tmpdb" "$@"
-  sudo rm -rf "$path_tmpdb" &> /dev/null
+  sudo /bin/rm -rf "$path_tmpdb" &> /dev/null
 }
 
 function pacdry { sudo pacman --logfile /dev/null "$@"; }
@@ -450,7 +450,7 @@ function rn {
     if [[ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]]; then
       cd -- "$(cat "$tempfile")"
     fi
-  rm -f -- "$tempfile"
+  /bin/rm -f -- "$tempfile"
 }
 
 function print_fortune {
@@ -484,7 +484,7 @@ function crynt {
   ${EDITOR} $dec
   $gpg --output $enc --passphrase $pass --symmetric --cipher-algo AES256 $dec
 
-  rm $dec
+  /bin/rm $dec
   pkill gpg-agent
 }
 
