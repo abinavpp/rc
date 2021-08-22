@@ -169,7 +169,8 @@ function eref() {
 
     local filter_cmd
     printf -v filter_cmd '%s' 'sed -E /^(opt|filter_cmd|PPID|PWD|OLDPWD' \
-      '|BASH_LINENO|TMUX_PANE|_fzf_.*|__fzf_.*)=/d'
+      '|BASH_ARGC|BASH_ARGV|BASH_LINENO|BASH_REMATCH|BASH_SOURCE|COLUMNS' \
+      '|LINES|FUNCNAME|TMUX_PANE|_fzf_.*|__fzf_.*)=/d'
     [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
 
     diff <(cat $ref_dir/variable | $filter_cmd) \
