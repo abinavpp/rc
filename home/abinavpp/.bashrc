@@ -178,10 +178,14 @@ function eref() {
     diff <(cat $ref_dir/variable | $filter_cmd) \
       <(set -o posix; set | $filter_cmd)
 
-    diff <(cat $ref_dir/function) <(declare -f)
     diff <(cat $ref_dir/set) <(set -o)
     diff <(cat $ref_dir/shopt) <(shopt)
     diff <(cat $ref_dir/alias) <(alias)
+    return
+  fi
+
+  if [[ $opt == '-f' ]]; then
+    diff <(cat $ref_dir/function) <(declare -f)
   fi
 }
 
