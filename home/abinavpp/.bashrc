@@ -21,10 +21,11 @@ alias readelf='readelf --wide'
 alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
 alias rmtcp='rsync -avz -e ssh'
 alias gdb='gdb -q --args'
-alias qtmux='tmux kill-server'
 alias tmux='tmux -u -2'
 alias cmus='TERM=xterm-256color cmus'
 alias ptm="pstree -T $USER"
+
+function qtmux { tmux kill-server; /bin/rm -rf /tmp/tmux-$UID 2> /dev/null; }
 
 function psx {
   local type=$1; shift
@@ -161,6 +162,7 @@ function eref() {
     declare -f > $ref_dir/function
     set -o > $ref_dir/set
     shopt > $ref_dir/shopt
+    alias > $ref_dir/alias
     return
   fi
 
@@ -179,6 +181,7 @@ function eref() {
     diff <(cat $ref_dir/function) <(declare -f)
     diff <(cat $ref_dir/set) <(set -o)
     diff <(cat $ref_dir/shopt) <(shopt)
+    diff <(cat $ref_dir/alias) <(alias)
   fi
 }
 
