@@ -3,6 +3,48 @@
 . /etc/.pre-bashrc &> /dev/null
 . ${HOME}/.pre-bashrc &> /dev/null
 
+alias grep='grep -P --color -n'
+alias ls='ls -a --color=auto --group-directories-first'
+alias ll='/bin/ls -alih --color=auto --group-directories-first'
+alias lt='/bin/ls -alihrt --color=auto'
+alias lsblk='lsblk -o +FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC,MODEL,UUID'
+alias rm='rm -rfv'
+alias cp='cp -vr'
+alias tree='tree -aC'
+alias kdbg='sudo cat /sys/kernel/debug/dynamic_debug/control'
+alias kconf="zcat /proc/config.gz | vim -"
+alias mkfs.ntfs='mkfs.ntfs -Q'
+alias sudo='sudo '
+alias perlpi='perl -lpe '
+alias perl1='perl -ne '
+alias readelf='readelf --wide'
+alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
+alias rmtcp='rsync -avz -e ssh'
+alias gdb='gdb -q --args'
+alias qtmux='tmux kill-server'
+alias tmux='tmux -u -2'
+alias cmus='TERM=xterm-256color cmus'
+alias ptm="pstree -T $USER"
+
+function psx {
+  local type=$1; shift
+
+  if [[ $type == "us" ]]; then
+    local fields="flag,stat,euser,pid,ppid,pgid,nice,%mem,%cpu,"
+    fields+="wchan=WIDE-WCHAN-COLUMN,tty,cmd"
+  else
+    local fields="flag,stat,pid,ppid,pri,ni,class,bsdtime,cmd"
+  fi
+
+  ps -o ${fields} $@
+}
+
+alias psm="psx us --user $USER"
+alias psu='psx us --ppid 2 --pid 2 -N'
+alias psi='psx us --ppid=1'
+alias psk='psx ks --ppid 2 --pid 2'
+alias pss='ps -o unit,cmd --ppid 2 --pid 2 -N'
+
 function is_in_delimvar() {
   declare -A fields
   local field
@@ -461,19 +503,6 @@ function 256col { echo -e "\e]10;#$1\007"; ps -efl; read; }
 
 function harakiri { echo "pkill -u ${USER} ?"; read; pkill -u ${USER}; }
 
-function psx {
-  local type=$1; shift
-
-  if [[ $type == "us" ]]; then
-    local fields="flag,stat,euser,pid,ppid,pgid,nice,%mem,%cpu,"
-    fields+="wchan=WIDE-WCHAN-COLUMN,tty,cmd"
-  else
-    local fields="flag,stat,pid,ppid,pri,ni,class,bsdtime,cmd"
-  fi
-
-  ps -o ${fields} $@
-}
-
 export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo
 export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble
@@ -495,34 +524,6 @@ epath -p "$HOME_BIN" "$EXTRA_BIN"
 eld -p "$HOME_LIB"
 elb -p "$HOME_LIB"
 ecpath -p "$HOME_INCLUDE"
-
-alias grep='grep -P --color -n'
-alias ls='ls -a --color=auto --group-directories-first'
-alias ll='/bin/ls -alih --color=auto --group-directories-first'
-alias lt='/bin/ls -alihrt --color=auto'
-alias lsblk='lsblk -o +FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC,MODEL,UUID'
-alias rm='rm -rfv'
-alias cp='cp -vr'
-alias tree='tree -aC'
-alias kdbg='sudo cat /sys/kernel/debug/dynamic_debug/control'
-alias kconf="zcat /proc/config.gz | vim -"
-alias mkfs.ntfs='mkfs.ntfs -Q'
-alias sudo='sudo '
-alias perlpi='perl -lpe '
-alias perl1='perl -ne '
-alias readelf='readelf --wide'
-alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
-alias rmtcp='rsync -avz -e ssh'
-alias gdb='gdb -q --args'
-alias qtmux='tmux kill-server'
-alias tmux='tmux -u -2'
-alias cmus='TERM=xterm-256color cmus'
-alias ptm="pstree -T $USER"
-alias psm="psx us --user $USER"
-alias psu='psx us --ppid 2 --pid 2 -N'
-alias psi='psx us --ppid=1'
-alias psk='psx ks --ppid 2 --pid 2'
-alias pss='ps -o unit,cmd --ppid 2 --pid 2 -N'
 
 # Enable fzf for Arch Linux.
 . /usr/share/fzf/completion.bash &> /dev/null
