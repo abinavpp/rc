@@ -153,9 +153,10 @@ function eref() {
 
   local opt=$1; shift;
   local ref_dir=~/.cache/eref
-  mkdir $ref_dir 2> /dev/null
 
   if [[ $opt == '-s' ]]; then
+    mkdir $ref_dir 2> /dev/null
+
     (set -o posix; set > $ref_dir/variable)
     declare -f > $ref_dir/function
     set -o > $ref_dir/set
@@ -164,9 +165,11 @@ function eref() {
   fi
 
   if [[ $opt == '-d' || $opt == '-D' ]]; then
+    [[ ! -d $ref_dir ]] && return 1
+
     local filter_cmd
-    printf -v filter_cmd '%s' 'sed -E /^(opt|filter_cmd' \
-      '|PWD|OLDPWD|BASH_LINENO|TMUX_PANE|_fzf_.*|__fzf_.*)=/d'
+    printf -v filter_cmd '%s' 'sed -E /^(opt|filter_cmd|PPID|PWD|OLDPWD' \
+      '|BASH_LINENO|TMUX_PANE|_fzf_.*|__fzf_.*)=/d'
     [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
 
     diff <(cat $ref_dir/variable | $filter_cmd) \
@@ -554,6 +557,7 @@ t_col_path="$HOME/.t_col"
 t_bg_curr_col=
 t_fg_curr_col=
 
+prompt_command
 PROMPT_COMMAND=prompt_command
 
 . /usr/share/bash-completion/completions/git &> /dev/null
@@ -584,5 +588,6 @@ if [[ $SAVED_RESET_XXX != true ]]; then
   export RESET_LIBRARY_PATH=$LIBRARY_PATH
   export RESET_CPATH=$CPATH
   export SAVED_RESET_XXX=true
-  eref -s
 fi
+
+! shopt -q login_shell && [[ ! -d ~/.cache/eref ]] && eref -s
