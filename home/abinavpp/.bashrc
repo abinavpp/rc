@@ -83,11 +83,12 @@ function edelimvar() {
   fi
 
   if [[ $opt == "-e" ]]; then
-    # Edit delimvar in vim with newlines as a temporary delimiter where :wq
-    # saves changes and :q discards changes.
+    # Edit delimvar in the editor with newlines as a temporary delimiter where
+    # saving the buffer while quitting saves changes but quitting without saving
+    # discards changes.
     local temp=$(mktemp -t md_delimvar.XXXXXX)
     echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}' > $temp
-    vim $temp
+    $EDITOR $temp
     export $delimvar=$(cat $temp | tr '\n' $delim | sed "s/$delim$//g")
     rm $temp
     return
