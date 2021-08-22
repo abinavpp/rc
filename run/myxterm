@@ -36,5 +36,5 @@ else
     -xrm 'xterm*vt100.faceName: *:size=12:antialias=true'"
 fi
 
-cmd=$(echo $cmd)
+cmd=$(echo $cmd -T xterm -e /bin/bash)
 exec bash -c "$cmd"
