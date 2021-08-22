@@ -5,11 +5,6 @@ my $eoi_path = qr/^
   C_INCLUDE_PATH | CPLUS_INCLUDE_PATH | CPATH)
   $/x;
 
-my $eoi_extra = qr/^
-  (LIBOMP.* | KMP.* | OMP.*)
-  $/x;
-
-
 sub match_env {
   my ($eoi_regex, $new_para) = @_;
 
@@ -22,4 +17,3 @@ sub match_env {
 }
 
 match_env($eoi_path);
-match_env($eoi_extra, "new_para");
