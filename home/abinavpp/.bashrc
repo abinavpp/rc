@@ -105,6 +105,36 @@ function ecpath() {
   edelimvar ':' CPATH $opt $(realpath "$@" 2> /dev/null);
 }
 
+function eref() {
+  [[ ! -d ~/.cache ]] && return 1
+
+  local opt=$1; shift;
+  local ref_dir=~/.cache/eref
+  mkdir $ref_dir 2> /dev/null
+
+  if [[ $opt == '-s' ]]; then
+    (set -o posix; set > $ref_dir/variable)
+    declare -f > $ref_dir/function
+    set -o > $ref_dir/set
+    shopt > $ref_dir/shopt
+    return
+  fi
+
+  if [[ $opt == '-d' || $opt == '-D' ]]; then
+    local filter_cmd
+    printf -v filter_cmd '%s' 'sed -E /^(opt|filter_cmd' \
+      '|PWD|OLDPWD|BASH_LINENO|TMUX_PANE|_fzf_.*|__fzf_.*)=/d'
+    [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
+
+    diff <(cat $ref_dir/variable | $filter_cmd) \
+      <(set -o posix; set | $filter_cmd)
+
+    diff <(cat $ref_dir/function) <(declare -f)
+    diff <(cat $ref_dir/set) <(set -o)
+    diff <(cat $ref_dir/shopt) <(shopt)
+  fi
+}
+
 function ind {
   $@ &
   disown $!
@@ -552,4 +582,5 @@ if [[ $SAVED_RESET_XXX != true ]]; then
   export RESET_LIBRARY_PATH=$LIBRARY_PATH
   export RESET_CPATH=$CPATH
   export SAVED_RESET_XXX=true
+  eref -s
 fi
