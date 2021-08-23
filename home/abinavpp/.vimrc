@@ -428,6 +428,7 @@ set statusline +=\ %v " Column number
 set statusline +=\ %l " Current line
 set statusline +=/%L " Total lines
 
+au! BufRead,BufNewFile *.cl set filetype=c
 au! BufRead,BufNewFile *.hip set filetype=cpp
 au! BufRead,BufNewFile *.s set filetype=xasm
 au! BufRead,BufNewFile *.ll set filetype=llvm
