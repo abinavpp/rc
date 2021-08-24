@@ -1,8 +1,9 @@
 map <C-c> recolor
-set show-v-scrollbar
+
+# Set status bar and vertical scrollbar
+set guioptions "sv"
+
 set show-recent 0
-# set default-bg "#000000"
-# set recolor-darkcolor "#3a3a3a" # sets fg col
 set recolor-lightcolor "#000000"
 set recolor-keephue true
 set recolor true
