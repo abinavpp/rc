@@ -292,7 +292,8 @@ nnoremap gg <Esc><Esc>mxgg
 nnoremap zz :call Save()<CR>
 nnoremap hh :noh<CR>
 nnoremap tt :TagbarToggle<CR>
-nnoremap dt :difft<CR>
+nnoremap dt :windo difft<CR>
+nnoremap dT :windo diffo<CR>
 
 " Cut, copy, select
 " -----------------
