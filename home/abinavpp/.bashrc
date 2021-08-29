@@ -46,6 +46,49 @@ alias psi='psx us --ppid=1'
 alias psk='psx ks --ppid 2 --pid 2'
 alias pss='ps -o unit,cmd --ppid 2 --pid 2 -N'
 
+function eref() {
+  [[ ! -d ~/.cache ]] && return 1
+
+  local opt=$1; shift;
+  local ref_dir=~/.cache/eref
+
+  if [[ $opt == '-s' ]]; then
+    mkdir $ref_dir 2> /dev/null
+
+    (set -o posix; set > $ref_dir/variable)
+    declare -f > $ref_dir/function
+    set -o > $ref_dir/set
+    shopt > $ref_dir/shopt
+    alias > $ref_dir/alias
+    return
+  fi
+
+  if [[ $opt == '-d' || $opt == '-D' ]]; then
+    [[ ! -d $ref_dir ]] && return 1
+
+    local filter_cmd
+    printf -v filter_cmd '%s' 'sed -E /^(opt|filter_cmd|PPID|PWD|OLDPWD' \
+      '|BASH_ARGC|BASH_ARGV|BASH_LINENO|BASH_REMATCH|BASH_SOURCE|COLUMNS' \
+      '|LINES|FUNCNAME|TMUX_PANE|_fzf_.*|__fzf_.*|__git.*' \
+      '|cur|prev|words|cword|PLUGIN)=/d'
+    [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
+
+    diff <(cat $ref_dir/variable | $filter_cmd) \
+      <(set -o posix; set | $filter_cmd)
+
+    diff <(cat $ref_dir/set) <(set -o)
+    diff <(cat $ref_dir/shopt) <(shopt)
+    diff <(cat $ref_dir/alias) <(alias)
+    return
+  fi
+
+  if [[ $opt == '-f' ]]; then
+    diff <(cat $ref_dir/function) <(declare -f)
+  fi
+}
+
+alias sb='source ~/.bashrc; eref -d'
+
 function is_in_delimvar() {
   declare -A fields
   local field
@@ -147,47 +190,6 @@ function elb() {
 function ecpath() {
   local opt=$1; shift;
   edelimvar ':' CPATH $opt $(realpath "$@" 2> /dev/null);
-}
-
-function eref() {
-  [[ ! -d ~/.cache ]] && return 1
-
-  local opt=$1; shift;
-  local ref_dir=~/.cache/eref
-
-  if [[ $opt == '-s' ]]; then
-    mkdir $ref_dir 2> /dev/null
-
-    (set -o posix; set > $ref_dir/variable)
-    declare -f > $ref_dir/function
-    set -o > $ref_dir/set
-    shopt > $ref_dir/shopt
-    alias > $ref_dir/alias
-    return
-  fi
-
-  if [[ $opt == '-d' || $opt == '-D' ]]; then
-    [[ ! -d $ref_dir ]] && return 1
-
-    local filter_cmd
-    printf -v filter_cmd '%s' 'sed -E /^(opt|filter_cmd|PPID|PWD|OLDPWD' \
-      '|BASH_ARGC|BASH_ARGV|BASH_LINENO|BASH_REMATCH|BASH_SOURCE|COLUMNS' \
-      '|LINES|FUNCNAME|TMUX_PANE|_fzf_.*|__fzf_.*|__git.*' \
-      '|cur|prev|words|cword|PLUGIN)=/d'
-    [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
-
-    diff <(cat $ref_dir/variable | $filter_cmd) \
-      <(set -o posix; set | $filter_cmd)
-
-    diff <(cat $ref_dir/set) <(set -o)
-    diff <(cat $ref_dir/shopt) <(shopt)
-    diff <(cat $ref_dir/alias) <(alias)
-    return
-  fi
-
-  if [[ $opt == '-f' ]]; then
-    diff <(cat $ref_dir/function) <(declare -f)
-  fi
 }
 
 function ind {
