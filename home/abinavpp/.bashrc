@@ -83,6 +83,8 @@ function eref() {
   fi
 
   if [[ $opt == '-f' ]]; then
+    [[ ! -d $ref_dir ]] && return 1
+
     diff <(cat $ref_dir/function) <(declare -f)
   fi
 }
