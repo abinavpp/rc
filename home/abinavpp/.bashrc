@@ -356,7 +356,7 @@ function cdp {
 }
 
 function rn {
-  tmp_file="$(mktemp -t tmp.XXXXXX)"
+  local tmp_file="$(mktemp -t tmp.XXXXXX)"
 
   ranger --choosedir="$tmp_file" "${@:-$(pwd)}"
   test -f "$tmp_file" &&
