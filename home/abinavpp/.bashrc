@@ -64,15 +64,14 @@ function is_in_delimvar() {
   declare -A fields
   local field
   local delim=$1 delimvar=$2 check=$3
-  fields=`echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}' | tr '\n' ' '`
+  local fields=`echo ${!delimvar} | awk -F$delim \
+    '{for (i = 1; i <= NF; i++) print $i}' | tr '\n' ' '`
 
   for field in ${fields[@]}; do
     if [[ $check == $field ]]; then
-      unset fields
       return 0
     fi
   done
-  unset fields
   return 1
 }
 
