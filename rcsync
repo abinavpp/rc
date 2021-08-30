@@ -1,5 +1,7 @@
 #! /bin/bash
 
+cd "${0%/*}"
+
 function print_usage {
 cat << ENDCAT
 rcsync is a high level wrapper script that uses treesync to sync rc files
