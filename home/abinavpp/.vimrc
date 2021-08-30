@@ -34,6 +34,8 @@ au! filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
 " Enable delimitMate within comments.
 let delimitMate_excluded_regions = ""
 
+let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0, 'relative': v:true, 'yoffset': 1.0 } }
+
 let NERDTreeShowHidden = 1
 
 let g:syntastic_c_compiler = "clang"
