@@ -1,6 +1,6 @@
 #! /bin/bash
 
-run_mode="" # run type (dry or nothing)
+run_mode=""
 
 function print_usage {
 cat <<ENDCAT
@@ -40,7 +40,8 @@ function sanitize_path_string {
     return
   fi
 
-  echo -n $dir | sed 's:/$::' # remove the trailing /
+  # Remove the trailing '/'
+  echo -n $dir | sed 's:/$::'
 }
 
 function tree_sync {

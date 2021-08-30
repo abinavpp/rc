@@ -60,7 +60,7 @@ done
 
 if [[ $profile_type == "home" ]]; then
   in="home/${profile_name}"
-  out="$HOME" # '~' breaks when used below TODO: know why!
+  out="$HOME"
 
 elif [[ $profile_type == "sysroot" ]]; then
   sudo="sudo"
@@ -76,8 +76,7 @@ if [[ ! -e $in || ! -e $out ]]; then
   exit
 fi
 
-for run_type; do true; done # gets last arg
-
+for run_type; do true; done
 echo -e "\033[0;32mPerforming $run_type:\033[0m"
 
 if [[ $run_type == "sin" ]]; then
@@ -90,7 +89,7 @@ elif [[ $run_type == "sout" ]]; then
 
 elif [[ $run_type == "diff" ]]; then
   from=$out
-  to=$in # order doesn't matter here
+  to=$in
   diff="-c"
 
 else
