@@ -602,5 +602,3 @@ if [[ $SAVED_RESET_XXX != true ]]; then
   export RESET_CPATH=$CPATH
   export SAVED_RESET_XXX=true
 fi
-
-! shopt -q login_shell && [[ ! -d ~/.cache/eref ]] && eref -s
