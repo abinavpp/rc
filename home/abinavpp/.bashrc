@@ -355,6 +355,18 @@ function cdp {
   cd /proc/$pid
 }
 
+function rn {
+  tmp_file="$(mktemp -t tmp.XXXXXX)"
+
+  ranger --choosedir="$tmp_file" "${@:-$(pwd)}"
+  test -f "$tmp_file" &&
+    if [[ "$(cat -- "$tmp_file")" != "$(echo -n `pwd`)" ]]; then
+      cd -- "$(cat "$tmp_file")"
+    fi
+
+  /bin/rm -f -- "$tmp_file"
+}
+
 function xnt {
   local dir=$1 note=$2
 
