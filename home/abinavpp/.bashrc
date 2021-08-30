@@ -101,7 +101,8 @@ function edelimvar() {
     # saving the buffer while quitting saves changes but quitting without saving
     # discards changes.
     local temp=$(mktemp -t md_delimvar.XXXXXX)
-    echo ${!delimvar} | awk -F$delim '{for (i = 1; i <= NF; i++) print $i}' > $temp
+    echo ${!delimvar} | awk -F$delim \
+      '{for (i = 1; i <= NF; i++) print $i}' > $temp
     $EDITOR $temp
     export $delimvar=$(cat $temp | tr '\n' $delim | sed "s/$delim$//g")
     /bin/rm $temp
