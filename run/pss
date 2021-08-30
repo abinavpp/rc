@@ -1,0 +1,3 @@
+#! /bin/bash
+
+ps -o unit,cmd --ppid 2 --pid 2 -N

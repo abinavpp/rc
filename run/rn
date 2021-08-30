@@ -1,0 +1,11 @@
+#! /bin/bash
+
+tmp_file="$(mktemp -t tmp.XXXXXX)"
+
+ranger --choosedir="$tmp_file" "${@:-$(pwd)}"
+test -f "$tmp_file" &&
+  if [[ "$(cat -- "$tmp_file")" != "$(echo -n `pwd`)" ]]; then
+    cd -- "$(cat "$tmp_file")"
+  fi
+
+rm -f -- "$tmp_file"

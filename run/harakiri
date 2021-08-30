@@ -1,0 +1,3 @@
+#! /bin/bash
+
+echo "pkill -u ${USER} ?"; read; pkill -u ${USER}

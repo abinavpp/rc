@@ -3,48 +3,17 @@
 . /etc/.pre-bashrc &> /dev/null
 . ${HOME}/.pre-bashrc &> /dev/null
 
-alias grep='grep -P --color -n'
 alias ls='ls -a --color=auto --group-directories-first'
-alias ll='/bin/ls -alih --color=auto --group-directories-first'
-alias lt='/bin/ls -alihrt --color=auto'
-alias lsblk='lsblk -o +FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC,MODEL,UUID'
 alias rm='rm -rfv'
 alias cp='cp -vr'
-alias tree='tree -aC'
-alias kdbg='sudo cat /sys/kernel/debug/dynamic_debug/control'
-alias kconf="zcat /proc/config.gz | vim -"
-alias mkfs.ntfs='mkfs.ntfs -Q'
+alias grep='grep -P --color -n'
 alias sudo='sudo '
-alias perlpi='perl -lpe '
-alias perl1='perl -ne '
 alias readelf='readelf --wide'
-alias llvm-readobj-gnu='llvm-readobj --elf-output-style=GNU'
-alias rmtcp='rsync -avz -e ssh'
 alias gdb='gdb -q --args'
-alias tmux='tmux -u -2'
 alias cmus='TERM=xterm-256color cmus'
-alias ptm="pstree -T $USER"
-
-function qtmux { tmux kill-server; /bin/rm -rf /tmp/tmux-$UID 2> /dev/null; }
-
-function psx {
-  local type=$1; shift
-
-  if [[ $type == "us" ]]; then
-    local fields="flag,stat,euser,pid,ppid,pgid,nice,%mem,%cpu,"
-    fields+="wchan=WIDE-WCHAN-COLUMN,tty,cmd"
-  else
-    local fields="flag,stat,pid,ppid,pri,ni,class,bsdtime,cmd"
-  fi
-
-  ps -o ${fields} $@
-}
-
-alias psm="psx us --user $USER"
-alias psu='psx us --ppid 2 --pid 2 -N'
-alias psi='psx us --ppid=1'
-alias psk='psx ks --ppid 2 --pid 2'
-alias pss='ps -o unit,cmd --ppid 2 --pid 2 -N'
+alias tmux='tmux -u -2'
+alias lsblk='lsblk -o +FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC,MODEL,UUID'
+alias mkfs.ntfs='mkfs.ntfs -Q'
 
 function eref() {
   [[ ! -d ~/.cache ]] && return 1
@@ -194,16 +163,6 @@ function ecpath() {
   edelimvar ':' CPATH $opt $(realpath "$@" 2> /dev/null);
 }
 
-function ind {
-  $@ &
-  disown $!
-}
-
-function pid_to_jid {
-  jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
-    /bin/grep -oE "[[:digit:]]+"
-}
-
 # Updates the global variables ${t_<fg/bg>_curr_col} as per the file name
 # referred by ${t_col_path}.
 function t_col_upd {
@@ -277,11 +236,9 @@ function prompt_command {
   PS1+="\[${t_fg_curr_col}\]\[${t_bg_curr_col}\]"
 }
 
-function in_array {
-  local e match="$1"
-  shift
-  for e; do [[ "$e" == "$match" ]] && return 0; done
-  return 1
+function pid_to_jid {
+  jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
+    /bin/grep -oE "[[:digit:]]+"
 }
 
 function vim {
@@ -334,10 +291,6 @@ function vim {
   fi
 }
 
-function obd { objdump -l -S -M intel -D -C $@; }
-
-function obd2 { obd --visualize-jumps; }
-
 function dis {
   local bin=$1 asm; shift
 
@@ -369,26 +322,6 @@ function dis {
   vim $asm
 }
 
-function sgrep {
-  local exclude=""
-
-  if git status &> /dev/null; then
-    exclude+="--exclude-dir=.git "
-    if test -f tags && file tags | /bin/grep -q "Ctags tag file"; then
-      exclude+="--exclude=tags "
-    fi
-
-    if test -f cscope.out && file cscope.out | \
-      /bin/grep -q "cscope reference data"; then
-          exclude+="--exclude=cscope.out --exclude=cscope.files "
-    fi
-
-    /bin/grep -P --color -n -I $exclude "$@"
-  else
-    /bin/grep -P --color -n -I "$@"
-  fi
-}
-
 function cd {
   local srcroot=$(srcerer 2> /dev/null)
 
@@ -406,14 +339,21 @@ function cd {
   command cd "$@"
 }
 
-function pacdry_fresh {
-  local path_tmpdb=$(mktemp -t -d pacdry_tmpdb.XXXXXX)
-  sudo pacman -Sy --dbpath "$path_tmpdb" --logfile /dev/null 1>&2 && \
-    pacdry --dbpath "$path_tmpdb" "$@"
-  sudo /bin/rm -rf "$path_tmpdb" &> /dev/null
-}
+function cdp {
+  if [[ $# -ne 1 ]]; then
+    return
+  fi
 
-function pacdry { sudo pacman --logfile /dev/null "$@"; }
+  local pid=`pgrep $1 | head -n1`
+
+  if [[ $pid == "" ]]; then
+    return
+  fi
+
+  echo -n "cmdline: "
+  echo `tr -d '\0' < /proc/$pid/cmdline`
+  cd /proc/$pid
+}
 
 function xnt {
   local dir=$1 note=$2
@@ -452,74 +392,6 @@ function _comp_cmpnt() { _comp_xnt $HOME/doc/cs/comp; }
 function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scratch; }
 function _comp_culnt() { _comp_xnt $HOME/doc/cul; }
 
-function mn { [[ -e ~/.man-vimrc ]] && man "$@" | ${EDITOR} -u ~/.man-vimrc -; }
-
-function rn {
-  local tempfile="$(mktemp -t tmp.XXXXXX)"
-
-  ranger --choosedir="$tempfile" "${@:-$(pwd)}"
-  test -f "$tempfile" &&
-    if [[ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]]; then
-      cd -- "$(cat "$tempfile")"
-    fi
-  /bin/rm -f -- "$tempfile"
-}
-
-function print_fortune {
-  [[ "$PS1"  ]] && (type fortune &> /dev/null \
-    && echo -e "\e[00;36m$(fortune)\e[00m")
-}
-
-function vimj {
-  sudo journalctl --no-pager $* | ${EDITOR} -c 'set ft=messages | +normal G' -
-}
-
-function crynt {
-  local cry_dir="$HOME/doc/cry/"
-  local gpg="gpg --batch --yes"
-
-  if [[ $# -ne 1 || ! -d $cry_dir ]]; then
-    return
-  fi
-
-  local enc=$cry_dir/$1 dec="$cry_dir/_d_$1"
-  local pass
-
-  read -s -p "Speak friend and enter : " pass
-  echo
-  if [[ -e $enc ]]; then
-    $gpg --output $dec --passphrase $pass --decrypt $enc
-    if [[ $? -ne 0 ]]; then
-      return
-    fi
-  fi
-  ${EDITOR} $dec
-  $gpg --output $enc --passphrase $pass --symmetric --cipher-algo AES256 $dec
-
-  /bin/rm $dec
-  pkill gpg-agent
-}
-
-function cdp {
-  if [[ $# -ne 1 ]]; then
-    return
-  fi
-
-  local pid=`pgrep $1 | head -n1`
-
-  if [[ $pid == "" ]]; then
-    return
-  fi
-
-  echo -n "cmdline: "
-  echo `tr -d '\0' < /proc/$pid/cmdline`
-  cd /proc/$pid
-}
-
-function 256col { echo -e "\e]10;#$1\007"; ps -efl; read; }
-
-function harakiri { echo "pkill -u ${USER} ?"; read; pkill -u ${USER}; }
-
 export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo
 export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble
@@ -542,17 +414,6 @@ eld -p "$HOME_LIB"
 elb -p "$HOME_LIB"
 ecpath -p "$HOME_INCLUDE"
 
-# Enable fzf for Arch Linux.
-. /usr/share/fzf/completion.bash &> /dev/null
-. /usr/share/fzf/key-bindings.bash &> /dev/null
-
-# Enable fzf for Ubuntu.
-. /usr/share/doc/fzf/examples/completion.bash &> /dev/null
-. /usr/share/doc/fzf/examples/key-bindings.bash &> /dev/null
-
-# Enable fzf for local installation.
-. ~/.fzf.bash &> /dev/null
-
 # Terminal color-scheme:
 declare -A t_bg_col t_fg_col
 t_bg_col[bl]="\e]11;#000000\007"
@@ -573,6 +434,17 @@ t_fg_curr_col=
 prompt_command
 PROMPT_COMMAND=prompt_command
 
+# Enable fzf for Arch Linux.
+. /usr/share/fzf/completion.bash &> /dev/null
+. /usr/share/fzf/key-bindings.bash &> /dev/null
+
+# Enable fzf for Ubuntu.
+. /usr/share/doc/fzf/examples/completion.bash &> /dev/null
+. /usr/share/doc/fzf/examples/key-bindings.bash &> /dev/null
+
+# Enable fzf for local installation.
+. ~/.fzf.bash &> /dev/null
+
 . /usr/share/bash-completion/completions/git &> /dev/null
 . /usr/share/bash-completion/completions/man &> /dev/null
 . /usr/share/bash-completion/completions/pacman &> /dev/null
@@ -589,7 +461,6 @@ complete -F _pacman -o default pacdry
 t_col_upd
 mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
 clhome
-print_fortune
 
 . /etc/.post-bashrc &> /dev/null
 . ${HOME}/.post-bashrc &> /dev/null

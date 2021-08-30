@@ -1,0 +1,13 @@
+#! /bin/bash
+
+this=`basename $0`
+mode=$1; shift
+
+us_fields="flag,stat,euser,pid,ppid,pgid,nice,%mem,%cpu,"
+us_fields+="wchan=WIDE-WCHAN-COLUMN,tty,cmd"
+ks_fields="flag,stat,pid,ppid,pri,ni,class,bsdtime,cmd"
+
+[[ $this == 'psm' ]] && ps -o $us_fields --user $USER
+[[ $this == 'psu' ]] && ps -o $us_fields --ppid 2 --pid 2 -N
+[[ $this == 'psi' ]] && ps -o $us_fields --ppid=1
+[[ $this == 'psk' ]] && ps -o $ks_fields --ppid 2 --pid 2

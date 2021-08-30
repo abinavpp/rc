@@ -1,0 +1,25 @@
+#! /bin/bash
+
+local cry_dir="$HOME/doc/cry/"
+local gpg="gpg --batch --yes"
+
+if [[ $# -ne 1 || ! -d $cry_dir ]]; then
+  return
+fi
+
+local enc=$cry_dir/$1 dec="$cry_dir/_d_$1"
+local pass
+
+read -s -p "Speak friend and enter : " pass
+echo
+if [[ -e $enc ]]; then
+  $gpg --output $dec --passphrase $pass --decrypt $enc
+  if [[ $? -ne 0 ]]; then
+    return
+  fi
+fi
+${EDITOR} $dec
+$gpg --output $enc --passphrase $pass --symmetric --cipher-algo AES256 $dec
+
+rm $dec
+pkill gpg-agent

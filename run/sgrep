@@ -1,0 +1,20 @@
+#! /bin/bash
+
+exclude=""
+
+if git status &> /dev/null; then
+  exclude+="--exclude-dir=.git "
+  if test -f tags && file tags | /bin/grep -q "Ctags tag file"; then
+    exclude+="--exclude=tags "
+  fi
+
+  if test -f cscope.out && file cscope.out | \
+    grep -q "cscope reference data"; then
+        exclude+="--exclude=cscope.out --exclude=cscope.files "
+  fi
+
+  grep -P --color -n -I $exclude "$@"
+
+else
+  grep -P --color -n -I "$@"
+fi

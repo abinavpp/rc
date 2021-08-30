@@ -1,0 +1,6 @@
+#! /bin/bash
+
+path_tmpdb=$(mktemp -t -d pacdry_tmpdb.XXXXXX)
+sudo pacman -Sy --dbpath "$path_tmpdb" --logfile /dev/null 1>&2 && \
+  pacdry --dbpath "$path_tmpdb" "$@"
+sudo rm -rf "$path_tmpdb" &> /dev/null
