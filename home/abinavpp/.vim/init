@@ -6,9 +6,9 @@ use warnings;
 my $wget = "wget --retry-on-http-error=500";
 
 sub setup_vim {
-  system("mkdir $ENV{HOME}/.vim &> /dev/null");
-  system("mkdir $ENV{HOME}/.vim/autoload &> /dev/null");
-  system("mkdir $ENV{HOME}/.vim/syntax &> /dev/null");
+  system("mkdir $ENV{HOME}/.vim 2> /dev/null");
+  system("mkdir $ENV{HOME}/.vim/autoload 2> /dev/null");
+  system("mkdir $ENV{HOME}/.vim/syntax 2> /dev/null");
 }
 
 sub setup_vimplug {
