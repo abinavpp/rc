@@ -6,22 +6,24 @@ let $LD_LIBRARY_PATH = $RESET_LD_LIBRARY_PATH
 
 " Plugins
 " =======
-call plug#begin('~/.vim/plugged')
-Plug 'https://github.com/Raimondi/delimitMate'
-Plug 'https://github.com/scrooloose/nerdtree'
-Plug 'https://github.com/vim-syntastic/syntastic'
-Plug 'https://github.com/tpope/vim-commentary'
-Plug 'https://github.com/tpope/vim-fugitive'
-Plug 'https://github.com/tpope/vim-surround'
-Plug 'https://github.com/tpope/vim-eunuch'
-Plug 'https://github.com/yegappan/greplace'
-Plug 'https://github.com/google/vim-searchindex'
-Plug 'https://github.com/gioele/vim-autoswap'
-Plug 'https://github.com/majutsushi/tagbar'
-Plug 'https://github.com/prabirshrestha/vim-lsp'
-Plug 'https://github.com/prabirshrestha/async.vim'
-Plug 'https://github.com/junegunn/fzf', { 'do': { -> fzf#install() } }
-call plug#end()
+if filereadable($HOME . "/.vim/autoload/plug.vim")
+  call plug#begin('~/.vim/plugged')
+  Plug 'https://github.com/Raimondi/delimitMate'
+  Plug 'https://github.com/scrooloose/nerdtree'
+  Plug 'https://github.com/vim-syntastic/syntastic'
+  Plug 'https://github.com/tpope/vim-commentary'
+  Plug 'https://github.com/tpope/vim-fugitive'
+  Plug 'https://github.com/tpope/vim-surround'
+  Plug 'https://github.com/tpope/vim-eunuch'
+  Plug 'https://github.com/yegappan/greplace'
+  Plug 'https://github.com/google/vim-searchindex'
+  Plug 'https://github.com/gioele/vim-autoswap'
+  Plug 'https://github.com/majutsushi/tagbar'
+  Plug 'https://github.com/prabirshrestha/vim-lsp'
+  Plug 'https://github.com/prabirshrestha/async.vim'
+  Plug 'https://github.com/junegunn/fzf', { 'do': { -> fzf#install() } }
+  call plug#end()
+endif
 
 " Variables
 " =========
@@ -416,12 +418,13 @@ set statusline =
 set statusline +=\ %{mode()}
 " Set statusline +=\ %{expand('%:p:h:t')}/%t " Short path
 set statusline +=\ %<%F " Full path; '<' truncates the path.
-set statusline +=\ \ %{tagbar#currenttag('%s','','%f')}
+set statusline +=\ \ %{exists('g:loaded_tagbar')?
+      \tagbar#currenttag('%s','','%f'):''}
 set statusline +=%m " Modified flag
 set statusline +=\ %r " Readonly flag
 
 set statusline +=%=
-silent! set statusline +=\ %{fugitive#statusline()} " Current git branch
+set statusline +=%{exists('g:loaded_fugitive')?fugitive#statusline():''}
 set statusline +=\ %{&ff} " File format
 set statusline +=%y " File type
 set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " File encoding
