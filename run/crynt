@@ -1,14 +1,13 @@
 #! /bin/bash
 
-local cry_dir="$HOME/doc/cry/"
-local gpg="gpg --batch --yes"
+cry_dir="$HOME/doc/cry/"
+gpg="gpg --batch --yes"
 
 if [[ $# -ne 1 || ! -d $cry_dir ]]; then
   return
 fi
 
-local enc=$cry_dir/$1 dec="$cry_dir/_d_$1"
-local pass
+enc=$cry_dir/$1 dec="$cry_dir/_d_$1"
 
 read -s -p "Speak friend and enter : " pass
 echo
