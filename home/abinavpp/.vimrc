@@ -34,7 +34,8 @@ au! filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
 " Enable delimitMate within comments.
 let delimitMate_excluded_regions = ""
 
-let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0, 'relative': v:true, 'yoffset': 1.0 } }
+let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0,
+      \ 'relative': v:true, 'yoffset': 1.0 } }
 
 let NERDTreeShowHidden = 1
 
@@ -437,19 +438,16 @@ set statusline +=/%L " Total lines
 au! BufRead,BufNewFile *.cl set filetype=c
 au! BufRead,BufNewFile *.hip set filetype=cpp
 au! BufRead,BufNewFile *.s set filetype=xasm
-au! BufRead,BufNewFile *.ll set filetype=llvm
+au! BufRead,BufNewFile *.{ll,mir} set filetype=llvm
 au! BufRead,BufNewFile *.mlir set filetype=mlir
 au! BufRead,BufNewFile lit.*cfg set filetype=python
 au! BufRead,BufNewFile *.td set filetype=tablegen
-au! BufRead,BufNewFile *.inc set filetype=cpp
-au! BufRead,BufNewFile *.def set filetype=cpp
+au! BufRead,BufNewFile *.{inc,def} set filetype=cpp
 au! BufNewFile,BufRead *.c.* set filetype=rtl
 
 au! FileType llvm setlocal commentstring=;\ %s
 au! FileType mlir setlocal commentstring=//\ %s
-au! FileType cpp setlocal commentstring=//\ %s
-  \| set comments^=:///
-" See https://stackoverflow.com/questions/27403413/vims-tab-length-is-different-for-py-files
+au! FileType cpp setlocal commentstring=//\ %s | set comments^=:///
 
 " Syntax
 " ======
