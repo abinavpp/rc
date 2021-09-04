@@ -378,8 +378,6 @@ complete -F _comp_scrnt scrnt
 complete -F _comp_culnt culnt
 complete -F _pacman -o default pacdry
 
-clhome
-
 . /etc/.post-bashrc &> /dev/null
 . ${HOME}/.post-bashrc &> /dev/null
 
