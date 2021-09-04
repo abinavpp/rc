@@ -35,7 +35,7 @@ floating_modifier $mod
 workspace_layout tabbed
 
 bindsym $mod+bracketleft exec myxterm min
-bindsym $mod+bracketright exec dmenu_run -fn "-xos4--medium" -nb "#000000" -sb "#000000" -sf "#ffffff"
+bindsym $mod+grave exec dmenu_run -fn "-xos4--medium" -nb "#000000" -sb "#000000" -sf "#ffffff"
 bindsym $mod+backslash kill
 
 bindsym XF86AudioRaiseVolume exec amixer set Master 5%+
