@@ -218,37 +218,6 @@ function vim {
   fi
 }
 
-function dis {
-  local bin=$1 asm; shift
-
-  # Note that inlining this at local declaration will make $asm ".s".
-  asm=$(basename "$bin").s
-
-  if file $bin | /bin/grep -iq "LLVM.*bitcode"; then
-    asm="$bin.ll"
-    llvm-dis $@ $bin -o $asm
-
-  elif file $bin | /bin/grep -iq "ELF.*x86-64"; then
-
-    # .o of a C++ file can have functions definitions in their own sections
-    # whose names are of the form ".text.<function-name>". We add them to
-    # objdump's -j. Note that the fully linked exe from C++ will have all it's
-    # functions definitions in .text.
-    local section sections
-    for section in $(readelf -S $bin |\
-      /bin/grep -Po '(?<=\ ).text.*?(?=\ )'); do
-      sections="$sections -j $section"
-    done
-
-    obd $@ $sections $bin > $asm
-
-  elif file $bin | /bin/grep -iq "ELF.*NVIDIA CUDA"; then
-    nvdisasm $@ $bin > $asm
-  fi
-
-  vim $asm
-}
-
 function cd {
   local srcroot=$(srcerer 2> /dev/null)
 
