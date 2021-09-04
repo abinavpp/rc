@@ -123,17 +123,6 @@ function! CSInv()
   colo CandyPaper2
 endfunction
 
-function! CSUpd()
-  for l:line in readfile($HOME . "/.t_col", '', 2)
-    if line =~ 'wh'
-      let g:color_theme = 'light'
-    else
-      let g:color_theme = 'dark'
-    endif
-  endfor
-  colo CandyPaper2
-endfunction
-
 function! NTToggle()
   if ! g:NERDTree.IsOpen()
     NERDTreeCWD
@@ -453,7 +442,7 @@ au! FileType cpp setlocal commentstring=//\ %s | set comments^=:///
 " ======
 syntax on
 filetype plugin indent on
-call CSUpd()
+colo CandyPaper2
 hi link llvmKeyword Special
 
 if executable('clangd')
@@ -472,7 +461,7 @@ endif
 
 " Other autocmds
 " ==============
-au! vimenter * call CSUpd() | call setreg('a', "")
+au! vimenter * call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
 au! insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
