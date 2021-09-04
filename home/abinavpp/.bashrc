@@ -163,79 +163,6 @@ function ecpath() {
   edelimvar ':' CPATH $opt $(realpath "$@" 2> /dev/null);
 }
 
-# Updates the global variables ${t_<fg/bg>_curr_col} as per the file name
-# referred by ${t_col_path}.
-function t_col_upd {
-  local cur
-  cur=`cat ${t_col_path} 2> /dev/null`
-
-  if [[ ! $cur ]]; then
-    cur="bl"
-    echo $cur > "${t_col_path}"
-  fi
-
-  t_bg_curr_col="${t_bg_col[$cur]}"
-
-  if [[ $cur == "wh" ]]; then
-    t_fg_curr_col="${t_fg_col[bl]}"
-  else
-    t_fg_curr_col="${t_fg_col[wh]}"
-  fi
-}
-
-# Colors this pts.
-function cotty {
-  [[ $# -ne 1 ]] && return
-  echo $1 > ${t_col_path}
-  t_col_upd
-}
-
-# Colors all pts.
-function coall {
-  [[ $# -ne 1 ]] && return
-
-  [[ ! -e "${t_col_path}" ]] || touch "${t_col_path}"
-  echo $1 > ${t_col_path}
-  t_col_upd # Updates the global variables.
-
-  for t in /dev/pts/*; do
-    # Skip this pts and ptmx, (the prompt will set color for this pts).
-    if [[ $t == "$(tty)" || $t == "/dev/pts/ptmx" ]]; then
-      continue
-    fi
-
-    exec 2> /dev/null
-    echo -ne "${t_fg_curr_col}" > $t
-    echo -ne "${t_bg_curr_col}" > $t
-    exec 2> /dev/stdout
-  done
-
-  mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
-  unset t
-}
-
-function prompt_command {
-  # Refer `man console_codes`.
-
-  # Recall that:
-  # - \e[ is the CSI (Control Sequence Introducer) and the sequence following
-  #   it is the CSI-sequence. The CSI-sequence ending in 'm' is the ECMA-48-SGR
-  #   (Set Graphics Rendition).
-  # - \e] is the OSC (Operating System Command) and the sequence following it
-  #   is the OSC-sequence.
-  # - Any non printable must be within \[ and \] in the PS1 string.
-
-  PS1='[\j] ' # <num-jobs>
-  PS1+='\[\e[38;5;76m\]\u@' # <user-name>@ in ECMA-48-SGR green foreground
-  PS1+='\[\e[0m\]' # ECMA-48-SGR reset
-  PS1+='\h ' # <host-name>
-  PS1+='\W ' # <PWD>
-  PS1+='\$ '
-
-  t_col_upd
-  PS1+="\[${t_fg_curr_col}\]\[${t_bg_curr_col}\]"
-}
-
 function pid_to_jid {
   jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
     /bin/grep -oE "[[:digit:]]+"
@@ -404,6 +331,8 @@ function _comp_cmpnt() { _comp_xnt $HOME/doc/cs/comp; }
 function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scratch; }
 function _comp_culnt() { _comp_xnt $HOME/doc/cul; }
 
+PROMPT_COMMAND=
+PS1='[\j] \W $ '
 export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo
 export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble
@@ -419,32 +348,11 @@ export LLVM_DEV="$PROJ"
 export FZF_DEFAULT_OPTS="--color 16"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
-
 edelimvar ':' PATH -a "."
 epath -p "$HOME_BIN" "$EXTRA_BIN"
 eld -p "$HOME_LIB"
 elb -p "$HOME_LIB"
 ecpath -p "$HOME_INCLUDE"
-
-# Terminal color-scheme:
-declare -A t_bg_col t_fg_col
-t_bg_col[bl]="\e]11;#000000\007"
-t_bg_col[dk]="\e]11;#3a3a3a\007"
-t_bg_col[wh]="\e]11;#ffffff\007"
-t_bg_col[mg]="\e]11;#520348\007"
-t_bg_col[gr]="\e]11;#08150f\007"
-t_bg_col[bu]="\e]11;#031721\007"
-t_fg_col[bl]="\e]10;#000000\007"
-t_fg_col[wh]="\e]10;#ffffff\007"
-t_fg_col[rd]="\e]10;#b20000\007"
-t_fg_col[gr]="\e]10;#008000\007"
-
-t_col_path="$HOME/.t_col"
-t_bg_curr_col=
-t_fg_curr_col=
-
-prompt_command
-PROMPT_COMMAND=prompt_command
 
 # Enable fzf for Arch Linux.
 . /usr/share/fzf/completion.bash &> /dev/null
@@ -470,8 +378,6 @@ complete -F _comp_scrnt scrnt
 complete -F _comp_culnt culnt
 complete -F _pacman -o default pacdry
 
-t_col_upd
-mkconf-gui $(echo $t_bg_curr_col | cut -c7-13)
 clhome
 
 . /etc/.post-bashrc &> /dev/null
