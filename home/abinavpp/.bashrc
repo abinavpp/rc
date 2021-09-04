@@ -266,22 +266,6 @@ function cd {
   command cd "$@"
 }
 
-function cdp {
-  if [[ $# -ne 1 ]]; then
-    return
-  fi
-
-  local pid=`pgrep $1 | head -n1`
-
-  if [[ $pid == "" ]]; then
-    return
-  fi
-
-  echo -n "cmdline: "
-  echo `tr -d '\0' < /proc/$pid/cmdline`
-  cd /proc/$pid
-}
-
 function rn {
   local tmp_file="$(mktemp -t tmp.XXXXXX)"
 
