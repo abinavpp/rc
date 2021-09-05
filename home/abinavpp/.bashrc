@@ -196,7 +196,7 @@ function vim {
   # vim.
   for arg in "$@"; do
     if [[ ! -e $arg  && $bg_pid ]]; then
-      $vim_bin "$@"
+      $vim_bin -i NONE -p "$@"
       return
     fi
   done
