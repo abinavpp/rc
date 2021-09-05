@@ -15,7 +15,7 @@ sub setup_vim {
 sub setup_vimplug {
   system("$wget -O $ENV{HOME}/.vim/autoload/plug.vim "
     . "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim");
-  system("vim -c 'PlugInstall | quit | quit'");
+  system("vim -i NONE -c 'PlugInstall | quit | quit'");
 }
 
 sub setup_llvm {
