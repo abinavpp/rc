@@ -121,7 +121,7 @@ function edelimvar() {
       export $delimvar="$1"
     fi
     shift
-    opt="-a" # XXX: Faking the option to force appending
+    opt="-a" # XXX: Faking the option to force appending.
   fi
 
   if [[ $opt == "-p" ]]; then
