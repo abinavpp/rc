@@ -286,7 +286,7 @@ function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scratch; }
 function _comp_culnt() { _comp_xnt $HOME/doc/cul; }
 
 PROMPT_COMMAND=
-PS1='[\j] \W $ '
+PS1='[\j] \W \[\e[38;5;76m\]$\[\e[0m\] '
 export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo
 export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble
