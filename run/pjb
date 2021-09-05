@@ -1,40 +1,22 @@
 #! /bin/bash
 
-# usage: projb <project> <build-cmd>
+function die() { echo "$@" 1>&2; exit 1; }
 
-function die() {
-  echo "$@"
-  exit 1
-}
-
-orig_path="$PATH"
-orig_ldlp="$LD_LIBRARY_PATH"
-orig_lp="$LIBRARY_PATH"
-
-if [[ $1 != "-e" ]]; then
-  export PATH="$RESET_PATH"
-  export LD_LIBRARY_PATH="$RESET_LD_LIBRARY_PATH"
-  export LIBRARY_PATH="$RESET_LIBRARY_PATH"
-else
-  shift;
-fi
+[[ ! $# -ge 1 ]] && die "Usage: pjb <project> <build-cmd>"
 
 proj="$1"; shift
 build_dir="$PROJ/build/$proj"
-
-if [[ ! -d "$build_dir" || $# -eq 0 ]]; then
-  die "Project doesn't exist"
-fi
-
+[[ ! -d "$build_dir" ]] && die "Project doesn't exist."
 cd "$build_dir"
+
+export PATH="$RESET_PATH"
+export LD_LIBRARY_PATH="$RESET_LD_LIBRARY_PATH"
+export LIBRARY_PATH="$RESET_LIBRARY_PATH"
+export CPATH="$RESET_CPATH"
 
 if [[ -e build.ninja ]]; then
   ninja "$@"
+
 elif [[ -e Makefile ]]; then
   make "$@"
 fi
-
-ret=$?
-
-cd - 1> /dev/null
-exit $ret
