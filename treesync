@@ -4,17 +4,19 @@ function die { echo "$@" 1>&2; exit 1; }
 
 function print_usage {
 cat <<ENDCAT
-Usage: treesync <options>
+Usage: treesync <mandatory-opt> <opt>*
 
-<options> :
--t <tree>: Set tree directory.
--s <src>: Set source directory.
--d <dst>: Set destination directory.
--D: Dry run.
--c: View diff.
+<mandatory-opt>:
+  - -t <tree>: Set tree directory.
+  - -s <src>: Set source directory.
+  - -d <dst>: Set destination directory.
 
-Brief: treesync synchronizes the file-tree under <tree> directory from <src>
-directory to <dst> directory.
+<opt>:
+  - -D: Dry run.
+  - -c: View diff.
+
+treesync synchronizes the file-tree under <tree> directory from <src> directory
+to <dst> directory.
 ENDCAT
 }
 
