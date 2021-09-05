@@ -47,11 +47,11 @@ function tree_sync {
 
   local f
   for f in ${file_tree[@]}; do
-    if [[ $run_mode == "dry" ]]; then
+    if [[ $mode == "dry" ]]; then
       echo 'mkdir -p' $(dirname "${dst}/$f")
       echo 'cp' "${src}/$f" $(dirname "${dst}/$f")
 
-    elif [[ $run_mode == "diff" ]]; then
+    elif [[ $mode == "diff" ]]; then
       local out=$(diff "${src}/$f" "${dst}/$f")
       [[ -n $out ]] || continue
 
@@ -69,9 +69,9 @@ while getopts "cDht:s:d:" opt
 do
   case "$opt" in
   c)
-    run_mode="diff";;
+    mode="diff";;
   D)
-    run_mode="dry";;
+    mode="dry";;
   h)
     print_usage_and_exit;;
   t)
