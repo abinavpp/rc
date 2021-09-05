@@ -3,20 +3,18 @@
 cry_dir="$HOME/doc/cry/"
 gpg="gpg --batch --yes"
 
-if [[ $# -ne 1 || ! -d $cry_dir ]]; then
-  return
-fi
+[[ $# -eq 1 && -d $cry_dir ]] || exit 1
 
 enc=$cry_dir/$1 dec="$cry_dir/_d_$1"
 
 read -s -p "Speak friend and enter : " pass
 echo
+
 if [[ -e $enc ]]; then
   $gpg --output $dec --passphrase $pass --decrypt $enc
-  if [[ $? -ne 0 ]]; then
-    return
-  fi
+  [[ $? -eq 0 ]] || exit 1
 fi
+
 ${EDITOR} $dec
 $gpg --output $enc --passphrase $pass --symmetric --cipher-algo AES256 $dec
 
