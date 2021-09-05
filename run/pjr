@@ -1,12 +1,13 @@
 #! /bin/bash
 
-# usage: projr <project> <cmd>
+proj=$1; shift
 
-proj=$1
 bin_dir="$PROJ/install/$proj/bin"
 [[ ! -d "$bin_dir" ]] && bin_dir="$PROJ/build/$proj/bin"
+
 lib_dir="$PROJ/install/$proj/lib"
 [[ ! -d "$lib_dir" ]] && lib_dir="$PROJ/build/$proj/lib"
+
 include_dir="$PROJ/install/$proj/include"
 [[ ! -d "$include_dir" ]] && include_dir="$PROJ/build/$proj/include"
 
@@ -14,5 +15,4 @@ include_dir="$PROJ/install/$proj/include"
 [[ ! -d $lib_dir ]] && export LD_LIBRARY_PATH="$lib_dir:$LD_LIBRARY_PATH"
 [[ ! -d $include_dir ]] && export CPATH="$include_dir:$CPATH"
 
-shift
 bash -c "$@"
