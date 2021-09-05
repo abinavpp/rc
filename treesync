@@ -1,36 +1,26 @@
 #! /bin/bash
 
-run_mode=""
+function die { echo "$@" 1>&2; exit 1; }
 
 function print_usage {
 cat <<ENDCAT
-You should be using a wrapper unless you know what you're doing.
-Usage : treesync [EXTRA_OPTIONS] -s <tree> -f <from> -t <to>
+Usage: treesync <options>
 
-Options :
--s : tree directory
--f : syncing from directory
--t : syncing to directory
--d : dry run (Always do this first!)
--c : view diff (this too!)
+<options> :
+-t <tree>: Set tree directory.
+-s <src>: Set source directory.
+-d <dst>: Set destination directory.
+-D: Dry run.
+-c: View diff.
 
-Brief:
-The tree-dir forms the hierarchy of files which would be the <tree> for
-synchronization from <from> to <to>
-
-Examples:
-To "sync in" your home:
-  treesync -s home/abinavpp -f /home/abinavpp -t repo/home/abinavpp
-To "sync out" your home:
-  treesync -s home/abinavpp -f repo/home/abinavpp -t /home/abinavpp
-
+Brief: treesync synchronizes the file-tree under <tree> directory from <src>
+directory to <dst> directory.
 ENDCAT
 }
 
-function die {
-  echo "$@" 1>&2
-  exit 0
-}
+function print_usage_and_exit { print_usage; exit 0; }
+
+function print_usage_and_die { print_usage; exit 1; }
 
 function sanitize_path_string {
   local dir=`echo $1 | tr -s /`
@@ -45,65 +35,55 @@ function sanitize_path_string {
 }
 
 function tree_sync {
-  if [[ $# -ne 3 ]]; then
-    die "tree_sync() must be called with exactly 3 args"
-  fi
+  local tree="$1" src="$2" dst="$3"
 
-  local dir_tree="$1" dir_from="$2" dir_to="$3"
+  [[ -d $tree && -d $src && -d $dst ]] || return 1
 
-  if [[ ! -d $dir_tree || ! -d $dir_from || ! -d $dir_to ]]; then
-    print_usage; exit
-  fi
-
-  local tree_root_len=`echo -n "$dir_tree" | wc -c`
-
-  local files_tree=(`find $dir_tree -type f -print |  \
+  local tree_root_len=`echo -n "$tree" | wc -c`
+  local file_tree=(`find $tree -type f -print |  \
     cut -c1-$(($tree_root_len + 1)) --complement `)
 
   local f
-  for f in ${files_tree[@]}; do
+  for f in ${file_tree[@]}; do
     if [[ $run_mode == "dry" ]]; then
-      echo "mkdir -p `dirname ${dir_to}/$f`"
-      echo "cp -v ${dir_from}/$f `dirname ${dir_to}/$f`"
+      echo 'mkdir -p' $(dirname "${dst}/$f")
+      echo 'cp' "${src}/$f" $(dirname "${dst}/$f")
 
     elif [[ $run_mode == "diff" ]]; then
-      echo "diff ${dir_from}/$f ${dir_to}/$f"
-      diff ${dir_from}/$f ${dir_to}/$f
+      local out=$(diff "${src}/$f" "${dst}/$f")
+      [[ -n $out ]] || continue
+
+      echo "diff \"${src}/$f\" \"${dst}/$f\""
+      echo "$out"
 
     else
-      # $f can be a x/y/file so get dirname with it
-      mkdir -p `dirname ${dir_to}/$f`
-      cp -v ${dir_from}/$f `dirname ${dir_to}/$f`
+      mkdir -p $(dirname "${dst}/$f")
+      cp "${src}/$f" $(dirname "${dst}/$f")
     fi
   done
 }
 
-while getopts "hcds:f:t:" opt
+while getopts "cDht:s:d:" opt
 do
   case "$opt" in
-  c) run_mode="diff";;
-  d) run_mode="dry";;
-  h)  print_usage
-    exit;;
-  s) tree=$OPTARG;;
-  f) from=$OPTARG;;
-  t) to=$OPTARG;;
-  ?)  print_usage
-    exit;;
+  c)
+    run_mode="diff";;
+  D)
+    run_mode="dry";;
+  h)
+    print_usage_and_exit;;
+  t)
+    tree=$OPTARG;;
+  s)
+    src=$OPTARG;;
+  d)
+    dst=$OPTARG;;
+  ?)
+    print_usage_and_die;;
   esac
 done
 
-if [[ $tree == "" || $from == "" || $to == "" ]]; then
-  print_usage; exit 1
-fi
-
 tree=`sanitize_path_string $tree`
-from=`sanitize_path_string $from`
-to=`sanitize_path_string $to`
-
-if [[ ! -d $tree || ! -d $from || ! -d $to ]]; then
-  print_usage; exit 1
-fi
-
-echo "[UID:$UID] Running: treesync -s $tree -f $from -t $to"
-tree_sync $tree $from $to
+src=`sanitize_path_string $src`
+dst=`sanitize_path_string $dst`
+tree_sync $tree $src $dst || print_usage_and_die

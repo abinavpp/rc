@@ -50,7 +50,7 @@ do
       profile_name=$OPTARG;;
     H)  profile_type="home"
       profile_name=$OPTARG;;
-    d)  dry="-d";;
+    d)  dry="-D";;
     h)  print_usage
       exit;;
     ?)  print_usage
@@ -97,4 +97,4 @@ else
   exit
 fi
 
-$sudo ./treesync $dry $diff -s $in -f $from -t $to
+$sudo ./treesync $dry $diff -t $in -s $from -d $to
