@@ -337,9 +337,9 @@ complete -F _pacman -o default pacdry
 
 # Avoid resetting RESET_XXX variables if sourcing .bashrc more than once.
 if [[ $SAVED_RESET_XXX != true ]]; then
-  export RESET_PATH=$PATH
-  export RESET_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-  export RESET_LIBRARY_PATH=$LIBRARY_PATH
-  export RESET_CPATH=$CPATH
+  export RESET_PATH="$PATH"
+  export RESET_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
+  export RESET_LIBRARY_PATH="$LIBRARY_PATH"
+  export RESET_CPATH="$CPATH"
   export SAVED_RESET_XXX=true
 fi
