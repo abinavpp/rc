@@ -4,7 +4,7 @@ primary_output=$(xrandr | grep -w "connected primary"  | \
   awk -F' +' '{print $1}')
 
 function die() {
-  echo $@ 1>&2
+  echo "$@" 1>&2
   exit 1
 }
 
@@ -38,5 +38,5 @@ elif [[ $run == "fix-intel-rgb" ]]; then
   xrandr --output $output --set "Broadcast RGB" "Full"
 
 else
-  xrandr --output $output $@
+  xrandr --output $output "$@"
 fi

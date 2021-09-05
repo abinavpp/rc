@@ -144,13 +144,13 @@ if [[ $this == "cluda" ]]; then
   set -x
   # Why --cuda-gpu-arch=sm_xx is an unused option ?
   clang++ -L ${cuda_path}/lib64 -I ${cuda_path}/include \
-    --cuda-gpu-arch=sm_$(nvsm) -lcudart $@
+    --cuda-gpu-arch=sm_$(nvsm) -lcudart "$@"
 
 elif [[ $this == "iroff" ]]; then
   if [[ $1 == "ub" ]]; then
     shift; unbundle_x86_ir $1
   else
-    compile_bundled_x86_ir $@
+    compile_bundled_x86_ir "$@"
     clean_iroff_leftovers
   fi
 
@@ -158,16 +158,16 @@ elif [[ $run == "nv" ]]; then
   shift
   set -x
   clang $omp_common -fopenmp-targets=nvptx64-nvidia-cuda -Xopenmp-target \
-    -march=sm_$(nvsm) $@
+    -march=sm_$(nvsm) "$@"
 
 # FIXME! remove the -march hard-coding
 elif [[ $run == "gcn" ]]; then
   shift
   set -x
   clang $omp_common -fopenmp-targets=amdgcn-amd-amdhsa \
-    -Xopenmp-target=amdgcn-amd-amdhsa -march=gfx900 $@
+    -Xopenmp-target=amdgcn-amd-amdhsa -march=gfx900 "$@"
 
 else
   set -x
-  clang $omp_common -fopenmp-targets=x86_64-pc-linux-gnu $@
+  clang $omp_common -fopenmp-targets=x86_64-pc-linux-gnu "$@"
 fi

@@ -5,7 +5,7 @@ asm=$(basename "$bin").s;
 
 if file $bin | grep -iq "LLVM.*bitcode"; then
   asm="$bin.ll"
-  llvm-dis $@ $bin -o $asm
+  llvm-dis "$@" $bin -o $asm
 
 elif file $bin | grep -iq "ELF.*x86-64"; then
 
@@ -18,8 +18,8 @@ elif file $bin | grep -iq "ELF.*x86-64"; then
     sections="$sections -j $section"
   done
 
-  obd $@ $sections $bin > $asm
+  obd "$@" $sections $bin > $asm
 
 elif file $bin | grep -iq "ELF.*NVIDIA CUDA"; then
-  nvdisasm $@ $bin > $asm
+  nvdisasm "$@" $bin > $asm
 fi

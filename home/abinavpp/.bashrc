@@ -176,7 +176,7 @@ function vim {
 
   # If $vim_bin has no client-server feature.
   if ! $vim_bin --version | /bin/grep -q -P '\+clientserver'; then
-    $vim_bin -i NONE -p $@
+    $vim_bin -i NONE -p "$@"
     return
   fi
 

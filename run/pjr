@@ -15,4 +15,4 @@ include_dir="$PROJ/install/$proj/include"
 [[ ! -d $include_dir ]] && export CPATH="$include_dir:$CPATH"
 
 shift
-$@
+bash -c "$@"

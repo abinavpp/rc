@@ -3,7 +3,7 @@
 # usage: projb <project> <build-cmd>
 
 function die() {
-  echo $@
+  echo "$@"
   exit 1
 }
 
@@ -31,9 +31,9 @@ shift;
 cd "$build_dir"
 
 if [[ -e build.ninja ]]; then
-  ninja $@
+  ninja "$@"
 elif [[ -e Makefile ]]; then
-  make $@
+  make "$@"
 fi
 
 ret=$?
