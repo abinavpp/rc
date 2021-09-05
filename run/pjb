@@ -19,15 +19,13 @@ else
   shift;
 fi
 
-proj="$1"
+proj="$1"; shift
 build_dir="$PROJ/build/$proj"
-n_cores=$(nproc --all || getconf _NPROCESSORS_ONLN || echo 1)
 
 if [[ ! -d "$build_dir" || $# -eq 0 ]]; then
   die "Project doesn't exist"
 fi
 
-shift;
 cd "$build_dir"
 
 if [[ -e build.ninja ]]; then
