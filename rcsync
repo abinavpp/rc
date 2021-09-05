@@ -2,99 +2,58 @@
 
 cd "${0%/*}"
 
+function die { echo "$@" 1>&2; exit 1; }
+
 function print_usage {
 cat << ENDCAT
-rcsync is a high level wrapper script that uses treesync to sync rc files
-between the system and this repo.
+Usage: rcsync <cmd> <opt>
 
-Usage: rcsync <profile-selector> <run>
+<cmd>:
+  - in: Update the rc repository.
+  - out: Update the corresponding external tree.
+  - diff: View diff.
 
-WARNING! Please do a dry run and/or diff before running sout since it overwrites
-your system rc files without any prompt. You have been warned.
-
-<profile-selector>:
--H <profile-name> : work on home/<profile-name>
--S <profile-name> : work on syroot/<profile-name>
-
-Other options:
--d                : does a dry run (when used with -H or -S)
--h                : prints this help
-
-<run>:
-diff  : diff in with out
-sin   : sync in with out
-sout  : sync out with in
-
-where, in means this repo and out means the system.  So "sin" mean "update this
-git repo from system".  And "sout" means "update the system from this git
-repo".
-
-Do "sin" if you're a developer of this repo. Do "sout" if you have a new system
-or unsynchronized system or you messed up your system big time.
-
-See rcsync -h and the examples below.
-
-Examples:
-rcsync -d -H abinavpp sin # dry run of sin (sync home/abinavpp with ~)
-rcsync -S y50 diff # does a diff with / and sysroot/y50
-rcsync -H abinavpp sin # does a sync in.
-rcsync -H abinavpp sout # does a sync out.
-
+<opt>
+  - -H <profile>: Add home/<profile> to synchronization.
+  - -S <profile>: Add sysroot/<profile> to synchronization.
 ENDCAT
 }
 
-while getopts "hdS:H:" opt
+function print_usage_and_exit { print_usage; exit 0; }
+
+function print_usage_and_die { print_usage; exit 1; }
+
+cmd=$1
+[[ $cmd =~ (in|out|diff) ]] && shift
+
+while getopts "hH:S:" opt
 do
   case "$opt" in
-    S)  profile_type="sysroot"
-      profile_name=$OPTARG;;
-    H)  profile_type="home"
-      profile_name=$OPTARG;;
-    d)  dry="-D";;
-    h)  print_usage
-      exit;;
-    ?)  print_usage
-      exit;;
+    h)
+      print_usage_and_exit;;
+    S)
+      trees+=("sysroot/$OPTARG");;
+    H)
+      trees+=("home/$OPTARG");;
+    ?)
+      print_usage_and_die;;
   esac
 done
 
-if [[ $profile_type == "home" ]]; then
-  in="home/${profile_name}"
-  out="$HOME"
+for tree in "${trees[@]}"; do
+  if [[ "$tree" =~ ^sysroot/ ]]; then
+    out='/'
+  elif [[ "$tree" =~ ^home/ ]]; then
+    out="$HOME"
+  fi
 
-elif [[ $profile_type == "sysroot" ]]; then
-  sudo="sudo"
-  in="sysroot/${profile_name}"
-  out="/"
-else
-  print_usage
-  exit
-fi
+  if [[ $cmd == 'in' ]]; then
+    ./treesync -t $tree -s $out -d $tree
 
-if [[ ! -e $in || ! -e $out ]]; then
-  print_usage
-  exit
-fi
+  elif [[ $cmd == 'out' ]]; then
+    ./treesync -t $tree -s $tree -d $out
 
-for run_type; do true; done
-echo -e "\033[0;32mPerforming $run_type:\033[0m"
-
-if [[ $run_type == "sin" ]]; then
-  from=$out
-  to=$in
-
-elif [[ $run_type == "sout" ]]; then
-  from=$in
-  to=$out
-
-elif [[ $run_type == "diff" ]]; then
-  from=$out
-  to=$in
-  diff="-c"
-
-else
-  print_usage
-  exit
-fi
-
-$sudo ./treesync $dry $diff -t $in -s $from -d $to
+  elif [[ $cmd == 'diff' ]]; then
+    ./treesync -t $tree -s $tree -d $out -c
+  fi
+done
