@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-my $wget = "wget -q --retry-on-http-error=500";
+my $wget = "wget -q --tries 100 --hsts-file /dev/null";
 
 sub setup_vim {
   system("mkdir -p $ENV{HOME}/.cache/vim/swap");
