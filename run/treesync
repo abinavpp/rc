@@ -25,42 +25,44 @@ function print_usage_and_exit { print_usage; exit 0; }
 function print_usage_and_die { print_usage; exit 1; }
 
 function sanitize_path_string {
-  local dir=`echo $1 | tr -s /`
+  local dir="$(echo "$1" | tr -s /)"
 
-  if [[ $dir == '/' ]]; then
+  if [[ "$dir" == '/' ]]; then
     echo -n '/'
     return
   fi
 
   # Remove the trailing '/'
-  echo -n $dir | sed 's:/$::'
+  echo -n "$dir" | sed 's:/$::'
 }
 
 function tree_sync {
   local tree="$1" src="$2" dst="$3"
 
-  [[ -d $tree && -d $src && -d $dst ]] || return 1
+  [[ -d "$tree" && -d "$src" && -d "$dst" ]] || return 1
 
-  local tree_root_len=`echo -n "$tree" | wc -c`
-  local file_tree=(`find $tree -type f -print |  \
-    cut -c1-$(($tree_root_len + 1)) --complement `)
+  local file_tree=()
+  while IFS= read -r -d $'\0'; do
+    file_tree+=("$REPLY")
+  done < <(find "$tree" -type f -print0)
 
-  local f
+  local f tree_prefix_len=$(echo -n "$tree" | wc -c)
   for f in ${file_tree[@]}; do
+    f=${f:$(($tree_prefix_len + 1))}
     if [[ $mode == "dry" ]]; then
-      echo 'mkdir -p' $(dirname "${dst}/$f")
-      echo 'cp' "${src}/$f" $(dirname "${dst}/$f")
+      echo 'mkdir -p' \"$(dirname "${dst}/$f")\"
+      echo 'cp' \""${src}/$f"\" \"$(dirname "${dst}/$f")\"
 
     elif [[ $mode == "diff" ]]; then
-      local out=$(diff "${src}/$f" "${dst}/$f")
+      local out="$(diff "${src}/$f" "${dst}/$f")"
       [[ -n $out ]] || continue
 
       echo "diff \"${src}/$f\" \"${dst}/$f\""
       echo "$out"
 
     else
-      mkdir -p $(dirname "${dst}/$f")
-      cp "${src}/$f" $(dirname "${dst}/$f")
+      mkdir -p "$(dirname "${dst}/$f")"
+      cp "${src}/$f" "$(dirname "${dst}/$f")"
     fi
   done
 }
@@ -75,17 +77,17 @@ do
   h)
     print_usage_and_exit;;
   t)
-    tree=$OPTARG;;
+    tree="$OPTARG";;
   s)
-    src=$OPTARG;;
+    src="$OPTARG";;
   d)
-    dst=$OPTARG;;
+    dst="$OPTARG";;
   ?)
     print_usage_and_die;;
   esac
 done
 
-tree=`sanitize_path_string $tree`
-src=`sanitize_path_string $src`
-dst=`sanitize_path_string $dst`
-tree_sync $tree $src $dst || print_usage_and_die
+tree="$(sanitize_path_string "$tree")"
+src="$(sanitize_path_string "$src")"
+dst="$(sanitize_path_string "$dst")"
+tree_sync "$tree" "$src" "$dst" || print_usage_and_die
