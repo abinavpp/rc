@@ -47,12 +47,12 @@ for tree in "${trees[@]}"; do
   fi
 
   if [[ $cmd == 'in' ]]; then
-    run/treesync -t $tree -s $out -d $tree
+    run/treesync -t "$tree" -s "$out" -d "$tree"
 
   elif [[ $cmd == 'out' ]]; then
-    run/treesync -t $tree -s $tree -d $out
+    run/treesync -t "$tree" -s "$tree" -d "$out"
 
   elif [[ $cmd == 'diff' ]]; then
-    run/treesync -t $tree -s $tree -d $out -c
+    run/treesync -t "$tree" -s "$tree" -d "$out" -c
   fi
 done
