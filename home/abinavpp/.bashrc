@@ -263,8 +263,8 @@ function xnt {
   fi
 }
 function nt { xnt "$HOME/doc/cs/sys" $1; }
-function cmpnt { xnt "$HOME/doc/cs/comp" $1; }
-function scrnt { xnt "$HOME/doc/misc/scratch" $1; }
+function cmpnt { xnt "$HOME/doc/cs/cmp" $1; }
+function scrnt { xnt "$HOME/doc/misc/scr" $1; }
 function culnt { xnt "$HOME/doc/cul" $1; }
 
 function _comp_xnt() {
@@ -281,8 +281,8 @@ function _comp_xnt() {
   COMPREPLY=( $(compgen -W "$words" -- $cur) )
 }
 function _comp_nt() { _comp_xnt $HOME/doc/cs/sys; }
-function _comp_cmpnt() { _comp_xnt $HOME/doc/cs/comp; }
-function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scratch; }
+function _comp_cmpnt() { _comp_xnt $HOME/doc/cs/cmp; }
+function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scr; }
 function _comp_culnt() { _comp_xnt $HOME/doc/cul; }
 
 PROMPT_COMMAND=
