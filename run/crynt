@@ -19,4 +19,3 @@ ${EDITOR} $dec
 $gpg --output $enc --passphrase $pass --symmetric --cipher-algo AES256 $dec
 
 rm $dec
-pkill gpg-agent
