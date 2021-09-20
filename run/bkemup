@@ -31,7 +31,7 @@ my $host = hostname();
 my $chrome_config_path = "$ENV{HOME}/.config/google-chrome";
 
 my @backup_paths = (
-  "$ENV{HOME}/bkup",
+  "$ENV{HOME}/bkp",
   "$ENV{HOME}/doc",
   "$ENV{HOME}/eph",
   "$ENV{HOME}/proj/my",
