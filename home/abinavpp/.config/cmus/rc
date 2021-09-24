@@ -5,6 +5,7 @@ set display_artist_sort_name=false
 set show_current_bitrate=true
 
 bind -f common i win-up
+bind -f browser i win-up
 bind -f common k win-down
 bind -f common j win-next
 bind -f common l win-next
@@ -29,9 +30,9 @@ set color_win_title_fg=22
 set color_titleline_bg=default
 set color_titleline_fg=89
 
-set color_win_cur_sel_bg=71
+set color_win_cur_sel_bg=42
 set color_win_cur_sel_fg=89
-set color_win_sel_bg=71
+set color_win_sel_bg=42
 set color_win_sel_fg=black
 set color_win_inactive_cur_sel_bg=default
 set color_win_inactive_cur_sel_fg=89
