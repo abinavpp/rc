@@ -123,14 +123,6 @@ function! CSInv()
   colo CandyPaper2
 endfunction
 
-function! NTToggle()
-  if ! g:NERDTree.IsOpen()
-    NERDTreeCWD
-  else
-    NERDTreeClose
-  endif
-endfunction
-
 function! MapAll(lhs, n_rhs, i_rhs, c_rhs)
   execute 'nnoremap' a:lhs a:n_rhs
   execute 'vnoremap' a:lhs a:n_rhs
@@ -469,8 +461,6 @@ au! insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
 au! insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
   \. ' ctermfg=016 guifg=#000000'
 
-au! TabEnter * NERDTreeClose
-au! TabLeave * if g:NERDTree.IsOpen() | wincmd p
 au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " .post-vimrc
