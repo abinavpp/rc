@@ -465,11 +465,10 @@ au! vimenter * call setreg('a', "")
   \| highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
 au! insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
-  \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
-  \. 'guifg=#000000 ctermbg=047 guibg=#00ff5f'
+  \. ' ctermfg=016 guifg=#000000'
 au! insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
-  \| exe 'hi! BoldStatusLine cterm=bold gui=bold '
-  \. 'guifg=#000000 ctermbg=220 guibg=#ffdf00'
+  \. ' ctermfg=016 guifg=#000000'
+
 au! TabEnter * NERDTreeClose
 au! TabLeave * if g:NERDTree.IsOpen() | wincmd p
 au! CompleteDone * if pumvisible() == 0 | pclose | endif

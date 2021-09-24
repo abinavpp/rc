@@ -9,10 +9,8 @@ endif
 let g:colors_name = "CandyPaper2"
 
 " Palette:
-" _xxx colors are beyond the 256 spectrum, you need true-color terminal or gvim
-" for them. Others are strictly the ones for 256 as specified by 256col.svg file
-" in .vim/colors/
-let s:yellow      = "#ffff00"
+" _xxx colors are beyond the 256 color spectrum.
+let s:yellow      = "#ffdf00"
 let s:cheddar     = "#d75f00"
 let s:red         = "#d70000"
 let s:darkred     = "#5f0000"
@@ -23,12 +21,12 @@ let s:lightgreen    = "#5fffaf"
 let s:green         = "#00d75f"
 let s:darkgreen     = "#00875f"
 let s:_darkestgreen = "#002000"
-let s:teal          = "#005f5f"
+let s:teal          = "#008080"
 
 let s:aqua        = "#00d7ff"
 let s:blue        = "#0087d7"
 let s:purple      = "#af5fd7"
-let s:violet      = "#870087"
+let s:violet      = "#800080"
 
 let s:white         = "#ffffff"
 let s:lightergrey   = "#e4e4e4"
@@ -175,7 +173,7 @@ function <SID>X(group, fg, bg, attr)
     endif
 endfunction
 
-function <SID>X2(group, fg, bg, attr, attrcol)
+function <SID>Y(group, fg, bg, attr, attrcol)
   call <SID>X(a:group, a:fg, a:bg, a:attr)
   if a:attrcol != ""
     exec "hi " . a:group . " guisp=" . a:attrcol
@@ -186,16 +184,16 @@ endfunction
 call <SID>X("Normal", "", "", "none")
 call <SID>X("NonText", s:darkgreen, "", "none")
 call <SID>X("SpecialKey", s:darkgreen, "", "none")
-call <SID>X("Search", s:yellow, s:teal, "none")
-call <SID>X("IncSearch", s:black, s:yellow, "none")
+call <SID>X("Search", "", s:violet, "none")
+call <SID>X("IncSearch", "", s:cheddar, "none")
 call <SID>X("LineNr", s:darkgrey, "", "none")
 call <SID>X("TabLine", s:black, s:teal, "none")
 call <SID>X("TabLineFill", "", s:teal, "none")
 call <SID>X("TabLineSel", "", s:cheddar, "none")
-call <SID>X("StatusLine", s:black, s:cheddar, "none")
+call <SID>X("StatusLine", s:black, s:yellow, "none")
 call <SID>X("StatusLineNC", s:black, s:teal, "none")
 call <SID>X("VertSplit", s:black, s:teal, "none")
-call <SID>X("Visual", "", s:teal, "none")
+call <SID>X("Visual", "", s:violet, "none")
 call <SID>X("Directory", s:aqua, "", "none")
 call <SID>X("ModeMsg", s:orange, "", "none")
 call <SID>X("MoreMsg", s:orange, "", "none")
@@ -215,7 +213,7 @@ if g:color_theme == "dark"
   call <SID>X("DiffAdd", "", s:_darkestgreen, "none")
   call <SID>X("DiffDelete", s:darkred, "", "none")
   call <SID>X("DiffChange", "", s:darkestgrey, "none")
-  call <SID>X2("DiffText", "", s:darkestgrey, "underline", s:violet)
+  call <SID>Y("DiffText", "", s:darkestgrey, "underline", s:violet)
 else
   call <SID>X("CursorLine", "", s:lightergrey, "none")
   call <SID>X("CursorLineNR", s:cheddar, "", "none")
@@ -223,12 +221,12 @@ else
   call <SID>X("DiffAdd", "", s:lightgreen, "none")
   call <SID>X("DiffDelete", s:red, "", "none")
   call <SID>X("DiffChange", "", s:lightgrey, "none")
-  call <SID>X2("DiffText", "", s:lightgrey, "underline", s:violet)
+  call <SID>Y("DiffText", "", s:lightgrey, "underline", s:violet)
 endif
 call <SID>X("SignColumn", "", "", "none")
 call <SID>X("PMenu", "", "", "none")
-call <SID>X("PMenuSel", "", s:teal, "none")
-call <SID>X("PMenuSBar", "", s:teal, "none")
+call <SID>X("PMenuSel", "", s:cheddar, "none")
+call <SID>X("PMenuSBar", "", s:cheddar, "none")
 call <SID>X("PMenuThumb", "", "", "none")
 call <SID>X("lspReference", "", s:darkergrey, "none")
 
@@ -453,7 +451,7 @@ call <SID>X("xmlAttrib", s:aqua, "", "none")
 
 " Delete Functions
 delfunction <SID>X
-delfunction <SID>X2
+delfunction <SID>Y
 delfunction <SID>rgb
 delfunction <SID>colour
 delfunction <SID>rgb_colour
