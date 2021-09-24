@@ -1,10 +1,5 @@
 #! /bin/bash
 
-if [[ -z $LLVM_DEV ]]; then
-  echo "Set your \$LLVM_DEV and try again"
-  exit 1
-fi
-
 # default output files
 fe_out="fe.ll"
 dot_out="dot.ll"

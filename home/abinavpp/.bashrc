@@ -293,20 +293,14 @@ export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble
 export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
 export HISTSIZE=32768
 export HISTFILESIZE=32768
-export EXTRA_BIN="$HOME/rc/run"
-export HOME_BIN="$HOME/sys/usr/bin"
-export HOME_LIB="$HOME/sys/usr/lib"
-export HOME_INCLUDE="$HOME/sys/usr/include"
-export PROJ="$HOME/proj"
-export LLVM_DEV="$PROJ"
 export FZF_DEFAULT_OPTS="--color 16"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
 edelimvar ':' PATH -a "."
-epath -p "$HOME_BIN" "$EXTRA_BIN"
-eld -p "$HOME_LIB"
-elb -p "$HOME_LIB"
-ecpath -p "$HOME_INCLUDE"
+epath -p ~/sys/usr/bin ~/rc/run
+eld -p ~/sys/usr/lib
+elb -p ~/sys/usr/lib
+ecpath -p ~/sys/usr/include
 
 # Enable fzf for Arch Linux.
 . /usr/share/fzf/completion.bash &> /dev/null

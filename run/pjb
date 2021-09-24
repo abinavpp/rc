@@ -4,8 +4,8 @@ function die() { echo "$@" 1>&2; exit 1; }
 
 [[ ! $# -ge 1 ]] && die "Usage: pjb <project> <build-cmd>"
 
-proj="$1"; shift
-build_dir="$PROJ/build/$proj"
+pj="$1"; shift
+build_dir="~/pj/build/$pj"
 [[ ! -d "$build_dir" ]] && die "Project doesn't exist."
 cd "$build_dir"
 
