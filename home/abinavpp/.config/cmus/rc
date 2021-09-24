@@ -4,12 +4,20 @@ set mouse=true
 set display_artist_sort_name=false
 set show_current_bitrate=true
 
-bind -f common H seek -1m
-bind -f common L seek +1m
-bind -f common left win-next
-bind -f common right win-next
+bind -f common i win-up
+bind -f common k win-down
+bind -f common j win-next
+bind -f common l win-next
 bind -f common mouse_scroll_down win-scroll-down
 bind -f common mouse_scroll_up win-scroll-up
+
+bind -f common up seek +1m
+bind -f common down seek -1m
+bind -f common left seek -5
+bind -f common right seek +5
+
+bind -f common 9 vol -10%
+bind -f common 0 vol +10%
 
 set color_win_bg=default
 set color_win_fg=default
