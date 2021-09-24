@@ -262,7 +262,7 @@ function xnt {
     ls "$dir"
   fi
 }
-function nt { xnt "$HOME/doc/cs/sys" $1; }
+function sysnt { xnt "$HOME/doc/cs/sys" $1; }
 function cmpnt { xnt "$HOME/doc/cs/cmp" $1; }
 function scrnt { xnt "$HOME/doc/misc/scr" $1; }
 function culnt { xnt "$HOME/doc/cul" $1; }
@@ -280,7 +280,7 @@ function _comp_xnt() {
   local cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$words" -- $cur) )
 }
-function _comp_nt() { _comp_xnt $HOME/doc/cs/sys; }
+function _comp_sysnt() { _comp_xnt $HOME/doc/cs/sys; }
 function _comp_cmpnt() { _comp_xnt $HOME/doc/cs/cmp; }
 function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scr; }
 function _comp_culnt() { _comp_xnt $HOME/doc/cul; }
@@ -326,7 +326,7 @@ __git_complete gitr __git_main &> /dev/null
 __git_complete gitrq __git_main &> /dev/null
 __git_complete gitbr __git_main &> /dev/null
 complete -F _man mn
-complete -F _comp_nt nt
+complete -F _comp_sysnt sysnt
 complete -F _comp_cmpnt cmpnt
 complete -F _comp_scrnt scrnt
 complete -F _comp_culnt culnt
