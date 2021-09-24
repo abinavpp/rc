@@ -6,10 +6,10 @@ def src(file):
   if os.path.isfile(file):
     gdb.execute('source ' + file)
 
-src(os.environ['HOME'] + '~/.pre-gdbinit')
+src(os.environ['HOME'] + '/.pre-gdbinit')
 src('/usr/share/gdb/python/gdb/command/pretty_printers.py')
-src(os.environ['LLVM_DEV'] +
-    '/llvm-project/llvm/utils/gdb-scripts/prettyprinters.py')
+src(os.environ['HOME'] +
+    'pj/llvm-project/llvm/utils/gdb-scripts/prettyprinters.py')
 
 class LLDump(gdb.Function):
   def __init__(self):
