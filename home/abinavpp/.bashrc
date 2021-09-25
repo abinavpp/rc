@@ -172,7 +172,7 @@ function pid_to_jid {
 function vim {
   local vim_bin="/usr/bin/vim"
 
-  [[ -x $HOME_BIN/vim ]] && vim_bin="$HOME_BIN/vim"
+  [[ -x ~/sys/usr/bin/vim ]] && vim_bin=~/sys/usr/bin/vim
 
   # If $vim_bin has no client-server feature.
   if ! $vim_bin --version | /bin/grep -q -P '\+clientserver'; then
@@ -248,26 +248,12 @@ function rn {
   /bin/rm -f -- "$tmp_file"
 }
 
-function xnt {
-  local dir=$1 note=$2
+function sysnt { vim "$HOME/doc/cs/sys/$1"; }
+function cmpnt { vim "$HOME/doc/cs/cmp/$1"; }
+function scrnt { vim "$HOME/doc/misc/scr/$1"; }
+function culnt { vim "$HOME/doc/cul/$1"; }
 
-  if [[ ! -e "$dir" ]]; then
-    echo "$dir not set"
-    return
-  fi
-
-  if [[ $# -ne 0  ]]; then
-    vim "$dir/$note"
-  else
-    ls "$dir"
-  fi
-}
-function sysnt { xnt "$HOME/doc/cs/sys" $1; }
-function cmpnt { xnt "$HOME/doc/cs/cmp" $1; }
-function scrnt { xnt "$HOME/doc/misc/scr" $1; }
-function culnt { xnt "$HOME/doc/cul" $1; }
-
-function _comp_xnt() {
+function _comp_nt() {
   local dir=$1
 
   [[ ! -d $dir ]] && return
@@ -280,16 +266,17 @@ function _comp_xnt() {
   local cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$words" -- $cur) )
 }
-function _comp_sysnt() { _comp_xnt $HOME/doc/cs/sys; }
-function _comp_cmpnt() { _comp_xnt $HOME/doc/cs/cmp; }
-function _comp_scrnt() { _comp_xnt $HOME/doc/misc/scr; }
-function _comp_culnt() { _comp_xnt $HOME/doc/cul; }
+
+function _comp_sysnt() { _comp_nt ~/doc/cs/sys; }
+function _comp_cmpnt() { _comp_nt ~/doc/cs/cmp; }
+function _comp_scrnt() { _comp_nt ~/doc/misc/scr; }
+function _comp_culnt() { _comp_nt ~/doc/cul; }
 
 PROMPT_COMMAND=
 PS1='[\j] \W \[\e[38;5;76m\]$\[\e[0m\] '
 export TERM=xterm-256color
-export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo
-export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble
+export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo.
+export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble.
 export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
 export HISTSIZE=32768
 export HISTFILESIZE=32768
