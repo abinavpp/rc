@@ -164,14 +164,8 @@ function ecpath() {
   edelimvar ':' CPATH $opt $(realpath "$@" 2> /dev/null);
 }
 
-function pid_to_jid {
-  jobs -l | gawk -v "_pid=$1" '$2 == _pid {print $1}' | \
-    /bin/grep -oE "[[:digit:]]+"
-}
-
 function vim {
   local vim_bin="/usr/bin/vim"
-
   [[ -x ~/sys/usr/bin/vim ]] && vim_bin=~/sys/usr/bin/vim
 
   # If $vim_bin has no client-server feature.
@@ -180,17 +174,13 @@ function vim {
     return
   fi
 
-  local srv_name=$(tty)
-  local cmd="$vim_bin -i NONE -p --servername $srv_name"
   if [[ $1 == "-" ]]; then
     $vim_bin -i NONE -
     return
   fi
 
-  local bg_ps=$(ps -ef | /bin/grep -P "\s+$cmd")
-  local bg_srv_name=/dev/$(echo $bg_ps | awk '{print $6}')
-  local bg_pid=$(echo $bg_ps | awk '{print $2}')
-
+  local cmd="$vim_bin -i NONE -p --servername $(tty)"
+  local bg_pid=$(pgrep -f "$cmd")
   local args="" arg=""
 
   # If we have a non-file argument and we have a background vim then run a new
@@ -209,9 +199,11 @@ function vim {
 
       # If path is under $bg_pwd, then access it relative so that tab heading
       # will be neater.
-      $cmd --remote-send "<esc>:tabnew ${arg##$bg_pwd} <CR>"
+      $cmd --remote-send "<Esc>:tabnew ${arg##$bg_pwd} <CR>"
     done
-    fg $(pid_to_jid $bg_pid)
+
+    fg $(jobs -l | gawk -v "pid=$bg_pid" '$2 == pid {print $1}' | \
+      /bin/grep -oE "[[:digit:]]+")
     return
 
   else
