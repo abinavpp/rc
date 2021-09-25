@@ -201,9 +201,9 @@ call s:bg("IncSearch", s:cheddar)
 call s:col("StatusLine", s:black, s:yellow)
 call s:col("StatusLineNC", s:white, s:darkestgrey)
 
-call s:bg("TabLine", s:darkestgrey)
-call s:bg("TabLineFill", s:darkestgrey)
-call s:bg("TabLineSel", s:cheddar)
+call s:col("TabLine", s:white, s:darkestgrey)
+call s:col("TabLineFill", s:white, s:darkestgrey)
+call s:col("TabLineSel", s:white, s:cheddar)
 
 call s:bg("PMenu", "NONE")
 call s:bg("PMenuSel", s:cheddar)
