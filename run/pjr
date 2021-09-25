@@ -2,14 +2,14 @@
 
 pj=$1; shift
 
-bin_dir="~/pj/install/$pj/bin"
-[[ ! -d "$bin_dir" ]] && bin_dir="~/pj/build/$pj/bin"
+bin_dir="$HOME/pj/install/$pj/bin"
+[[ ! -d "$bin_dir" ]] && bin_dir="$HOME/pj/build/$pj/bin"
 
-lib_dir="~/pj/install/$pj/lib"
-[[ ! -d "$lib_dir" ]] && lib_dir="~/pj/build/$pj/lib"
+lib_dir="$HOME/pj/install/$pj/lib"
+[[ ! -d "$lib_dir" ]] && lib_dir="$HOME/pj/build/$pj/lib"
 
-include_dir="~/pj/install/$pj/include"
-[[ ! -d "$include_dir" ]] && include_dir="~/pj/build/$pj/include"
+include_dir="$HOME/pj/install/$pj/include"
+[[ ! -d "$include_dir" ]] && include_dir="$HOME/pj/build/$pj/include"
 
 [[ ! -d $bin_dir ]] && export PATH="$bin_dir:$PATH"
 [[ ! -d $lib_dir ]] && export LD_LIBRARY_PATH="$lib_dir:$LD_LIBRARY_PATH"
