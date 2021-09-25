@@ -37,7 +37,7 @@ set color_win_sel_fg=black
 set color_win_inactive_cur_sel_bg=default
 set color_win_inactive_cur_sel_fg=89
 set color_win_inactive_sel_bg=default
-set color_win_inactive_sel_fg=108
+set color_win_inactive_sel_fg=29
 
 set color_cmdline_bg=default
 set color_cmdline_fg=default
