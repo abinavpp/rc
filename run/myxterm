@@ -13,6 +13,7 @@ cmd="xterm
   -xrm 'xterm*vt100.utf8: true'
   -xrm 'xterm*vt100.utf8Fonts: true'
   -xrm 'xterm*vt100.utf8Title: true'
+  -xrm 'xterm*metaSendsEscape: true'
   -xrm 'xterm*mainMenu*background: black'
   -xrm 'xterm*mainMenu*foreground: white'
   -xrm 'xterm*vtMenu*background: black'
