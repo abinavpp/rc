@@ -272,7 +272,7 @@ export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble.
 export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
 export HISTSIZE=32768
 export HISTFILESIZE=32768
-export FZF_DEFAULT_OPTS="--color 16"
+export FZF_DEFAULT_OPTS="--color 16 --bind ctrl-i:up,ctrl-k:down"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
 edelimvar ':' PATH -a "."
@@ -304,6 +304,12 @@ complete -F _comp_cmpnt cmpnt
 complete -F _comp_scrnt scrnt
 complete -F _comp_culnt culnt
 complete -F _pacman -o default pacdry
+
+bind '\C-j: backward-char' '\C-l: forward-char'
+bind '"\ej": backward-word' '"\el": forward-word'
+bind '"\eJ": beginning-of-line' '"\eL": end-of-line'
+bind 'set completion-query-items 512'
+bind 'set page-completions off'
 
 . /etc/.post-bashrc &> /dev/null
 . ${HOME}/.post-bashrc &> /dev/null
