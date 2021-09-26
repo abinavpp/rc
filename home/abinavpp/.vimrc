@@ -254,7 +254,6 @@ nnoremap <C-]> g<C-]>
 inoremap <C-z> <C-o>u
 inoremap <C-r> <C-o><C-r>
 nnoremap <C-]> g<C-]>
-nnoremap <A-]> <Esc>:tab tjump <C-r><C-w><CR>
 
 " FIXME! This is a workaround. The problem:
 " for (...)<CR>
