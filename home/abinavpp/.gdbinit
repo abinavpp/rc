@@ -44,23 +44,19 @@ end
 
 define sta
   start
-  del
+  delete
 end
 
 define stai
-  la asm
+  layout asm
   starti
-  del
-end
-
-define ps
-  print (char *) $arg0
+  delete
 end
 
 define ub
-  b $arg0
-  cont
-  del
+  break $arg0
+  continue
+  delete
 end
 
 define sub
@@ -82,10 +78,6 @@ end
 
 define d
   down
-end
-
-define c
-  call
 end
 
 set follow-fork-mode child
