@@ -39,8 +39,7 @@ end
 skip -gfi /usr/include/c++/*/bits/*.h
 
 define asm
-  la asm
-  la reg
+  layout asm
 end
 
 define sta
