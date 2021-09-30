@@ -9,6 +9,8 @@
   ch = checkout
   br = branch
   df = diff
+  rb = rebase
+  rbi = rebase -i
   dfc = diff --cached
   them = ls-files --others --directory
 
