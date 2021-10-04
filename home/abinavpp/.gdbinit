@@ -42,6 +42,10 @@ define asm
   layout asm
 end
 
+define sp
+  layout split
+end
+
 define sta
   start
   delete
