@@ -7,9 +7,9 @@ use Getopt::Long;
 
 sub usage {
   print
-  "usage: bkemup [OPTIONS] /path/to/backup.tar.gz
-  -s              dumps uncompressed size
-  -h, --help      view this help\n";
+  "Usage: bkemup <options> <destination>
+  -s              Dumps uncompressed size
+  -h, --help      View this help\n";
 }
 
 sub die_usage {
@@ -34,10 +34,10 @@ my @backup_paths = (
   "$ENV{HOME}/bkp",
   "$ENV{HOME}/doc",
   "$ENV{HOME}/eph",
-  "$ENV{HOME}/proj/my",
+  "$ENV{HOME}/pj/my",
   "$ENV{HOME}/rc",
   "$ENV{HOME}/sys",
-  "$ENV{HOME}/test/my",
+  "$ENV{HOME}/tst/my",
   "$ENV{HOME}/www",
 
   "$chrome_config_path/Local State",
@@ -81,7 +81,7 @@ if (! -d $dest) { die_usage(); }
 for my $backup_glob (@backup_globs) {
   my @glob_files = glob($backup_glob);
 
-  if (!@glob_files) { print "ignoring: $backup_glob\n"; }
+  if (!@glob_files) { print "Ignoring: $backup_glob\n"; }
 
   for my $glob_file (@glob_files) {
     push(@backup_paths, $glob_file);
@@ -91,7 +91,7 @@ for my $backup_glob (@backup_globs) {
 my @ignore_indices;
 for my $i (0 .. $#backup_paths) {
   if (! -e $backup_paths[$i]) {
-    print "ignoring: $backup_paths[$i]\n";
+    print "Ignoring: $backup_paths[$i]\n";
     push(@ignore_indices, $i);
   }
 }
