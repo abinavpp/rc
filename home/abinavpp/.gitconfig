@@ -6,11 +6,13 @@
   sh1 = show --stat --oneline
   st = status
   cm = commit
+  cma = commit --amend
   ch = checkout
   br = branch
   df = diff
   rb = rebase
   rbi = rebase -i
+  rbc = rebase --continue
   dfc = diff --cached
   them = ls-files --others --directory
 
