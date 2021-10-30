@@ -424,6 +424,7 @@ au! BufRead,BufNewFile lit.*cfg set filetype=python
 au! BufRead,BufNewFile *.td set filetype=tablegen
 au! BufRead,BufNewFile *.{inc,def} set filetype=cpp
 au! BufNewFile,BufRead *.c.* set filetype=rtl
+au! BufRead,BufNewFile *.{gvy,Jenkinsfile} set filetype=groovy
 
 au! FileType llvm setlocal commentstring=;\ %s
 au! FileType mlir setlocal commentstring=//\ %s
