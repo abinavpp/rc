@@ -102,6 +102,11 @@ function! FindAMDGPUReg(r)
     \. '|' . l:f . '\[[0-9]+:' . l:n . '\])'
 endfunction
 
+function! Vp(p)
+  let l:n = search(a:p, 'bn')
+  echo l:n . ': ' . getline(l:n)
+endfunction
+
 function! Gnu()
   set tabstop=8
   match none
@@ -198,6 +203,9 @@ endfunction
 com! Cl :call CleanMe()
 com! -nargs=1 R :call FindAMDGPUReg("<args>")
   \ <bar> :call feedkeys("\<Esc>\<Esc>n")
+com! Vs :call Vp('\*\*\* IR Dump ')
+com! Vl :call Vp('\v^\p+:$')
+com! Vd :call Vp(expand("<cword>") . '.*=')
 com! Gnu :call Gnu()
 com! Fif :call FoldIfDef()
 com! Cdb :lcd %:p:h
