@@ -264,6 +264,8 @@ vnoremap d "_d
 nnoremap / <Esc><Esc>/
 nnoremap <C-o> <Esc>
 
+nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
+nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-n> :on<CR>
 nnoremap <C-x> :q<CR>
