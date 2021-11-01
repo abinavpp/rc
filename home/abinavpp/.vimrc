@@ -94,6 +94,14 @@ function! TrailingSpaceMatch()
   endif
 endfunction
 
+function! FindAMDGPUReg(r)
+  let l:f = matchstr(a:r, '\v^[a-zA-Z]+')
+  let l:n = matchstr(a:r, '\v[0-9]+$')
+
+  let @/ = '\v<(' . a:r . '|' . l:f . '\[' . l:n . ':[0-9]+\]'
+    \. '|' . l:f . '\[[0-9]+:' . l:n . '\])'
+endfunction
+
 function! Gnu()
   set tabstop=8
   match none
@@ -188,6 +196,8 @@ endfunction
 " Commands
 " ========
 com! Cl :call CleanMe()
+com! -nargs=1 R :call FindAMDGPUReg("<args>")
+  \ <bar> :call feedkeys("\<Esc>\<Esc>n")
 com! Gnu :call Gnu()
 com! Fif :call FoldIfDef()
 com! Cdb :lcd %:p:h
