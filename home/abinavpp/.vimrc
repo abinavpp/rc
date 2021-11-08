@@ -458,17 +458,21 @@ colo CandyPaper2
 hi link llvmKeyword Special
 
 if executable('clangd')
-  augroup lsp_clangd
-    " Remove all lsp_clangd autocommands.
-    au!
+  au User lsp_setup call lsp#register_server({
+    \ 'name': 'clangd',
+    \ 'cmd': {server_info->['clangd']},
+    \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
+    \ })
+  au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
+endif
 
-    au User lsp_setup call lsp#register_server({
-      \ 'name': 'clangd',
-      \ 'cmd': {server_info->['clangd']},
-      \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
-      \ })
-    au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
-  augroup end
+if executable('rust-analyzer')
+  au User lsp_setup call lsp#register_server({
+    \ 'name': 'rust-analyzer',
+    \ 'cmd': {server_info->['rust-analyzer']},
+    \ 'whitelist': ['rust'],
+    \ })
+  au FileType rust setlocal omnifunc=lsp#complete
 endif
 
 " Other autocmds
