@@ -461,7 +461,7 @@ if executable('clangd')
   au User lsp_setup call lsp#register_server({
     \ 'name': 'clangd',
     \ 'cmd': {server_info->['clangd']},
-    \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
+    \ 'allowlist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
     \ })
   au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
 endif
@@ -470,9 +470,18 @@ if executable('rust-analyzer')
   au User lsp_setup call lsp#register_server({
     \ 'name': 'rust-analyzer',
     \ 'cmd': {server_info->['rust-analyzer']},
-    \ 'whitelist': ['rust'],
+    \ 'allowlist': ['rust'],
     \ })
   au FileType rust setlocal omnifunc=lsp#complete
+endif
+
+if executable('pyls')
+  au User lsp_setup call lsp#register_server({
+    \ 'name': 'pyls',
+    \ 'cmd': {server_info->['pyls']},
+    \ 'allowlist': ['python'],
+    \ })
+  au FileType python setlocal omnifunc=lsp#complete
 endif
 
 " Other autocmds
