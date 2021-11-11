@@ -276,7 +276,7 @@ export FZF_DEFAULT_OPTS="--color 16 --bind ctrl-i:up,ctrl-k:down"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
 edelimvar ':' PATH -a "."
-epath -p ~/sys/usr/bin ~/rc/run
+epath -p ~/sys/usr/bin ~/rc/run ~/.local/bin ~/bin
 eld -p ~/sys/usr/lib
 elb -p ~/sys/usr/lib
 ecpath -p ~/sys/usr/include
