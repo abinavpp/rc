@@ -166,6 +166,7 @@ function ecpath() {
 
 function vim {
   local vim_bin="/usr/bin/vim"
+  [[ -x ~/.local/bin/vim ]] && vim_bin=~/.local/bin/vim
   [[ -x ~/sys/usr/bin/vim ]] && vim_bin=~/sys/usr/bin/vim
 
   # If $vim_bin has no client-server feature.
