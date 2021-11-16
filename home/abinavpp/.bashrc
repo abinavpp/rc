@@ -167,7 +167,6 @@ function ecpath() {
 function vim {
   local vim_bin="/usr/bin/vim"
   [[ -x ~/.local/bin/vim ]] && vim_bin=~/.local/bin/vim
-  [[ -x ~/sys/usr/bin/vim ]] && vim_bin=~/sys/usr/bin/vim
 
   # If $vim_bin has no client-server feature.
   if ! $vim_bin --version | /bin/grep -q -P '\+clientserver'; then
@@ -277,10 +276,7 @@ export FZF_DEFAULT_OPTS="--color 16 --bind ctrl-i:up,ctrl-k:down"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
 edelimvar ':' PATH -a "."
-epath -p ~/sys/usr/bin ~/rc/run ~/.local/bin ~/bin
-eld -p ~/sys/usr/lib
-elb -p ~/sys/usr/lib
-ecpath -p ~/sys/usr/include
+epath -p ~/rc/bin ~/.local/bin ~/bin
 
 # Enable fzf for Arch Linux.
 . /usr/share/fzf/completion.bash &> /dev/null
