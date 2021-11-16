@@ -147,21 +147,25 @@ function edelimvar() {
 function epath() {
   local opt=$1; shift;
   edelimvar ':' PATH $opt $(realpath "$@" 2> /dev/null);
+  [[ -z $PATH ]] && unset PATH
 }
 
 function eld() {
   local opt=$1; shift;
   edelimvar ':' LD_LIBRARY_PATH $opt $(realpath "$@" 2> /dev/null);
+  [[ -z $LD_LIBRARY_PATH ]] && unset LD_LIBRARY_PATH
 }
 
 function elb() {
   local opt=$1; shift;
   edelimvar ':' LIBRARY_PATH $opt $(realpath "$@" 2> /dev/null);
+  [[ -z $LIBRARY_PATH ]] && unset LIBRARY_PATH
 }
 
 function ecpath() {
   local opt=$1; shift;
   edelimvar ':' CPATH $opt $(realpath "$@" 2> /dev/null);
+  [[ -z $CPATH ]] && unset CPATH
 }
 
 function vim {
