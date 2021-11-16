@@ -280,7 +280,7 @@ export FZF_DEFAULT_OPTS="--color 16 --bind ctrl-i:up,ctrl-k:down"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
 edelimvar ':' PATH -a "."
-epath -p ~/rc/bin ~/.local/bin ~/bin
+epath -p ~/bin ~/.local/bin ~/rc/bin
 
 # Enable fzf for Arch Linux.
 . /usr/share/fzf/completion.bash &> /dev/null
