@@ -36,7 +36,7 @@ my @backup_paths = (
   "$ENV{HOME}/eph",
   "$ENV{HOME}/pj/my",
   "$ENV{HOME}/rc",
-  "$ENV{HOME}/sys",
+  "$ENV{HOME}/bin",
   "$ENV{HOME}/tst/my",
   "$ENV{HOME}/www",
 
