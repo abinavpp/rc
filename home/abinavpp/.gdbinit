@@ -9,7 +9,7 @@ def src(file):
 src(os.environ['HOME'] + '/.pre-gdbinit')
 src('/usr/share/gdb/python/gdb/command/pretty_printers.py')
 src(os.environ['HOME'] +
-    'pj/llvm-project/llvm/utils/gdb-scripts/prettyprinters.py')
+    '/pj/llvm-project/llvm/utils/gdb-scripts/prettyprinters.py')
 
 class LLDump(gdb.Function):
   def __init__(self):
@@ -93,10 +93,4 @@ set auto-load safe-path /
 tui enable
 foc cmd
 
-python
-
-src(os.environ['HOME'] + '/.post-gdbinit')
-
-end
-
-# vim: ft=python
+python src(os.environ['HOME'] + '/.post-gdbinit')
