@@ -17,6 +17,9 @@
   dfc = diff --cached
   them = ls-files --others --directory
 
+[core]
+  editor = vim -i NONE
+
 [init]
   defaultBranch = main
 
