@@ -241,14 +241,14 @@ nnoremap <Leader>x :set textwidth=
 " Lsp
 " ---
 nmap <C-\>d :LspDefinition<CR>i
-nmap <C-\><S-d> :tab split<CR>:LspDefinition<CR>i
+nmap <C-\>D :tab split<CR>:LspDefinition<CR>i
 nmap <C-\>s :LspDeclaration<CR>i
 nmap <C-\>r :LspReference<CR>i
-nmap <C-\><S-R> :LspRename<CR>
+nmap <C-\>R :LspRename<CR>
 nmap <C-\>i :LspHover<CR>i
 nmap <C-\>e :LspNextError<CR>
-nmap <C-\>l :LspNextReference<CR><Right>i
-nmap <C-\><S-l> :LspPreviousReference<CR><Right>i
+nmap <C-\>l <Esc><Esc><Esc>:LspNextReference<CR><Right>i
+nmap <C-\>L <Esc><Esc><Esc>:LspPreviousReference<CR><Right>i
 nmap <C-\>p :LspPeekDefinition<CR>i
 nmap <C-\>P :LspPeekDeclaration<CR>i
 nmap <C-\>f :LspWorkspaceSymbol<CR>
