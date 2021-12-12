@@ -484,6 +484,9 @@ if executable('pyls')
   au FileType python setlocal omnifunc=lsp#complete
 endif
 
+au! FileType tablegen nnoremap <buffer>
+  \ <C-\>d :execute 'tag' expand('<cword>')<CR>i
+
 " Other autocmds
 " ==============
 au! vimenter * call setreg('a', "")
