@@ -151,6 +151,11 @@ function! MapAll(lhs, n_rhs, i_rhs, c_rhs)
   endif
 endfunction
 
+function! MapTags()
+  nnoremap <buffer><C-\>d :exe 'tag' expand('<cword>')<CR>i
+  nnoremap <buffer><C-\>D :tab sp<CR>:exe 'tag' expand('<cword>')<CR>i
+endfunction
+
 function! Save()
   if filewritable(bufname('%')) || empty(glob(bufname('%')))
     exe 'w'
@@ -258,8 +263,7 @@ nmap <C-\>L <Esc><Esc><Esc>:LspPreviousReference<CR><Right>i
 nmap <C-\>p :LspPeekDefinition<CR>i
 nmap <C-\>P :LspPeekDeclaration<CR>i
 nmap <C-\>f :LspWorkspaceSymbol<CR>
-au! FileType tablegen
-  \ nnoremap <buffer><C-\>d :execute 'tag' expand('<cword>')<CR>i
+au! FileType tablegen call MapTags()
 
 " Misc
 " ----
