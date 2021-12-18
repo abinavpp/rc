@@ -258,6 +258,8 @@ nmap <C-\>L <Esc><Esc><Esc>:LspPreviousReference<CR><Right>i
 nmap <C-\>p :LspPeekDefinition<CR>i
 nmap <C-\>P :LspPeekDeclaration<CR>i
 nmap <C-\>f :LspWorkspaceSymbol<CR>
+au! FileType tablegen
+  \ nnoremap <buffer><C-\>d :execute 'tag' expand('<cword>')<CR>i
 
 " Misc
 " ----
@@ -456,13 +458,11 @@ au! FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au! FileType mlir setlocal commentstring=//\ %s
 au! FileType cpp setlocal commentstring=//\ %s | set comments^=:///
 
-" Syntax
-" ======
-syntax on
-filetype plugin indent on
-colo CandyPaper2
-hi link llvmKeyword Special
+au! vimenter * call setreg('a', "")
+au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
+" Syntax and colors
+" =================
 if executable('clangd')
   au User lsp_setup call lsp#register_server({
     \ 'name': 'clangd',
@@ -490,20 +490,18 @@ if executable('pyls')
   au FileType python setlocal omnifunc=lsp#complete
 endif
 
-au! FileType tablegen nnoremap <buffer>
-  \ <C-\>d :execute 'tag' expand('<cword>')<CR>i
+syntax on
+filetype plugin indent on
+colo CandyPaper2
+hi link llvmKeyword Special
 
-" Other autocmds
-" ==============
-au! vimenter * call setreg('a', "")
-  \| highlight trailingSpace ctermbg=red guibg=red
+au! vimenter * highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
+
 au! insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
   \. ' ctermfg=016 guifg=#000000'
 au! insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
   \. ' ctermfg=016 guifg=#000000'
-
-au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " .post-vimrc
 " ===========
