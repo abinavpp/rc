@@ -82,6 +82,11 @@ function! CleanMe()
   silent! exec '%s/\v[^\x00-\x7F]+//g'
 endfunction
 
+function! DelCommentLines()
+  let l:expr = substitute(&commentstring, '%s', '.*', '')
+  exe 'g/^\ *' . l:expr .  '/d'
+endfunction
+
 function! TrailingSpaceMatch()
   if s:trailing_space_state == 0
     let s:trailing_space_state = 1
@@ -216,6 +221,7 @@ com! Gr :Gedit
 com! Gd :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
 com! GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
 com! Csi :call CSInv()
+com! Dcl :call DelCommentLines()
 au! filetype c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
@@ -446,7 +452,7 @@ au! BufRead,BufNewFile *.{inc,def} set filetype=cpp
 au! BufNewFile,BufRead *.c.* set filetype=rtl
 au! BufRead,BufNewFile *.{gvy,Jenkinsfile} set filetype=groovy
 
-au! FileType llvm setlocal commentstring=;\ %s
+au! FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au! FileType mlir setlocal commentstring=//\ %s
 au! FileType cpp setlocal commentstring=//\ %s | set comments^=:///
 
