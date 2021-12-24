@@ -275,6 +275,7 @@ vnoremap d "_d
 " Double escape forces command mode from <C-o> mode.
 nnoremap / <Esc><Esc>/
 nnoremap <C-o> <Esc>
+nnoremap V <Esc><Esc>0v
 
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
 nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
@@ -293,16 +294,16 @@ nnoremap <C-]> g<C-]>
 " for (...)
 " {|
 "
-" I.e. braces always shift left in a new line in C, C++, Java etc. files. This
-" might be a vim default behaviour for C-style source.
+" I.e. braces in a new line always align with the parent indentation. This might
+" be a vim default behaviour for C-style source.
 "
 " FIXME! This is for GNU indent style, but adding under our Gnu() function
 " doesn't work due to delimitMate.
 "
 " Note that the d is just a random character.
-inoremap { d{<Left><bs><Right>}<Left>
-" Similarly for # in C/C++
-inoremap # d#<Left><bs><Right>
+inoremap { d{<Left><BS><Right>}<Left>
+" Similarly:
+inoremap # d#<Left><BS><Right>
 
 nnoremap gg <Esc><Esc>mxgg
 nnoremap zz :call Save()<CR>
