@@ -279,7 +279,6 @@ nnoremap <C-o> <Esc>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
 nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
 nnoremap <C-p> :FZF<CR>
-nnoremap <C-n> :on<CR>
 nnoremap <C-x> :q<CR>
 imap <C-_> <Esc>gcci
 nnoremap <C-]> g<C-]>
@@ -315,7 +314,6 @@ nnoremap dT :windo diffo<CR><Esc>:wincmd p<CR>
 " Cut, copy, select
 " -----------------
 inoremap <C-p> <C-x>
-inoremap <C-w> <C-o>viw
 inoremap <C-c> <Esc>^"*y$i
 inoremap <C-x> <Esc>^"*d$"_ddi
 inoremap <C-e> <Esc>"_ddi
