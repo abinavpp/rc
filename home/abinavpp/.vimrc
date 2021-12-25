@@ -235,6 +235,46 @@ au! filetype c,cpp,cuda com! Cp :call CPair()
 " - https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
 " - https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
 
+nnoremap / <Esc><Esc>/
+nnoremap <C-o> <Esc>
+nnoremap zz :call Save()<CR>
+nnoremap <C-x> :q<CR>
+inoremap <C-z> <C-o>u
+inoremap <C-r> <C-o><C-r>
+nnoremap V :normal 0v<CR>
+nnoremap d "_d
+vnoremap d "_d
+nnoremap xx :normal ^"+y$"_dd<CR>
+vnoremap x d
+nnoremap yy :normal ^"+y$<CR>
+inoremap <C-v> <C-o>:call Paste('')<CR>
+nnoremap hh :noh<CR>
+nnoremap dt :windo difft<CR><Esc>:wincmd p<CR>
+nnoremap dT :windo diffo<CR><Esc>:wincmd p<CR>
+inoremap <C-p> <C-x>
+nnoremap <C-p> :FZF<CR>
+nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
+nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
+nnoremap tt :TagbarToggle<CR>
+
+" FIXME! This is a workaround. The problem:
+" for (...)<CR>
+"   |
+"
+" for (...)
+" {|
+"
+" I.e. braces in a new line always align with the parent indentation. This might
+" be a vim default behaviour for C-style source.
+"
+" FIXME! This is for GNU indent style, but adding under our Gnu() function
+" doesn't work due to delimitMate.
+"
+" Note that the d is just a random character.
+inoremap { d{<Left><BS><Right>}<Left>
+" Similarly:
+inoremap # d#<Left><BS><Right>
+
 " Leader
 " ------
 nnoremap <Leader>f :set filetype
@@ -265,77 +305,8 @@ nmap <C-\>P :LspPeekDeclaration<CR>i
 nmap <C-\>f :LspWorkspaceSymbol<CR>
 au! FileType tablegen call MapTags()
 
-" Misc
-" ----
-vmap <C-_> gc
-vnoremap <C-x> d
-vnoremap <C-c> y
-vnoremap d "_d
-
-" Double escape forces command mode from <C-o> mode.
-nnoremap / <Esc><Esc>/
-nnoremap <C-o> <Esc>
-nnoremap V <Esc><Esc>0v
-
-nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
-nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
-nnoremap <C-p> :FZF<CR>
-nnoremap <C-x> :q<CR>
-imap <C-_> <Esc>gcci
-nnoremap <C-]> g<C-]>
-inoremap <C-z> <C-o>u
-inoremap <C-r> <C-o><C-r>
-nnoremap <C-]> g<C-]>
-
-" FIXME! This is a workaround. The problem:
-" for (...)<CR>
-"   |
-"
-" for (...)
-" {|
-"
-" I.e. braces in a new line always align with the parent indentation. This might
-" be a vim default behaviour for C-style source.
-"
-" FIXME! This is for GNU indent style, but adding under our Gnu() function
-" doesn't work due to delimitMate.
-"
-" Note that the d is just a random character.
-inoremap { d{<Left><BS><Right>}<Left>
-" Similarly:
-inoremap # d#<Left><BS><Right>
-
-nnoremap gg <Esc><Esc>mxgg
-nnoremap zz :call Save()<CR>
-nnoremap hh :noh<CR>
-nnoremap tt :TagbarToggle<CR>
-nnoremap dt :windo difft<CR><Esc>:wincmd p<CR>
-nnoremap dT :windo diffo<CR><Esc>:wincmd p<CR>
-
-" Cut, copy, select
-" -----------------
-inoremap <C-p> <C-x>
-inoremap <C-c> <Esc>^"*y$i
-inoremap <C-x> <Esc>^"*d$"_ddi
-inoremap <C-e> <Esc>"_ddi
-inoremap <C-d> <C-o>"_diw
-inoremap <C-v> <C-o>:call Paste('')<CR>
-
-" Cut, copy in append mode
-" ------------------------
-nnoremap <C-a><C-c> "Ayy
-nnoremap <C-a><C-v> :call Paste('"Ap')
-nnoremap <C-a><C-r> :call setreg('a', "")<CR>
-
-" <FX>
-" ----
-au! filetype plaintex inoremap <F6> <C-o>:wa <bar> exec
-  \'!pdftex -interaction nonstopmode '.shellescape('%') <CR>
-au! filetype tex inoremap <F6> <C-o>:wa <bar> exec
-  \'!pdflatex -interaction nonstopmode '.shellescape('%') <CR>
-
-" Cursor movement
-" ---------------
+" Navigation
+" ----------
 call MapAll('<C-i>', '<Up>', '<Up>', '<Up>')
 " <C-i> mimics <Tab>. <C-@> mimics ctrl + space.
 inoremap <C-@> <Tab>
@@ -371,15 +342,11 @@ call MapAll("\eL", '$', '<C-o>$', '<Home>')
 call MapAll('<A-S-k>', 'YP', '<C-o>Y<C-o>p', '<End>')
 call MapAll("\eK", 'YP', '<C-o>Y<C-o>p', '<End>')
 
-" Tab
-" ---
 call MapAll('<A-,>', ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
 call MapAll("\e,", ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
 call MapAll('<A-.>', ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 call MapAll("\e.", ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 
-" Split
-" -----
 nnoremap <C-w><C-j> <C-w>h
 nnoremap <C-w><C-l> <C-w>l
 nnoremap <C-w><C-k> <C-w>j
@@ -417,7 +384,7 @@ set pastetoggle=<F2>
 set completeopt=noselect,menuone,preview
 set autoread
 set diffopt+=vertical
-set clipboard=unnamed
+set clipboard^=unnamed,unnamedplus
 set mouse=a
 set hlsearch
 set incsearch
