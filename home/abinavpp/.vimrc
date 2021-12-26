@@ -238,9 +238,8 @@ au! filetype c,cpp,cuda com! Cp :call CPair()
 nnoremap / <Esc><Esc>/
 nnoremap <C-o> <Esc>
 nnoremap zz :call Save()<CR>
-nnoremap <C-x> :q<CR>
-inoremap <C-z> <C-o>u
-inoremap <C-r> <C-o><C-r>
+nnoremap ZZ :q<CR>
+nnoremap U <C-r>
 nnoremap V :normal 0v<CR>
 nnoremap d "_d
 vnoremap d "_d
