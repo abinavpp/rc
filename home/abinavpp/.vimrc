@@ -197,15 +197,13 @@ function! Glg(range, line1, line2)
   endif
 endfunction
 
-function! Paste(prefix)
+function! Paste(suffix)
   let l:paste_mode = 'p'
   if col(".") == 1
     let l:paste_mode = 'P'
   endif
 
-  " `[v`]= indents the paste. The last `] moves the cursor to the end of the
-  " paste.
-  call feedkeys(a:prefix . "\<Esc>" . l:paste_mode . "`[v`]=`]i\<Right>")
+  exe ":normal! " . l:paste_mode . a:suffix
 endfunction
 
 " Commands
@@ -243,10 +241,11 @@ nnoremap U <C-r>
 nnoremap V :normal 0v<CR>
 nnoremap d "_d
 vnoremap d "_d
-nnoremap xx :normal ^"+y$"_dd<CR>
+nnoremap xx :normal ^y$"_dd<CR>
 vnoremap x d
-nnoremap yy :normal ^"+y$<CR>
-inoremap <C-v> <C-o>:call Paste('')<CR>
+nnoremap yy :normal ^y$<CR>
+nnoremap p :call Paste('')<CR>
+nnoremap P :call Paste('`[v`]=`]\<Right>')<CR>
 nnoremap hh :noh<CR>
 nnoremap dt :windo difft<CR><Esc>:wincmd p<CR>
 nnoremap dT :windo diffo<CR><Esc>:wincmd p<CR>
