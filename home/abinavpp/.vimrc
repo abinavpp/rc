@@ -167,6 +167,7 @@ endfunction
 function! CopyToClipboard(str)
   if has('xterm_clipboard')
     let @* = a:str
+    let @+ = a:str
   else
     exe 'silent !echo -n "' . a:str . '" | xsel'
     exe 'redraw!'
