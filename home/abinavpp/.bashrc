@@ -246,7 +246,7 @@ function rn {
 
 function sysnt { vim "$HOME/doc/cs/sys/$1"; }
 function cmpnt { vim "$HOME/doc/cs/cmp/$1"; }
-function scrnt { vim "$HOME/doc/misc/scr/$1"; }
+function scrnt { vim "$HOME/doc/scr/$1"; }
 function culnt { vim "$HOME/doc/cul/$1"; }
 
 function _comp_nt() {
@@ -265,7 +265,7 @@ function _comp_nt() {
 
 function _comp_sysnt() { _comp_nt ~/doc/cs/sys; }
 function _comp_cmpnt() { _comp_nt ~/doc/cs/cmp; }
-function _comp_scrnt() { _comp_nt ~/doc/misc/scr; }
+function _comp_scrnt() { _comp_nt ~/doc/scr; }
 function _comp_culnt() { _comp_nt ~/doc/cul; }
 
 PROMPT_COMMAND=
