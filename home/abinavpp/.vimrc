@@ -346,14 +346,12 @@ call MapAll("\e,", ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
 call MapAll('<A-.>', ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 call MapAll("\e.", ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
 
-nnoremap <C-w><C-j> <C-w>h
-nnoremap <C-w><C-l> <C-w>l
-nnoremap <C-w><C-k> <C-w>j
-nnoremap <C-w><C-i> <C-w>k
+nnoremap <C-w>j <C-w>h
+nnoremap <C-w>k <C-w>j
+nnoremap <C-w>i <C-w>k
 nnoremap <C-w>J <C-w>H
-nnoremap <C-w>L <C-w>L
-nnoremap <C-w>I <C-w>K
 nnoremap <C-w>K <C-w>J
+nnoremap <C-w>I <C-w>K
 
 " Set
 " ===
