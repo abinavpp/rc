@@ -457,6 +457,15 @@ if executable('pyls')
   au FileType python setlocal omnifunc=lsp#complete
 endif
 
+if executable('typescript-language-server')
+  au User lsp_setup call lsp#register_server({
+    \ 'name': 'typescript-language-server',
+    \ 'cmd': {server_info->['typescript-language-server', '--stdio']},
+    \ 'allowlist': ['javascript', 'typescript'],
+    \ })
+  au FileType javascript,typescript setlocal omnifunc=lsp#complete
+endif
+
 syntax on
 filetype plugin indent on
 colo CandyPaper2
