@@ -306,11 +306,9 @@ complete -F _comp_scrnt scrnt
 complete -F _comp_culnt culnt
 complete -F _pacman -o default pacdry
 
-bind '\C-j: backward-char' '\C-l: forward-char'
-bind '"\ej": backward-word' '"\el": forward-word'
-bind '"\eJ": beginning-of-line' '"\eL": end-of-line'
 bind 'set completion-query-items 512'
 bind 'set page-completions off'
+bind 'set editing-mode vi'
 
 . /etc/.post-bashrc &> /dev/null
 . ${HOME}/.post-bashrc &> /dev/null
