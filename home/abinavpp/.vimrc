@@ -242,6 +242,10 @@ nnoremap <C-p> :FZF<CR>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
 nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
 nnoremap tt :TagbarToggle<CR>
+exe "nnoremap \ej }"
+exe "nnoremap \ek {"
+exe "nnoremap \eh ^"
+exe "nnoremap \el $"
 
 " FIXME! This is a workaround. The problem:
 " for (...)<CR>
