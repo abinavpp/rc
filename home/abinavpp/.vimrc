@@ -247,7 +247,6 @@ vnoremap x d
 nnoremap yy :normal ^y$<CR>
 nnoremap p :call Paste('')<CR>
 nnoremap P :call Paste('`[v`]=`]\<Right>')<CR>
-nnoremap hh :noh<CR>
 inoremap <C-p> <C-x>
 nnoremap <C-p> :FZF<CR>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
@@ -287,6 +286,7 @@ nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
 nnoremap <Leader>d :windo difft<CR><Esc>:wincmd p<CR>
 nnoremap <Leader>D :windo diffo<CR><Esc>:wincmd p<CR>
+nnoremap <Leader>h :noh<CR>
 
 " Lsp
 " ---
