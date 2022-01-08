@@ -141,16 +141,6 @@ function! CSInv()
   colo CandyPaper2
 endfunction
 
-function! MapAll(lhs, n_rhs, i_rhs, c_rhs)
-  execute 'nnoremap' a:lhs a:n_rhs
-  execute 'vnoremap' a:lhs a:n_rhs
-  execute 'inoremap' a:lhs a:i_rhs
-
-  if a:c_rhs != ""
-    execute 'cnoremap' a:lhs a:c_rhs
-  endif
-endfunction
-
 function! MapTags()
   nnoremap <buffer><C-\>d :exe 'tag' expand('<cword>')<CR>i
   nnoremap <buffer><C-\>D :tab sp<CR>:exe 'tag' expand('<cword>')<CR>i
@@ -303,55 +293,6 @@ nmap <C-\>p :LspPeekDefinition<CR>i
 nmap <C-\>P :LspPeekDeclaration<CR>i
 nmap <C-\>f :LspWorkspaceSymbol<CR>
 au! FileType tablegen call MapTags()
-
-" Navigation
-" ----------
-call MapAll('<C-i>', '<Up>', '<Up>', '<Up>')
-" <C-i> mimics <Tab>. <C-@> mimics ctrl + space.
-inoremap <C-@> <Tab>
-" The following 2 statements allow tab completion in command mode.
-set wildcharm=<Tab>
-cnoremap <C-@> <Tab>
-call MapAll('<C-k>', '<Down>', '<Down>', '<Down>')
-call MapAll('<C-j>', '<Left>', '<Left>', '<Left>')
-call MapAll('<C-l>', '<Right>', '<Right>', '<Right>')
-
-call MapAll('<A-i>', '{', '<C-o>{', '')
-call MapAll("\ei", '{', '<C-o>{', '')
-call MapAll('<A-k>', '}', '<C-o>}', '')
-call MapAll("\ek", '}', '<C-o>}', '')
-call MapAll('<A-j>', 'b', '<C-o>b', '<S-left>')
-call MapAll("\ej", 'b', '<C-o>b', '<S-left>')
-call MapAll('<A-l>', 'w', '<C-o>w', '<S-right>')
-call MapAll("\el", 'w', '<C-o>w', '<S-right>')
-
-call MapAll('<C-A-i>', '5k', '<C-o>5k', '')
-call MapAll("\e<C-i>", '5k', '<C-o>5k', '')
-call MapAll('<C-A-k>', '5j', '<C-o>5j', '')
-call MapAll("\e<C-k>", '5j', '<C-o>5j', '')
-call MapAll('<C-A-j>', '3b', '<C-o>3b', '')
-call MapAll("\e<C-j>", '3b', '<C-o>3b', '')
-call MapAll('<C-A-l>', '3w', '<C-o>3w', '')
-call MapAll("\e<C-l>", '3w', '<C-o>3w', '')
-
-call MapAll('<A-S-j>', '^', '<C-o>^', '')
-call MapAll("\eJ", '^', '<C-o>^', '')
-call MapAll('<A-S-l>', '$', '<C-o>$', '<Home>')
-call MapAll("\eL", '$', '<C-o>$', '<Home>')
-call MapAll('<A-S-k>', 'YP', '<C-o>Y<C-o>p', '<End>')
-call MapAll("\eK", 'YP', '<C-o>Y<C-o>p', '<End>')
-
-call MapAll('<A-,>', ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
-call MapAll("\e,", ':tabprevious<CR>', '<C-o>:tabprevious<CR>', '')
-call MapAll('<A-.>', ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
-call MapAll("\e.", ':tabnext<CR>', '<C-o>:tabnext<CR>', '')
-
-nnoremap <C-w>j <C-w>h
-nnoremap <C-w>k <C-w>j
-nnoremap <C-w>i <C-w>k
-nnoremap <C-w>J <C-w>H
-nnoremap <C-w>K <C-w>J
-nnoremap <C-w>I <C-w>K
 
 " Set
 " ===
