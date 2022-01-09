@@ -227,7 +227,7 @@ au! filetype c,cpp,cuda com! Cp :call CPair()
 nnoremap zz :call Save()<CR>
 nnoremap ZZ :q<CR>
 nnoremap U <C-r>
-nnoremap V :normal 0v<CR>
+nnoremap V :normal 0v$<CR>
 nnoremap <Leader>d "_d
 vnoremap <Leader>d "_d
 nnoremap p :call Paste('')<CR>
