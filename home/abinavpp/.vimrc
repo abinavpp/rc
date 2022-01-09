@@ -224,8 +224,6 @@ au! filetype c,cpp,cuda com! Cp :call CPair()
 " - https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
 " - https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
 
-nnoremap / <Esc><Esc>/
-nnoremap <C-o> <Esc>
 nnoremap zz :call Save()<CR>
 nnoremap ZZ :q<CR>
 nnoremap U <C-r>
