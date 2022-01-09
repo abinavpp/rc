@@ -4,24 +4,20 @@ set mouse=true
 set display_artist_sort_name=false
 set show_current_bitrate=true
 
-bind -f common j win-next
+bind -f common h win-next
 bind -f common l win-next
-bind -f common k win-down
 bind -f common mouse_scroll_down win-scroll-down
-bind -f common i win-up
-bind -f browser i win-up
 bind -f common mouse_scroll_up win-scroll-up
 
-bind -f common enter seek -5
-bind -f common ^L seek +5
-bind -f common ^K seek -1m
-bind -f common tab seek +1m
+bind -f common H seek -5
+bind -f common L seek +5
+bind -f common J seek -1m
+bind -f common K seek +1m
 
 bind -f common 9 vol -10%
 bind -f common 0 vol +10%
 
-bind -f common ; win-activate
-bind -f browser l win-activate
+bind -f common enter win-activate
 
 set color_win_bg=default
 set color_win_fg=default
