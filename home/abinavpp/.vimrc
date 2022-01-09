@@ -228,11 +228,8 @@ nnoremap zz :call Save()<CR>
 nnoremap ZZ :q<CR>
 nnoremap U <C-r>
 nnoremap V :normal 0v<CR>
-nnoremap d "_d
-vnoremap d "_d
-nnoremap xx :normal ^y$"_dd<CR>
-vnoremap x d
-nnoremap yy :normal ^y$<CR>
+nnoremap <Leader>d "_d
+vnoremap <Leader>d "_d
 nnoremap p :call Paste('')<CR>
 nnoremap P :call Paste('`[v`]=`]\<Right>')<CR>
 inoremap <C-p> <C-x>
@@ -276,8 +273,8 @@ nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
-nnoremap <Leader>d :windo difft<CR><Esc>:wincmd p<CR>
-nnoremap <Leader>D :windo diffo<CR><Esc>:wincmd p<CR>
+" nnoremap <Leader>d :windo difft<CR><Esc>:wincmd p<CR>
+" nnoremap <Leader>D :windo diffo<CR><Esc>:wincmd p<CR>
 nnoremap <Leader>h :noh<CR>
 
 " Lsp
