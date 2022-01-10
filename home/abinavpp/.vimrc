@@ -142,8 +142,8 @@ function! CSInv()
 endfunction
 
 function! MapTags()
-  nnoremap <buffer><C-\>d :exe 'tag' expand('<cword>')<CR>i
-  nnoremap <buffer><C-\>D :tab sp<CR>:exe 'tag' expand('<cword>')<CR>i
+  nnoremap <buffer><Leader>ld :exe 'tag' expand('<cword>')<CR>
+  nnoremap <buffer><Leader>lD :tab sp<CR>:exe 'tag' expand('<cword>')<CR>
 endfunction
 
 function! Save()
@@ -230,17 +230,44 @@ nnoremap U <C-r>
 nnoremap V :normal 0v$<CR>
 nnoremap <Leader>d "_d
 vnoremap <Leader>d "_d
-nnoremap p :call Paste('')<CR>
-nnoremap P :call Paste('`[v`]=`]\<Right>')<CR>
 inoremap <C-p> <C-x>
 nnoremap <C-p> :FZF<CR>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
 nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
-nnoremap tt :TagbarToggle<CR>
 exe "nnoremap \ej }"
 exe "nnoremap \ek {"
 exe "nnoremap \eh ^"
 exe "nnoremap \el $"
+nnoremap <Leader>f :set filetype
+nnoremap <Leader>l :set list!<CR>
+nnoremap <Leader>s :call SpellToggle()<CR>
+nnoremap <Leader>w :set wrap!<CR>
+nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
+nnoremap <Leader>m :SyntasticToggleMode<CR>
+nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
+nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
+nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
+nnoremap <Leader>v :so $MYVIMRC<CR>
+nnoremap <Leader>x :set textwidth=
+nnoremap <Leader>p :call Paste('`[v`]=`]\<Right>')<CR>
+" nnoremap <Leader>d :windo difft<CR><Esc>:wincmd p<CR>
+" nnoremap <Leader>D :windo diffo<CR><Esc>:wincmd p<CR>
+nnoremap <Leader>h :noh<CR>
+nnoremap <Leader>ld :LspDefinition<CR>
+nnoremap <Leader>lD :tab split<CR>:LspDefinition<CR>
+nnoremap <Leader>ls :LspDeclaration<CR>
+nnoremap <Leader>lr :LspReference<CR>
+nnoremap <Leader>lR :LspRename<CR>
+nnoremap <Leader>li :LspHover<CR>
+nnoremap <Leader>le :LspNextError<CR>
+nnoremap <Leader>ll :LspNextReference<CR>
+nnoremap <Leader>lL :LspPreviousReference<CR>
+nnoremap <Leader>lp :LspPeekDefinition<CR>
+nnoremap <Leader>lP :LspPeekDeclaration<CR>
+nnoremap <Leader>lf :LspWorkspaceSymbol<CR>
+nnoremap <Leader>lt :TagbarToggle<CR>
+nnoremap <Leader>lb <C-t>
+au! FileType tablegen call MapTags()
 
 " FIXME! This is a workaround. The problem:
 " for (...)<CR>
@@ -259,39 +286,6 @@ exe "nnoremap \el $"
 inoremap { d{<Left><BS><Right>}<Left>
 " Similarly:
 inoremap # d#<Left><BS><Right>
-
-" Leader
-" ------
-nnoremap <Leader>f :set filetype
-nnoremap <Leader>l :set list!<CR>
-nnoremap <Leader>s :call SpellToggle()<CR>
-nnoremap <Leader>w :set wrap!<CR>
-nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
-nnoremap <Leader>m :SyntasticToggleMode<CR>
-nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
-nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
-nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
-nnoremap <Leader>v :so $MYVIMRC<CR>
-nnoremap <Leader>x :set textwidth=
-" nnoremap <Leader>d :windo difft<CR><Esc>:wincmd p<CR>
-" nnoremap <Leader>D :windo diffo<CR><Esc>:wincmd p<CR>
-nnoremap <Leader>h :noh<CR>
-
-" Lsp
-" ---
-nmap <C-\>d :LspDefinition<CR>i
-nmap <C-\>D :tab split<CR>:LspDefinition<CR>i
-nmap <C-\>s :LspDeclaration<CR>i
-nmap <C-\>r :LspReference<CR>i
-nmap <C-\>R :LspRename<CR>
-nmap <C-\>i :LspHover<CR>i
-nmap <C-\>e :LspNextError<CR>
-nmap <C-\>l <Esc><Esc><Esc>:LspNextReference<CR><Right>i
-nmap <C-\>L <Esc><Esc><Esc>:LspPreviousReference<CR><Right>i
-nmap <C-\>p :LspPeekDefinition<CR>i
-nmap <C-\>P :LspPeekDeclaration<CR>i
-nmap <C-\>f :LspWorkspaceSymbol<CR>
-au! FileType tablegen call MapTags()
 
 " Set
 " ===
