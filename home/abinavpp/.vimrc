@@ -141,6 +141,11 @@ function! CSInv()
   colo CandyPaper2
 endfunction
 
+function! Map(lhs, rhs)
+  execute 'nnoremap' a:lhs a:rhs
+  execute 'vnoremap' a:lhs a:rhs
+endfunction
+
 function! MapTags()
   nnoremap <buffer><Leader>ld :exe 'tag' expand('<cword>')<CR>
   nnoremap <buffer><Leader>lD :tab sp<CR>:exe 'tag' expand('<cword>')<CR>
@@ -234,10 +239,10 @@ inoremap <C-p> <C-x>
 nnoremap <C-p> :FZF<CR>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
 nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
-exe "nnoremap \ej }"
-exe "nnoremap \ek {"
-exe "nnoremap \eh ^"
-exe "nnoremap \el $"
+call Map("\ej", "}")
+call Map("\ek", "{")
+call Map("\eh", "^")
+call Map("\el", "$")
 nnoremap <Leader>f :set filetype
 nnoremap <Leader>l :set list!<CR>
 nnoremap <Leader>s :call SpellToggle()<CR>
