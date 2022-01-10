@@ -276,7 +276,7 @@ export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble.
 export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
 export HISTSIZE=32768
 export HISTFILESIZE=32768
-export FZF_DEFAULT_OPTS="--color 16 --bind ctrl-i:up,ctrl-k:down"
+export FZF_DEFAULT_OPTS="--color 16"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
 edelimvar ':' PATH -a "."
