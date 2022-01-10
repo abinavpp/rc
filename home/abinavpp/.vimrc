@@ -82,6 +82,16 @@ function! CleanMe()
   silent! exec '%s/\v[^\x00-\x7F]+//g'
 endfunction
 
+function! DiffToggle()
+  if &diff == 0
+   exe 'windo difft'
+ else
+   exe 'windo diffo'
+ endif
+
+ exe 'wincmd p'
+endfunction
+
 function! DelCommentLines()
   let l:expr = substitute(&commentstring, '%s', '.*', '')
   exe 'g/^\ *' . l:expr .  '/d'
@@ -221,6 +231,7 @@ com! Gd :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
 com! GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
 com! Csi :call CSInv()
 com! Dcl :call DelCommentLines()
+com! Df :call DiffToggle()
 au! filetype c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
@@ -255,8 +266,6 @@ nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
 nnoremap <Leader>p :call Paste('`[v`]=`]\<Right>')<CR>
-" nnoremap <Leader>d :windo difft<CR><Esc>:wincmd p<CR>
-" nnoremap <Leader>D :windo diffo<CR><Esc>:wincmd p<CR>
 nnoremap <Leader>h :noh<CR>
 nnoremap <Leader>ld :LspDefinition<CR>
 nnoremap <Leader>lD :tab split<CR>:LspDefinition<CR>
