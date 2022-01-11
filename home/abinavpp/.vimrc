@@ -247,6 +247,10 @@ nnoremap U <C-r>
 nnoremap V :normal 0v$<CR>
 nnoremap <Leader>d "_d
 vnoremap <Leader>d "_d
+nnoremap x "_x
+nnoremap X "_X
+nnoremap c "_c
+nnoremap C "_C
 inoremap <C-p> <C-x>
 nnoremap <C-p> :FZF<CR>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
