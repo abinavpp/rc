@@ -233,6 +233,7 @@ com! Csi :call CSInv()
 com! Dcl :call DelCommentLines()
 com! Df :call DiffToggle()
 com! Wr :set wrap!
+com! Li :set list!
 au! filetype c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
@@ -261,7 +262,6 @@ call Map("\eh", "^")
 call Map("\el", "$")
 nnoremap <Leader>w <C-w>
 nnoremap <Leader>f :set filetype
-nnoremap <Leader>l :set list!<CR>
 nnoremap <Leader>s :call SpellToggle()<CR>
 nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
 nnoremap <Leader>m :SyntasticToggleMode<CR>
