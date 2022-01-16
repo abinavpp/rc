@@ -27,7 +27,7 @@ endif
 
 " Variables
 " =========
-let mapleader = " "
+let mapleader = 'm'
 
 let delimitMate_expand_cr = 1
 au! filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
