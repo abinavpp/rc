@@ -253,7 +253,6 @@ nnoremap X "_X
 nnoremap c "_c
 nnoremap C "_C
 inoremap <C-p> <C-x>
-nnoremap <C-p> :FZF<CR>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
 nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
 call Map("\ej", "}")
@@ -261,8 +260,8 @@ call Map("\ek", "{")
 call Map("\eh", "^")
 call Map("\el", "$")
 nnoremap <Leader>w <C-w>
-nnoremap <Leader>f :set filetype
-nnoremap <Leader>s :call SpellToggle()<CR>
+nnoremap <Leader>sf :set filetype
+nnoremap <Leader>ss :call SpellToggle()<CR>
 nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
 nnoremap <Leader>m :SyntasticToggleMode<CR>
 nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
@@ -272,6 +271,7 @@ nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
 nnoremap <Leader>p :call Paste('`[v`]=`]\<Right>')<CR>
 nnoremap <Leader>h :noh<CR>
+nnoremap <Leader>f :FZF<CR>
 nnoremap <Leader>ld :LspDefinition<CR>
 nnoremap <Leader>lD :tab split<CR>:LspDefinition<CR>
 nnoremap <Leader>ls :LspDeclaration<CR>
