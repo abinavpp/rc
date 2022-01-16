@@ -268,6 +268,7 @@ function _comp_cmpnt() { _comp_nt ~/doc/cs/cmp; }
 function _comp_scrnt() { _comp_nt ~/doc/scr; }
 function _comp_culnt() { _comp_nt ~/doc/cul; }
 
+set -o ignoreeof
 PROMPT_COMMAND=
 PS1='[\j] \W \[\e[38;5;76m\]$\[\e[0m\] '
 export TERM=xterm-256color
