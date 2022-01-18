@@ -68,7 +68,6 @@ g_ControlRepeatDetected := false
 ~*^8::
 ~*^9::
 ~*^0::
-~*^Space::
 ~*^Backspace::
 ~*^Delete::
 ~*^Insert::
