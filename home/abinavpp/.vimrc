@@ -8,7 +8,6 @@ let $LD_LIBRARY_PATH = $RESET_LD_LIBRARY_PATH
 " =======
 if filereadable($HOME . "/.vim/autoload/plug.vim")
   call plug#begin('~/.vim/plugged')
-  Plug 'https://github.com/Raimondi/delimitMate'
   Plug 'https://github.com/scrooloose/nerdtree'
   Plug 'https://github.com/vim-syntastic/syntastic'
   Plug 'https://github.com/tpope/vim-commentary'
@@ -28,11 +27,6 @@ endif
 " Variables
 " =========
 let mapleader = 'm'
-
-let delimitMate_expand_cr = 1
-au! filetype plaintex,tex let b:delimitMate_quotes = "\" ' $"
-" Enable delimitMate within comments.
-let delimitMate_excluded_regions = ""
 
 let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0,
       \ 'relative': v:true, 'yoffset': 1.0 } }
@@ -302,7 +296,7 @@ au! FileType tablegen call MapTags()
 " doesn't work due to delimitMate.
 "
 " Note that the d is just a random character.
-inoremap { d{<Left><BS><Right>}<Left>
+inoremap { d{<Left><BS><Right>
 " Similarly:
 inoremap # d#<Left><BS><Right>
 
