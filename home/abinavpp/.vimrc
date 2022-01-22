@@ -309,7 +309,7 @@ set background=dark
 set ruler
 set noshowmode
 set nowrap
-set number
+set number relativenumber
 
 set ttimeoutlen=50
 set scrolloff=5
