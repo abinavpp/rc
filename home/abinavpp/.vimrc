@@ -8,18 +8,14 @@ let $LD_LIBRARY_PATH = $RESET_LD_LIBRARY_PATH
 " =======
 if filereadable($HOME . "/.vim/autoload/plug.vim")
   call plug#begin('~/.vim/plugged')
-  Plug 'https://github.com/scrooloose/nerdtree'
   Plug 'https://github.com/vim-syntastic/syntastic'
   Plug 'https://github.com/tpope/vim-commentary'
   Plug 'https://github.com/tpope/vim-fugitive'
   Plug 'https://github.com/tpope/vim-surround'
-  Plug 'https://github.com/tpope/vim-eunuch'
-  Plug 'https://github.com/yegappan/greplace'
   Plug 'https://github.com/google/vim-searchindex'
   Plug 'https://github.com/gioele/vim-autoswap'
   Plug 'https://github.com/majutsushi/tagbar'
   Plug 'https://github.com/prabirshrestha/vim-lsp'
-  Plug 'https://github.com/prabirshrestha/async.vim'
   Plug 'https://github.com/junegunn/fzf', { 'do': { -> fzf#install() } }
   call plug#end()
 endif
@@ -29,9 +25,7 @@ endif
 let mapleader = 'm'
 
 let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0,
-      \ 'relative': v:true, 'yoffset': 1.0 } }
-
-let NERDTreeShowHidden = 1
+  \ 'relative': v:true, 'yoffset': 1.0 } }
 
 let g:syntastic_c_compiler = "clang"
 let g:syntastic_cpp_compiler = "clang++"
