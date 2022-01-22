@@ -23,21 +23,19 @@ endif
 " Variables
 " =========
 let mapleader = 'm'
-
+let fortran_free_source = 1
+let fortran_have_tabs = 1
+let fortran_more_precise = 1
+let fortran_do_enddo = 1
+let s:trailing_space_state = 1
+let g:color_theme = "dark"
+let g:tagbar_left = 1
 let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0,
   \ 'relative': v:true, 'yoffset': 1.0 } }
-
-let g:syntastic_c_compiler = "clang"
-let g:syntastic_cpp_compiler = "clang++"
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],
+  \ 'passive_filetypes': [] }
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
-let g:syntastic_mode_map = {
-  \ "mode": "active",
-  \ "passive_filetypes": ["c", "cpp", "cuda", "tex"] }
-let g:syntastic_c_compiler_options = '-Wparentheses'
-
 let g:lsp_signature_help_enabled = 1
 let g:lsp_preview_keep_focus = 0
 let g:lsp_document_highlight_delay = 0
@@ -46,16 +44,6 @@ let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_diagnostics_echo_delay = 0
 let g:lsp_diagnostics_highlights_enabled = 0
 let g:lsp_diagnostics_signs_enabled = 0
-
-let g:tagbar_left = 1
-
-let fortran_free_source = 1
-let fortran_have_tabs = 1
-let fortran_more_precise = 1
-let fortran_do_enddo = 1
-
-let s:trailing_space_state = 1
-let g:color_theme = "dark"
 
 " .pre-vimrc
 " ==========
@@ -251,8 +239,6 @@ nnoremap <Leader>w <C-w>
 nnoremap <Leader>sf :set filetype
 nnoremap <Leader>ss :call SpellToggle()<CR>
 nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
-nnoremap <Leader>m :SyntasticToggleMode<CR>
-nnoremap <Leader>r :SyntasticReset<CR><Esc> pc!<CR>i<Right>
 nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
