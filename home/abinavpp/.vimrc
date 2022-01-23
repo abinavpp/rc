@@ -34,7 +34,6 @@ let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0,
   \ 'relative': v:true, 'yoffset': 1.0 } }
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],
   \ 'passive_filetypes': [] }
-let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:lsp_signature_help_enabled = 1
 let g:lsp_preview_keep_focus = 0
@@ -132,9 +131,31 @@ function! Map(lhs, rhs)
   execute 'vnoremap' a:lhs a:rhs
 endfunction
 
-function! MapTags()
-  nnoremap <buffer><Leader>ld :exe 'tag' expand('<cword>')<CR>
-  nnoremap <buffer><Leader>lD :tab sp<CR>:exe 'tag' expand('<cword>')<CR>
+function! MapLsp()
+  nnoremap <buffer><Leader>ld :LspDefinition<CR>
+  nnoremap <buffer><Leader>lD :tab split<CR>:LspDefinition<CR>
+  nnoremap <buffer><Leader>ls :LspDeclaration<CR>
+  nnoremap <buffer><Leader>lr :LspReference<CR>
+  nnoremap <buffer><Leader>lR :LspRename<CR>
+  nnoremap <buffer><Leader>li :LspHover<CR>
+  nnoremap <buffer><Leader>le :LspNextError<CR>
+  nnoremap <buffer><Leader>ll :LspNextReference<CR>
+  nnoremap <buffer><Leader>lL :LspPreviousReference<CR>
+  nnoremap <buffer><Leader>lp :LspPeekDefinition<CR>
+  nnoremap <buffer><Leader>lP :LspPeekDeclaration<CR>
+  nnoremap <buffer><Leader>lf :LspWorkspaceSymbol<CR>
+endfunction
+
+function! Lsp(cmd, fts)
+  if ! executable(a:cmd[0])
+    return
+  endif
+
+  exe "au User lsp_setup call lsp#register_server({'name':'" . a:cmd[0] . "',"
+    \ "'cmd':{server_info->['" . join(a:cmd, "','") . "']},"
+    \ "'allowlist':['" . join(a:fts, "','") . "']})"
+  exe 'au FileType ' . join(a:fts, ',') . ' call MapLsp()'
+  exe 'au FileType ' . join(a:fts, ',') . ' setlocal omnifunc=lsp#complete'
 endfunction
 
 function! Save()
@@ -246,21 +267,11 @@ nnoremap <Leader>x :set textwidth=
 nnoremap <Leader>p :call Paste('`[v`]=`]\<Right>')<CR>
 nnoremap <Leader>h :noh<CR>
 nnoremap <Leader>f :FZF<CR>
-nnoremap <Leader>ld :LspDefinition<CR>
-nnoremap <Leader>lD :tab split<CR>:LspDefinition<CR>
-nnoremap <Leader>ls :LspDeclaration<CR>
-nnoremap <Leader>lr :LspReference<CR>
-nnoremap <Leader>lR :LspRename<CR>
-nnoremap <Leader>li :LspHover<CR>
-nnoremap <Leader>le :LspNextError<CR>
-nnoremap <Leader>ll :LspNextReference<CR>
-nnoremap <Leader>lL :LspPreviousReference<CR>
-nnoremap <Leader>lp :LspPeekDefinition<CR>
-nnoremap <Leader>lP :LspPeekDeclaration<CR>
-nnoremap <Leader>lf :LspWorkspaceSymbol<CR>
+nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
+nnoremap <Leader>lD :tab sp<CR>:exe 'tag' expand('<cword>')<CR>
+nnoremap <Leader>le :SyntasticCheck<CR>
 nnoremap <Leader>lt :TagbarToggle<CR>
 nnoremap <Leader>lb <C-t>
-au! FileType tablegen call MapTags()
 
 " FIXME! This is a workaround. The problem:
 " for (...)<CR>
@@ -357,41 +368,11 @@ au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " Syntax and colors
 " =================
-if executable('clangd')
-  au User lsp_setup call lsp#register_server({
-    \ 'name': 'clangd',
-    \ 'cmd': {server_info->['clangd']},
-    \ 'allowlist': ['c', 'cpp', 'objc', 'objcpp', 'cuda'],
-    \ })
-  au FileType c,cpp,objc,objcpp,cuda setlocal omnifunc=lsp#complete
-endif
-
-if executable('rust-analyzer')
-  au User lsp_setup call lsp#register_server({
-    \ 'name': 'rust-analyzer',
-    \ 'cmd': {server_info->['rust-analyzer']},
-    \ 'allowlist': ['rust'],
-    \ })
-  au FileType rust setlocal omnifunc=lsp#complete
-endif
-
-if executable('pyls')
-  au User lsp_setup call lsp#register_server({
-    \ 'name': 'pyls',
-    \ 'cmd': {server_info->['pyls']},
-    \ 'allowlist': ['python'],
-    \ })
-  au FileType python setlocal omnifunc=lsp#complete
-endif
-
-if executable('typescript-language-server')
-  au User lsp_setup call lsp#register_server({
-    \ 'name': 'typescript-language-server',
-    \ 'cmd': {server_info->['typescript-language-server', '--stdio']},
-    \ 'allowlist': ['javascript', 'typescript'],
-    \ })
-  au FileType javascript,typescript setlocal omnifunc=lsp#complete
-endif
+call Lsp(['clangd'], ['c', 'cpp', 'objc', 'objcpp', 'cuda'])
+call Lsp(['rust-analyzer'], ['rust'])
+call Lsp(['pyls'], ['python'])
+call Lsp(['typescript-language-server', '--stdio'], ['javascript',
+  \ 'typescript'])
 
 syntax on
 filetype plugin indent on
