@@ -200,15 +200,6 @@ function! Glg(range, line1, line2)
   endif
 endfunction
 
-function! Paste(suffix)
-  let l:paste_mode = 'p'
-  if col(".") == 1
-    let l:paste_mode = 'P'
-  endif
-
-  exe ":normal! " . l:paste_mode . a:suffix
-endfunction
-
 " Commands
 " ========
 com! Cl :call CleanMe()
@@ -264,7 +255,7 @@ nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>v :so $MYVIMRC<CR>
 nnoremap <Leader>x :set textwidth=
-nnoremap <Leader>p :call Paste('`[v`]=`]\<Right>')<CR>
+nnoremap <Leader>vs `[v`]
 nnoremap <Leader>h :noh<CR>
 nnoremap <Leader>f :FZF<CR>
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
