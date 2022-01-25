@@ -323,7 +323,6 @@ au! FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au! FileType mlir setlocal commentstring=//\ %s
 au! FileType cpp setlocal commentstring=//\ %s | set comments^=:///
 
-au! VimEnter * call setreg('a', "")
 au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " Syntax and colors
