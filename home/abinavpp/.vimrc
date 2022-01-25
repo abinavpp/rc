@@ -284,60 +284,31 @@ inoremap # d#<Left><BS><Right>
 
 " Set
 " ===
-set t_Co=256
-set notitle
-set termguicolors " For highlight guixx in xterm.
-set background=dark
-set ruler
-set noshowmode
-set nowrap
-set number relativenumber
-
-set ttimeoutlen=50
-set scrolloff=5
-set backspace=2
-
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
-set smartindent
-set smarttab
-set expandtab
-set textwidth=80
-
-set laststatus=2
-set pastetoggle=<F2>
+set rtp+=~/.fzf directory=~/.cache/vim/swap//
+set notitle ruler noshowmode nowrap number relativenumber
+set hlsearch incsearch splitright diffopt+=vertical autoread
+set tabstop=2 shiftwidth=2 softtabstop=2 smartindent smarttab expandtab
+set textwidth=80 scrolloff=5 backspace=2
 set completeopt=noselect,menuone,preview
-set autoread
-set diffopt+=vertical
 set clipboard^=unnamed,unnamedplus
+set termguicolors background=dark
 set mouse=a
-set hlsearch
-set incsearch
-set splitright
-set ignorecase
-set smartcase
-set rtp+=~/.fzf
-set directory=~/.cache/vim/swap//
 
-" Use %#BoldStatusLine#foobar%#StatusLine to add bold texts to our statusline.
-set statusline =
-set statusline +=\ %{mode()}
-" Set statusline +=\ %{expand('%:p:h:t')}/%t " Short path
-set statusline +=\ %<%F " Full path; '<' truncates the path.
-set statusline +=\ \ %{exists('g:loaded_tagbar')?
+set laststatus=2 statusline=
+set statusline+=\ %{mode()}
+set statusline+=\ %<%F " Full path; '<' truncates the path.
+set statusline+=\ \ %{exists('g:loaded_tagbar')?
       \tagbar#currenttag('%s','','%f'):''}
-set statusline +=%m " Modified flag
-set statusline +=\ %r " Readonly flag
-
-set statusline +=%=
-set statusline +=%{exists('g:loaded_fugitive')?fugitive#statusline():''}
-set statusline +=\ %{&ff} " File format
-set statusline +=%y " File type
-set statusline +=[%{strlen(&fenc)?&fenc:'none'}] " File encoding
-set statusline +=\ %v " Column number
-set statusline +=\ %l " Current line
-set statusline +=/%L " Total lines
+set statusline+=%m " Modified flag
+set statusline+=\ %r " Read-only flag
+set statusline+=%=
+set statusline+=%{exists('g:loaded_fugitive')?fugitive#statusline():''}
+set statusline+=\ %{&ff} " File format
+set statusline+=%y " File type
+set statusline+=[%{strlen(&fenc)?&fenc:'none'}] " File encoding
+set statusline+=\ %v " Column number
+set statusline+=\ %l " Current line
+set statusline+=/%L " Total lines
 
 au! BufRead,BufNewFile *.cl set filetype=c
 au! BufRead,BufNewFile *.hip set filetype=cpp
