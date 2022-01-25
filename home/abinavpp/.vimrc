@@ -286,13 +286,11 @@ inoremap # d#<Left><BS><Right>
 " ===
 set rtp+=~/.fzf directory=~/.cache/vim/swap//
 set notitle ruler noshowmode nowrap number relativenumber
-set hlsearch incsearch splitright diffopt+=vertical autoread
+set hlsearch incsearch ignorecase smartcase completeopt=noselect,menuone,preview
+set splitright diffopt+=vertical autoread ttimeoutlen=50
 set tabstop=2 shiftwidth=2 softtabstop=2 smartindent smarttab expandtab
 set textwidth=80 scrolloff=5 backspace=2
-set completeopt=noselect,menuone,preview
-set clipboard^=unnamed,unnamedplus
-set termguicolors background=dark
-set mouse=a
+set clipboard^=unnamed,unnamedplus mouse=a termguicolors background=dark
 
 set laststatus=2 statusline=
 set statusline+=\ %{mode()}
