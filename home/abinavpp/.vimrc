@@ -222,7 +222,7 @@ com! Dcl :call DelCommentLines()
 com! Df :call DiffToggle()
 com! Wr :set wrap!
 com! Li :set list!
-au! filetype c,cpp,cuda com! Cp :call CPair()
+au! FileType c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
 " ========
@@ -318,14 +318,14 @@ au! BufRead,BufNewFile *.mlir set filetype=mlir
 au! BufRead,BufNewFile lit.*cfg set filetype=python
 au! BufRead,BufNewFile *.td set filetype=tablegen
 au! BufRead,BufNewFile *.{inc,def} set filetype=cpp
-au! BufNewFile,BufRead *.c.* set filetype=rtl
+au! BufRead,BufNewFile *.c.* set filetype=rtl
 au! BufRead,BufNewFile *.{gvy,Jenkinsfile} set filetype=groovy
 
 au! FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au! FileType mlir setlocal commentstring=//\ %s
 au! FileType cpp setlocal commentstring=//\ %s | set comments^=:///
 
-au! vimenter * call setreg('a', "")
+au! VimEnter * call setreg('a', "")
 au! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " Syntax and colors
@@ -341,12 +341,12 @@ filetype plugin indent on
 colo CandyPaper2
 hi link llvmKeyword Special
 
-au! vimenter * highlight trailingSpace ctermbg=red guibg=red
+au! VimEnter * highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
 
-au! insertenter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
+au! InsertEnter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
   \. ' ctermfg=016 guifg=#000000'
-au! insertleave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
+au! InsertLeave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
   \. ' ctermfg=016 guifg=#000000'
 
 " .post-vimrc
