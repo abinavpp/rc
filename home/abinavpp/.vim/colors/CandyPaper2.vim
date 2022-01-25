@@ -198,15 +198,15 @@ call s:fg("WarningMsg", s:green)
 call s:bg("Search", s:violet)
 call s:bg("IncSearch", s:cheddar)
 
-call s:col("StatusLine", s:black, s:yellow)
+call s:col("StatusLine", s:black, s:cheddar)
 call s:col("StatusLineNC", s:white, s:darkestgrey)
 
 call s:col("TabLine", s:white, s:darkestgrey)
 call s:col("TabLineFill", s:white, s:darkestgrey)
-call s:col("TabLineSel", s:white, s:cheddar)
+call s:col("TabLineSel", s:black, s:cheddar)
 
 call s:bg("PMenu", "NONE")
-call s:bg("PMenuSel", s:cheddar)
+call s:col("PMenuSel", s:black, s:cheddar)
 call s:bg("PMenuSBar", s:cheddar)
 call s:bg("PMenuThumb", "NONE")
 
@@ -281,3 +281,8 @@ call s:fg("Todo", s:purple)
 call s:fg("Comment", s:darkgrey)
 call s:fg("Title", s:darkgrey)
 call s:fg("SpecialComment", s:darkgrey)
+
+au VimEnter * highlight trailingSpace ctermbg=red guibg=red
+  \| match trailingSpace /\s\+\%#\@<!$/
+au InsertLeave * call s:col("StatusLine", s:black, s:cheddar)
+au InsertEnter * call s:col("StatusLine", s:black, s:green)

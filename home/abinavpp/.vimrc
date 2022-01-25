@@ -339,14 +339,6 @@ filetype plugin indent on
 colo CandyPaper2
 hi link llvmKeyword Special
 
-au! VimEnter * highlight trailingSpace ctermbg=red guibg=red
-  \| match trailingSpace /\s\+\%#\@<!$/
-
-au! InsertEnter * exe 'hi! StatusLine ctermbg=047 guibg=#00ff5f'
-  \. ' ctermfg=016 guifg=#000000'
-au! InsertLeave * exe 'hi! StatusLine ctermbg=220 guibg=#ffdf00'
-  \. ' ctermfg=016 guifg=#000000'
-
 " .post-vimrc
 " ===========
 if filereadable($HOME . "/.post-vimrc")
