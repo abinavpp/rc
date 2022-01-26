@@ -18,14 +18,16 @@ let s:orange = "#d78700"
 let s:lightgreen = "#5fffaf"
 let s:green = "#00d75f"
 let s:darkgreen = "#00875f"
+let s:darkergreen = "#005f00"
 let s:_darkestgreen = "#002000"
 let s:teal = "#008080"
 
 let s:aqua = "#00d7ff"
 let s:darkblue = "#000080"
 let s:blue = "#0087d7"
-let s:purple = "#af5fd7"
-let s:violet = "#800080"
+let s:violet = "#af5fd7"
+let s:purple = "#800080"
+let s:darkpurple = "#5f005f"
 
 let s:white = "#ffffff"
 let s:lightergrey = "#e4e4e4"
@@ -44,7 +46,7 @@ if g:color_theme == 'light'
 
   let s:aqua = "#0087ff"
   let s:blue = "#0000d7"
-  let s:purple = "#af00d7"
+  let s:violet = "#af00d7"
 
   let s:darkgrey = "#626262"
   let s:lightgrey = "#c6c6c6"
@@ -184,7 +186,7 @@ endfunction
 
 call s:bg("Normal", "NONE")
 call s:bg("Conceal", "NONE")
-call s:bg("Visual", s:violet)
+call s:bg("Visual", s:purple)
 call s:col("MatchParen", s:black, s:darkgreen)
 call s:bg("lspReference", s:darkergrey)
 call s:fg("NonText", s:darkgreen)
@@ -195,22 +197,22 @@ call s:fg("MoreMsg", s:orange)
 call s:fg("Question", s:orange)
 call s:fg("WarningMsg", s:green)
 
-call s:bg("Search", s:violet)
+call s:bg("Search", s:purple)
 call s:bg("IncSearch", s:cheddar)
 
-call s:col("StatusLine", s:black, s:cheddar)
+call s:col("StatusLine", s:white, s:darkpurple)
 call s:col("StatusLineNC", s:white, s:darkestgrey)
 
 call s:col("TabLine", s:white, s:darkestgrey)
 call s:col("TabLineFill", s:white, s:darkestgrey)
-call s:col("TabLineSel", s:black, s:cheddar)
+call s:col("TabLineSel", s:white, s:darkpurple)
 
 call s:bg("PMenu", "NONE")
-call s:col("PMenuSel", s:black, s:cheddar)
-call s:bg("PMenuSBar", s:cheddar)
+call s:col("PMenuSel", s:white, s:darkpurple)
+call s:bg("PMenuSBar", s:darkpurple)
 call s:bg("PMenuThumb", "NONE")
 
-call s:bg("Folded", s:purple)
+call s:bg("Folded", s:violet)
 call s:bg("FoldColumn", "NONE")
 
 call s:bg("ColorColumn", s:red)
@@ -258,9 +260,9 @@ call s:fg("StorageClass", s:teal)
 call s:fg("Function", "NONE")
 call s:fg("Identifier", "NONE")
 
-call s:fg("Keyword", s:purple)
-call s:fg("Conditional", s:purple)
-call s:fg("Repeat", s:purple)
+call s:fg("Keyword", s:violet)
+call s:fg("Conditional", s:violet)
+call s:fg("Repeat", s:violet)
 call s:fg("Statement", s:blue)
 call s:fg("Operator", s:blue)
 call s:fg("Typedef", s:blue)
@@ -276,7 +278,7 @@ call s:fg("Include", s:pink)
 call s:fg("Special", s:pink)
 call s:fg("Debug", s:red)
 call s:fg("Error", s:red)
-call s:fg("Todo", s:purple)
+call s:fg("Todo", s:violet)
 
 call s:fg("Comment", s:darkgrey)
 call s:fg("Title", s:darkgrey)
@@ -284,5 +286,5 @@ call s:fg("SpecialComment", s:darkgrey)
 
 au VimEnter * highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
-au InsertLeave * call s:col("StatusLine", s:black, s:cheddar)
-au InsertEnter * call s:col("StatusLine", s:black, s:green)
+au InsertLeave * call s:col("StatusLine", s:white, s:darkpurple)
+au InsertEnter * call s:col("StatusLine", s:white, s:darkergreen)
