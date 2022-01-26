@@ -223,7 +223,7 @@ com! Df :call DiffToggle()
 com! Wr :set wrap!
 com! Li :set list!
 com! Sv :so $MYVIMRC
-au! FileType c,cpp,cuda com! Cp :call CPair()
+au FileType c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
 " ========
@@ -308,22 +308,22 @@ set statusline+=\ %v " Column number
 set statusline+=\ %l " Current line
 set statusline+=/%L " Total lines
 
-au! BufRead,BufNewFile *.cl set filetype=c
-au! BufRead,BufNewFile *.hip set filetype=cpp
-au! BufRead,BufNewFile *.s set filetype=xasm
-au! BufRead,BufNewFile *.{ll,mir} set filetype=llvm
-au! BufRead,BufNewFile *.mlir set filetype=mlir
-au! BufRead,BufNewFile lit.*cfg set filetype=python
-au! BufRead,BufNewFile *.td set filetype=tablegen
-au! BufRead,BufNewFile *.{inc,def} set filetype=cpp
-au! BufRead,BufNewFile *.c.* set filetype=rtl
-au! BufRead,BufNewFile *.{gvy,Jenkinsfile} set filetype=groovy
+au BufRead,BufNewFile *.cl set filetype=c
+au BufRead,BufNewFile *.hip set filetype=cpp
+au BufRead,BufNewFile *.s set filetype=xasm
+au BufRead,BufNewFile *.{ll,mir} set filetype=llvm
+au BufRead,BufNewFile *.mlir set filetype=mlir
+au BufRead,BufNewFile lit.*cfg set filetype=python
+au BufRead,BufNewFile *.td set filetype=tablegen
+au BufRead,BufNewFile *.{inc,def} set filetype=cpp
+au BufRead,BufNewFile *.c.* set filetype=rtl
+au BufRead,BufNewFile *.{gvy,Jenkinsfile} set filetype=groovy
 
-au! FileType llvm setlocal commentstring=;\ %s | set textwidth=0
-au! FileType mlir setlocal commentstring=//\ %s
-au! FileType cpp setlocal commentstring=//\ %s | set comments^=:///
+au FileType llvm setlocal commentstring=;\ %s | set textwidth=0
+au FileType mlir setlocal commentstring=//\ %s
+au FileType cpp setlocal commentstring=//\ %s | set comments^=:///
 
-au! CompleteDone * if pumvisible() == 0 | pclose | endif
+au CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " Syntax and colors
 " =================
