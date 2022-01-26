@@ -10,17 +10,17 @@ let g:colors_name = "CandyPaper2"
 " _xxx colors are beyond the 256 color spectrum.
 let s:yellow = "#ffdf00"
 let s:cheddar = "#d75f00"
+let s:orange = "#d78700"
+let s:pink = "#d75faf"
 let s:red = "#d70000"
 let s:darkred = "#5f0000"
-let s:pink = "#d75faf"
-let s:orange = "#d78700"
 
 let s:lightgreen = "#5fffaf"
+let s:teal = "#008080"
 let s:green = "#00d75f"
 let s:darkgreen = "#00875f"
 let s:darkergreen = "#005f00"
 let s:_darkestgreen = "#002000"
-let s:teal = "#008080"
 
 let s:aqua = "#00d7ff"
 let s:darkblue = "#000080"
@@ -39,17 +39,22 @@ let s:lightblack = "#121212"
 let s:black = "#000000"
 
 if g:color_theme == 'light'
-  let s:pink = "#d700af"
   let s:orange = "#d75f00"
+  let s:pink = "#d700af"
 
   let s:green = "#00af00"
+  let s:darkergreen = "#00af00"
 
   let s:aqua = "#0087ff"
   let s:blue = "#0000d7"
   let s:violet = "#af00d7"
+  let s:purple = "#ff87ff"
+  let s:darkpurple = "#ff5fff"
 
-  let s:darkgrey = "#626262"
   let s:lightgrey = "#c6c6c6"
+  let s:darkgrey = "#626262"
+  let s:darkergrey = "#585858"
+  let s:darkestgrey = "#4e4e4e"
 endif
 
 " Returns an approximate grey index for the given grey level.
@@ -186,7 +191,7 @@ endfunction
 
 call s:bg("Normal", "NONE")
 call s:bg("Conceal", "NONE")
-call s:bg("Visual", s:purple)
+call s:bg("Visual", s:darkpurple)
 call s:col("MatchParen", s:black, s:darkgreen)
 call s:bg("lspReference", s:darkergrey)
 call s:fg("NonText", s:darkgreen)
@@ -200,28 +205,25 @@ call s:fg("WarningMsg", s:green)
 call s:bg("Search", s:purple)
 call s:bg("IncSearch", s:cheddar)
 
-call s:col("StatusLine", s:white, s:darkpurple)
-call s:col("StatusLineNC", s:white, s:darkestgrey)
+call s:bg("StatusLine", s:darkpurple)
+call s:bg("StatusLineNC", s:darkestgrey)
 
-call s:col("TabLine", s:white, s:darkestgrey)
-call s:col("TabLineFill", s:white, s:darkestgrey)
-call s:col("TabLineSel", s:white, s:darkpurple)
+call s:bg("TabLine", s:darkestgrey)
+call s:bg("TabLineFill", s:darkestgrey)
+call s:bg("TabLineSel", s:darkpurple)
 
 call s:bg("PMenu", "NONE")
-call s:col("PMenuSel", s:white, s:darkpurple)
+call s:bg("PMenuSel", s:darkpurple)
 call s:bg("PMenuSBar", s:darkpurple)
 call s:bg("PMenuThumb", "NONE")
 
-call s:bg("Folded", s:violet)
+call s:bg("Folded", s:cheddar)
 call s:bg("FoldColumn", "NONE")
 
-call s:bg("ColorColumn", s:red)
 call s:bg("SignColumn", "NONE")
 call s:fg("LineNr", s:darkgrey)
 call s:bg("VertSplit", "NONE")
 
-call s:col("Cursor", s:black, s:pink)
-call s:col("CursorIM", s:black, s:aqua)
 call s:bg("CursorColumn", "NONE")
 if g:color_theme == "dark"
   call s:bg("CursorLine", s:lightblack)
@@ -286,5 +288,5 @@ call s:fg("SpecialComment", s:darkgrey)
 
 au VimEnter * highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
-au InsertLeave * call s:col("StatusLine", s:white, s:darkpurple)
-au InsertEnter * call s:col("StatusLine", s:white, s:darkergreen)
+au InsertLeave * call s:bg("StatusLine", s:darkpurple)
+au InsertEnter * call s:bg("StatusLine", s:darkergreen)
