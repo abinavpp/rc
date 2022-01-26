@@ -222,6 +222,7 @@ com! Dcl :call DelCommentLines()
 com! Df :call DiffToggle()
 com! Wr :set wrap!
 com! Li :set list!
+com! Sv :so $MYVIMRC
 au! FileType c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
@@ -253,8 +254,7 @@ nnoremap <Leader>ss :call SpellToggle()<CR>
 nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
 nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
-nnoremap <Leader>v :so $MYVIMRC<CR>
-nnoremap <Leader>x :set textwidth=
+nnoremap <Leader>sx :set textwidth=
 nnoremap <Leader>vs `[v`]
 nnoremap <Leader>h :noh<CR>
 nnoremap <Leader>f :FZF<CR>
