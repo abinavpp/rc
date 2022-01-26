@@ -27,7 +27,7 @@ let fortran_free_source = 1
 let fortran_have_tabs = 1
 let fortran_more_precise = 1
 let fortran_do_enddo = 1
-let s:trailing_space_state = 1
+let s:trailing_space_match_state = 1
 let g:color_theme = "dark"
 let g:tagbar_left = 1
 let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0,
@@ -73,12 +73,12 @@ function! DelCommentLines()
 endfunction
 
 function! TrailingSpaceMatch()
-  if s:trailing_space_state == 0
-    let s:trailing_space_state = 1
+  if s:trailing_space_match_state == 0
+    let s:trailing_space_match_state = 1
     match trailingSpace /\s\+\%#\@<!$/
     echo "Trailing-space-match on"
   else
-    let s:trailing_space_state = 0
+    let s:trailing_space_match_state = 0
     match none
     echo "Trailing-space-match off"
   endif
@@ -220,8 +220,6 @@ com! GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
 com! Csi :call CSInv()
 com! Dcl :call DelCommentLines()
 com! Df :call DiffToggle()
-com! Wr :set wrap!
-com! Li :set list!
 com! Sv :so $MYVIMRC
 au FileType c,cpp,cuda com! Cp :call CPair()
 
@@ -250,11 +248,13 @@ call Map("\eh", "^")
 call Map("\el", "$")
 nnoremap <Leader>w <C-w>
 nnoremap <Leader>sf :set filetype
+nnoremap <Leader>sl :set list!<CR>
 nnoremap <Leader>ss :call SpellToggle()<CR>
-nnoremap <Leader>t :call TrailingSpaceMatch()<CR>
+nnoremap <Leader>st :call TrailingSpaceMatch()<CR>
+nnoremap <Leader>sw :set wrap!<CR>
+nnoremap <Leader>sx :set textwidth=
 nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
-nnoremap <Leader>sx :set textwidth=
 nnoremap <Leader>vs `[v`]
 nnoremap <Leader>h :noh<CR>
 nnoremap <Leader>f :FZF<CR>
