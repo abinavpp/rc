@@ -229,7 +229,6 @@ au FileType c,cpp,cuda com! Cp :call CPair()
 " - https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
 " - https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
 
-nnoremap zz :call Save()<CR>
 nnoremap ZZ :q<CR>
 nnoremap U <C-r>
 nnoremap V :normal 0v$<CR>
@@ -246,23 +245,24 @@ call Map("\ej", "}")
 call Map("\ek", "{")
 call Map("\eh", "^")
 call Map("\el", "$")
-nnoremap <Leader>w <C-w>
-nnoremap <Leader>sf :set filetype
-nnoremap <Leader>sl :set list!<CR>
-nnoremap <Leader>ss :call SpellToggle()<CR>
-nnoremap <Leader>st :call TrailingSpaceMatch()<CR>
-nnoremap <Leader>sw :set wrap!<CR>
-nnoremap <Leader>sx :set textwidth=
+nnoremap <Leader>z :call Save()<CR>
 nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
-nnoremap <Leader>vs `[v`]
 nnoremap <Leader>h :noh<CR>
+nnoremap <Leader>vs `[v`]
+nnoremap <Leader>w <C-w>
 nnoremap <Leader>f :FZF<CR>
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>lD :tab sp<CR>:exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
 nnoremap <Leader>lt :TagbarToggle<CR>
 nnoremap <Leader>lb <C-t>
+nnoremap <Leader>sf :set filetype
+nnoremap <Leader>sl :set list!<CR>
+nnoremap <Leader>ss :call SpellToggle()<CR>
+nnoremap <Leader>st :call TrailingSpaceMatch()<CR>
+nnoremap <Leader>sw :set wrap!<CR>
+nnoremap <Leader>sx :set textwidth=
 
 " FIXME! This is a workaround. The problem:
 " for (...)<CR>
