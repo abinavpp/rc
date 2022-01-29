@@ -58,14 +58,14 @@ function! CleanMe()
   silent! exec '%s/\v[^\x00-\x7F]+//g'
 endfunction
 
-function! DiffToggle()
+function! ToggleDiff()
   if &diff == 0
-   exe 'windo difft'
- else
-   exe 'windo diffo'
- endif
+    exe 'windo difft'
+  else
+    exe 'windo diffo'
+  endif
 
- exe 'wincmd p'
+  exe 'wincmd p'
 endfunction
 
 function! DelCommentLines()
@@ -178,17 +178,11 @@ function! CopyToClipboard(str)
 endfunction
 
 function! FoldIfDef()
-  set foldmarker=#if,#endif
-  set foldmethod=marker
+  set foldmarker=#if,#endif foldmethod=marker
 endfunction
 
-function! SpellToggle()
-  set spell!
-  if &spell == 1
-    echo "Spell-check on"
-  else
-    echo "Spell-check off"
-  endif
+function! ToggleSet(s)
+  exe 'set ' . a:s . '! | set ' . a:s . '?'
 endfunction
 
 function! Glg(range, line1, line2)
@@ -220,7 +214,7 @@ com! Gd :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
 com! GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
 com! Csi :call CSInv()
 com! Dcl :call DelCommentLines()
-com! Df :call DiffToggle()
+com! Df :call ToggleDiff()
 com! Sv :so $MYVIMRC
 au FileType c,cpp,cuda com! Cp :call CPair()
 
@@ -249,7 +243,7 @@ call Map("\eh", "^")
 call Map("\el", "$")
 nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
-nnoremap <Leader>h :noh<CR>
+nnoremap <Leader>h :call ToggleSet('hls')<CR>
 nnoremap <Leader>vs `[v`]
 nnoremap <Leader>w <C-w>
 nnoremap <Leader>a :Files<CR>
@@ -261,7 +255,7 @@ nnoremap <Leader>lt :TagbarToggle<CR>
 nnoremap <Leader>lb <C-t>
 nnoremap <Leader>sf :set filetype
 nnoremap <Leader>sl :set list!<CR>
-nnoremap <Leader>ss :call SpellToggle()<CR>
+nnoremap <Leader>ss :call ToggleSet('spell')<CR>
 nnoremap <Leader>st :call TrailingSpaceMatch()<CR>
 nnoremap <Leader>sw :set wrap!<CR>
 nnoremap <Leader>sx :set textwidth=
@@ -288,7 +282,7 @@ inoremap # d#<Left><BS><Right>
 " ===
 set directory=~/.cache/vim/swap//
 set notitle ruler noshowmode nowrap number relativenumber
-set hlsearch incsearch ignorecase smartcase completeopt=noselect,menuone,preview
+set incsearch ignorecase smartcase completeopt=noselect,menuone,preview
 set splitright diffopt+=vertical autoread ttimeoutlen=50 hidden
 set tabstop=2 shiftwidth=2 softtabstop=2 smartindent smarttab expandtab
 set textwidth=80 scrolloff=5 backspace=2
