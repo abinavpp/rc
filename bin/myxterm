@@ -13,13 +13,15 @@ cmd="xterm
   -xrm 'xterm*vt100.utf8: true'
   -xrm 'xterm*vt100.utf8Fonts: true'
   -xrm 'xterm*vt100.utf8Title: true'
-  -xrm 'xterm*metaSendsEscape: true'
   -xrm 'xterm*mainMenu*background: black'
   -xrm 'xterm*mainMenu*foreground: white'
   -xrm 'xterm*vtMenu*background: black'
   -xrm 'xterm*vtMenu*foreground: white'
   -xrm 'xterm*fontMenu*background: black'
-  -xrm 'xterm*fontMenu*foreground: white'"
+  -xrm 'xterm*fontMenu*foreground: white'
+  -xrm 'xterm*metaSendsEscape: true'
+  -xrm 'xterm*selectToClipboard: true'"
+
 
 # To send alt+ keybindings as <esc><something> (which is how most modern
 # linux-terminals behave)
