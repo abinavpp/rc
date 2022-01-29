@@ -260,6 +260,9 @@ set splitright diffopt+=vertical autoread ttimeoutlen=50 hidden
 set tabstop=2 shiftwidth=2 softtabstop=2 smartindent smarttab expandtab
 set textwidth=80 scrolloff=5 backspace=2
 set clipboard^=unnamed,unnamedplus mouse=a termguicolors background=dark
+au FileType llvm setlocal commentstring=;\ %s | set textwidth=0
+au FileType mlir setlocal commentstring=//\ %s
+au FileType cpp setlocal commentstring=//\ %s | set comments^=:///
 
 set laststatus=2 statusline=
 set statusline+=\ %{mode()}\ %<%F " Mode and truncated path
@@ -273,19 +276,14 @@ set statusline+=[%{strlen(&fenc)?&fenc:'none'}] " File encoding
 set statusline+=\ %v\ %l/%L " Column, line and total lines
 
 au BufRead,BufNewFile *.cl set filetype=c
-au BufRead,BufNewFile *.hip set filetype=cpp
+au BufRead,BufNewFile *.{hip,inc,def} set filetype=cpp
 au BufRead,BufNewFile *.s set filetype=xasm
 au BufRead,BufNewFile *.{ll,mir} set filetype=llvm
 au BufRead,BufNewFile *.mlir set filetype=mlir
 au BufRead,BufNewFile lit.*cfg set filetype=python
 au BufRead,BufNewFile *.td set filetype=tablegen
-au BufRead,BufNewFile *.{inc,def} set filetype=cpp
 au BufRead,BufNewFile *.c.* set filetype=rtl
 au BufRead,BufNewFile *.{gvy,Jenkinsfile} set filetype=groovy
-
-au FileType llvm setlocal commentstring=;\ %s | set textwidth=0
-au FileType mlir setlocal commentstring=//\ %s
-au FileType cpp setlocal commentstring=//\ %s | set comments^=:///
 
 au CompleteDone * if pumvisible() == 0 | pclose | endif
 
