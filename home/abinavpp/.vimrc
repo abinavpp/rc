@@ -225,7 +225,6 @@ call Map('c', '"_c') | call Map('C', '"_C')
 nnoremap ZZ :q<CR>
 nnoremap <Leader>z :call Save()<CR>
 nnoremap U <C-r>
-nnoremap V :normal 0v$<CR>
 nnoremap <Leader>vs `[v`]
 nnoremap <Leader>h :call ToggleSet('hls')<CR>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
