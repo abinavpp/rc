@@ -134,7 +134,6 @@ endfunction
 
 function! MapLsp()
   nnoremap <buffer><Leader>ld :LspDefinition<CR>
-  nnoremap <buffer><Leader>lD :tab split<CR>:LspDefinition<CR>
   nnoremap <buffer><Leader>ls :LspDeclaration<CR>
   nnoremap <buffer><Leader>lr :LspReference<CR>
   nnoremap <buffer><Leader>lR :LspRename<CR>
@@ -237,7 +236,6 @@ nnoremap <Leader>w <C-w>
 nnoremap <Leader>a :Files<CR>
 nnoremap <Leader>f :Buffers<CR>
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
-nnoremap <Leader>lD :tab sp<CR>:exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
 nnoremap <Leader>lt :TagbarToggle<CR>
 nnoremap <Leader>lb <C-t>
