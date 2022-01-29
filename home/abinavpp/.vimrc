@@ -262,20 +262,15 @@ set textwidth=80 scrolloff=5 backspace=2
 set clipboard^=unnamed,unnamedplus mouse=a termguicolors background=dark
 
 set laststatus=2 statusline=
-set statusline+=\ %{mode()}
-set statusline+=\ %<%F " Full path; '<' truncates the path.
+set statusline+=\ %{mode()}\ %<%F " Mode and truncated path
 set statusline+=\ \ %{exists('g:loaded_tagbar')?
       \tagbar#currenttag('%s','','%f'):''}
-set statusline+=%m " Modified flag
-set statusline+=\ %r " Read-only flag
+set statusline+=%m\ %r " Modified and read-only flag
 set statusline+=%=
 set statusline+=%{exists('g:loaded_fugitive')?fugitive#statusline():''}
-set statusline+=\ %{&ff} " File format
-set statusline+=%y " File type
+set statusline+=\ %{&ff}%y " File format and type
 set statusline+=[%{strlen(&fenc)?&fenc:'none'}] " File encoding
-set statusline+=\ %v " Column number
-set statusline+=\ %l " Current line
-set statusline+=/%L " Total lines
+set statusline+=\ %v\ %l/%L " Column, line and total lines
 
 au BufRead,BufNewFile *.cl set filetype=c
 au BufRead,BufNewFile *.hip set filetype=cpp
