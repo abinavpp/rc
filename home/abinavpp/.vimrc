@@ -220,31 +220,19 @@ au FileType c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
 " ========
-" To understand the alt keybinding issue, see:
-" - https://groups.google.com/forum/#!topic/vim_dev/zmRiqhFfOu8
-" - https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
-
+call Map('<Leader>d', '"_d')
+call Map('x', '"_x') | call Map('X', '"_X')
+call Map('c', '"_c') | call Map('C', '"_C')
 nnoremap ZZ :q<CR>
 nnoremap <Leader>z :call Save()<CR>
 nnoremap U <C-r>
 nnoremap V :normal 0v$<CR>
-nnoremap <Leader>d "_d
-vnoremap <Leader>d "_d
-nnoremap x "_x
-nnoremap X "_X
-nnoremap c "_c
-nnoremap C "_C
-inoremap <C-p> <C-x>
+nnoremap <Leader>vs `[v`]
+nnoremap <Leader>h :call ToggleSet('hls')<CR>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
 nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
-call Map("\ej", "}")
-call Map("\ek", "{")
-call Map("\eh", "^")
-call Map("\el", "$")
 nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
-nnoremap <Leader>h :call ToggleSet('hls')<CR>
-nnoremap <Leader>vs `[v`]
 nnoremap <Leader>w <C-w>
 nnoremap <Leader>a :Files<CR>
 nnoremap <Leader>f :Buffers<CR>
@@ -259,23 +247,8 @@ nnoremap <Leader>ss :call ToggleSet('spell')<CR>
 nnoremap <Leader>st :call TrailingSpaceMatch()<CR>
 nnoremap <Leader>sw :set wrap!<CR>
 nnoremap <Leader>sx :set textwidth=
-
-" FIXME! This is a workaround. The problem:
-" for (...)<CR>
-"   |
-"
-" for (...)
-" {|
-"
-" I.e. braces in a new line always align with the parent indentation. This might
-" be a vim default behaviour for C-style source.
-"
-" FIXME! This is for GNU indent style, but adding under our Gnu() function
-" doesn't work due to delimitMate.
-"
-" Note that the d is just a random character.
+inoremap <C-p> <C-x>
 inoremap { d{<Left><BS><Right>
-" Similarly:
 inoremap # d#<Left><BS><Right>
 
 " Set
