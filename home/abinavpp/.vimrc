@@ -17,6 +17,7 @@ if filereadable($HOME . "/.vim/autoload/plug.vim")
   Plug 'https://github.com/majutsushi/tagbar'
   Plug 'https://github.com/prabirshrestha/vim-lsp'
   Plug 'https://github.com/junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'https://github.com/junegunn/fzf.vim'
   call plug#end()
 endif
 
@@ -230,6 +231,7 @@ au FileType c,cpp,cuda com! Cp :call CPair()
 " - https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
 
 nnoremap ZZ :q<CR>
+nnoremap <Leader>z :call Save()<CR>
 nnoremap U <C-r>
 nnoremap V :normal 0v$<CR>
 nnoremap <Leader>d "_d
@@ -245,13 +247,13 @@ call Map("\ej", "}")
 call Map("\ek", "{")
 call Map("\eh", "^")
 call Map("\el", "$")
-nnoremap <Leader>z :call Save()<CR>
 nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>h :noh<CR>
 nnoremap <Leader>vs `[v`]
 nnoremap <Leader>w <C-w>
-nnoremap <Leader>f :FZF<CR>
+nnoremap <Leader>a :Files<CR>
+nnoremap <Leader>f :Buffers<CR>
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>lD :tab sp<CR>:exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
@@ -284,10 +286,10 @@ inoremap # d#<Left><BS><Right>
 
 " Set
 " ===
-set rtp+=~/.fzf directory=~/.cache/vim/swap//
+set directory=~/.cache/vim/swap//
 set notitle ruler noshowmode nowrap number relativenumber
 set hlsearch incsearch ignorecase smartcase completeopt=noselect,menuone,preview
-set splitright diffopt+=vertical autoread ttimeoutlen=50
+set splitright diffopt+=vertical autoread ttimeoutlen=50 hidden
 set tabstop=2 shiftwidth=2 softtabstop=2 smartindent smarttab expandtab
 set textwidth=80 scrolloff=5 backspace=2
 set clipboard^=unnamed,unnamedplus mouse=a termguicolors background=dark

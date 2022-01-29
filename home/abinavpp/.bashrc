@@ -174,7 +174,7 @@ function vim {
 
   # If $vim_bin has no client-server feature.
   if ! $vim_bin --version | /bin/grep -q -P '\+clientserver'; then
-    $vim_bin -i NONE -p "$@"
+    $vim_bin -i NONE "$@"
     return
   fi
 
@@ -183,7 +183,7 @@ function vim {
     return
   fi
 
-  local cmd="$vim_bin -i NONE -p --servername $(tty)"
+  local cmd="$vim_bin -i NONE --servername $(tty)"
   local bg_pid=$(pgrep -f "$cmd")
   local args="" arg=""
 
@@ -191,19 +191,15 @@ function vim {
   # vim.
   for arg in "$@"; do
     if [[ ! -e $arg  && $bg_pid ]]; then
-      $vim_bin -i NONE -p "$@"
+      $vim_bin -i NONE "$@"
       return
     fi
   done
 
   if [[ $bg_pid ]]; then
-    local bg_pwd=$(pwdx $bg_pid | awk '{print $2}')/
     for arg in "$@"; do
       arg=$(realpath "$arg")
-
-      # If path is under $bg_pwd, then access it relative so that tab heading
-      # will be neater.
-      $cmd --remote-send "<Esc>:tabnew ${arg##$bg_pwd} <CR>"
+      $cmd --remote-send "<Esc>:e $arg<CR>"
     done
 
     fg $(jobs -l | gawk -v "pid=$bg_pid" '$2 == pid {print $1}' | \
