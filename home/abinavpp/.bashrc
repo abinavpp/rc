@@ -277,19 +277,9 @@ export FZF_DEFAULT_OPTS="--color 16"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
 edelimvar ':' PATH -a "."
-epath -p ~/bin ~/.local/bin ~/rc/bin
+epath -p ~/bin ~/.local/bin ~/rc/bin ~/.vim/plugged/fzf/bin
 
-# Enable fzf for Arch Linux.
-. /usr/share/fzf/completion.bash &> /dev/null
-. /usr/share/fzf/key-bindings.bash &> /dev/null
-
-# Enable fzf for Ubuntu.
-. /usr/share/doc/fzf/examples/completion.bash &> /dev/null
-. /usr/share/doc/fzf/examples/key-bindings.bash &> /dev/null
-
-# Enable fzf for local installation.
-. ~/.fzf.bash &> /dev/null
-
+. ~/.vim/plugged/fzf/shell/key-bindings.bash &> /dev/null
 . /usr/share/bash-completion/completions/git &> /dev/null
 . /usr/share/bash-completion/completions/man &> /dev/null
 . /usr/share/bash-completion/completions/pacman &> /dev/null
