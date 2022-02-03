@@ -277,7 +277,7 @@ export FZF_DEFAULT_OPTS="--color 16"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
 edelimvar ':' PATH -a "."
-epath -p ~/bin ~/.local/bin ~/rc/bin ~/.vim/plugged/fzf/bin
+edelimvar ':' PATH -p ~/bin ~/.local/bin ~/rc/bin ~/.vim/plugged/fzf/bin
 
 . ~/.vim/plugged/fzf/shell/key-bindings.bash &> /dev/null
 . /usr/share/bash-completion/completions/git &> /dev/null
