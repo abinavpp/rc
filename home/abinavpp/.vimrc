@@ -31,6 +31,7 @@ let fortran_do_enddo = 1
 let s:trailing_space_match_state = 1
 let g:color_theme = "dark"
 let g:tagbar_left = 1
+let g:tagbar_show_linenumbers = 2
 let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0,
   \ 'relative': v:true, 'yoffset': 1.0 } }
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],
