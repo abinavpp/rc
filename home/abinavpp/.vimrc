@@ -185,7 +185,15 @@ function! ToggleSet(s)
   exe 'set ' . a:s . '! | set ' . a:s . '?'
 endfunction
 
-function! Glg(range, line1, line2)
+function! Gdiff(a)
+  if a:a == ""
+    exe 'Gdiffsplit | wincmd l | wincmd H'
+  else
+    exe 'Gdiffsplit ' . a:a . ' | wincmd h'
+  endif
+endfunction
+
+function! Glog(range, line1, line2)
   if a:range == 0
     execute '0Gllog!'
   elseif a:range == 1
@@ -208,10 +216,11 @@ com! Fif :call FoldIfDef()
 com! Cdb :lcd %:p:h
 com! Cds :call Cds()
 com! Gbl :Git blame
-com! -range Glg call Glg(<range>, <line1>, <line2>)
+com! -range Glg call Glog(<range>, <line1>, <line2>)
 com! Gr :Gedit
-com! Gd :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
-com! GD :Gdiffsplit <bar> :wincmd l <bar> :wincmd H
+com! -nargs=? Gd :call Gdiff("<args>")
+com! -nargs=? GD :call Gdiff("<args>")
+com! Gd1 :call Gdiff("HEAD~1")
 com! Csi :call CSInv()
 com! Dcl :call DelCommentLines()
 com! Df :call ToggleDiff()
