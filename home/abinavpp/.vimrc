@@ -269,7 +269,7 @@ set textwidth=80 scrolloff=5 backspace=2
 set clipboard^=unnamed,unnamedplus mouse=a termguicolors background=dark
 au FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au FileType mlir setlocal commentstring=//\ %s
-au FileType cpp setlocal commentstring=//\ %s | set comments^=:///
+au FileType cpp,tablegen setlocal commentstring=//\ %s | set comments^=:///
 
 set laststatus=2 statusline=
 set statusline+=\ %{mode()}\ %<%F " Mode and truncated path
