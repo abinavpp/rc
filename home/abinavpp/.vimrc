@@ -232,6 +232,7 @@ au FileType c,cpp,cuda com! Cp :call CPair()
 call Map('<Leader>d', '"_d')
 call Map('x', '"_x') | call Map('X', '"_X')
 call Map('c', '"_c') | call Map('C', '"_C')
+call Map('I', '^') | call Map('A', '$')
 nnoremap ZZ :q<CR>
 nnoremap <Leader>z :call Save()<CR>
 nnoremap U <C-r>
