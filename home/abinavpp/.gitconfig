@@ -1,9 +1,10 @@
 [alias]
   cfl = config --local -l
   cfg = config --global -l
-  lg0 = log --oneline
-  sh0 = show --no-patch --oneline
-  sh1 = show --stat --oneline
+  lg = log --oneline
+  lgg = log --graph --oneline
+  sh = show --no-patch --oneline
+  shs = show --stat --oneline
   st = status
   cm = commit
   cma = commit --amend
