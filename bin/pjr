@@ -2,17 +2,12 @@
 
 pj=$1; shift
 
-bin_dir="$HOME/pj/install/$pj/bin"
-[[ ! -d "$bin_dir" ]] && bin_dir="$HOME/pj/build/$pj/bin"
+bin_dir="$HOME/pj/build/$pj/bin"
+lib_dir="$HOME/pj/build/$pj/lib"
+include_dir="$HOME/pj/build/$pj/include"
 
-lib_dir="$HOME/pj/install/$pj/lib"
-[[ ! -d "$lib_dir" ]] && lib_dir="$HOME/pj/build/$pj/lib"
+[[ -d $bin_dir ]] && export PATH="$bin_dir:$PATH"
+[[ -d $lib_dir ]] && export LD_LIBRARY_PATH="$lib_dir:$LD_LIBRARY_PATH"
+[[ -d $include_dir ]] && export CPATH="$include_dir:$CPATH"
 
-include_dir="$HOME/pj/install/$pj/include"
-[[ ! -d "$include_dir" ]] && include_dir="$HOME/pj/build/$pj/include"
-
-[[ ! -d $bin_dir ]] && export PATH="$bin_dir:$PATH"
-[[ ! -d $lib_dir ]] && export LD_LIBRARY_PATH="$lib_dir:$LD_LIBRARY_PATH"
-[[ ! -d $include_dir ]] && export CPATH="$include_dir:$CPATH"
-
-bash -c "$@"
+"$@"
