@@ -1,0 +1,8 @@
+#! /bin/bash
+
+[[ $# -ne 2 ]] && exit 1
+
+f=$1 t=$2
+git checkout $f
+git checkout -b mt-$t
+git merge -m "Merge $t into $f" --no-edit $t
