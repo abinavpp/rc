@@ -8,7 +8,6 @@
   st = status
   cm = commit
   cma = commit --amend
-  cf = "!git add --all; git clang-format; git add --all; git reset"
   ch = checkout
   br = branch
   df = diff
