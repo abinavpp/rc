@@ -1,0 +1,7 @@
+#! /bin/bash
+
+[[ -z $t ]] && t='AMDGPU'
+
+cd ~/pj/llvm-project/llvm
+grep -rPn --color "(defm?|class|multiclass) $@" include/llvm/Target \
+  include/llvm/CodeGen lib/Target/$t

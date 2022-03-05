@@ -1,0 +1,15 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+require "sys/ioctl.ph";
+
+my $inp = join (' ', @ARGV[0 .. $#ARGV]);
+
+my $tty_file = `tty`; chomp($tty_file);
+open(my $tty, ">", $tty_file) or die "$!";
+
+for my $c(split //, $inp) {
+  ioctl($tty, &TIOCSTI, $c);
+}

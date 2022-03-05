@@ -1,0 +1,13 @@
+#! /bin/bash
+
+[[ -z $t ]] && t='AMDGPU'
+
+src="$HOME/pj/llvm-project"
+bld="$HOME/pj/build/rel/llvm-project"
+I="$src/llvm/lib/Target/$t/$t.td"
+
+c="$bld/bin/llvm-tblgen -I $bld/include -I $src/llvm/include -I $src/llvm/lib/Target"
+c+=" -I $src/llvm/lib/Target/$t"
+c+=" -gen-ctags $I -o $src/llvm/tags"
+
+bash -c "$c"
