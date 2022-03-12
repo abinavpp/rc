@@ -4,7 +4,7 @@ function br() { echo; }
 
 cmake --version | head -n 1; br
 ccache --version | head -n 1; br
-clangd --version; br
+clangd --version | head -n 1; br
 clang --version | head -n 1; br
 clang++ --version | head -n 1; br
 ld.lld --version | head -n 1;
