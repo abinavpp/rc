@@ -123,14 +123,18 @@ tztime local {
   format = "%Y-%m-%d [%a] %H:%M:%S"
 }
 
+ipv6 {
+  format_down = ""
+}
+
 wireless _first_ {
   format_up = "W: (%quality at %essid) %ip"
-  format_down = "W: down"
+  format_down = ""
 }
 
 ethernet _first_ {
   format_up = "E: %ip (%speed)"
-  format_down = "E: down"
+  format_down = ""
 }
 
 disk "/" {
@@ -139,6 +143,7 @@ disk "/" {
 
 battery all {
   format = "%status %percentage %remaining"
+  format_down = ""
 }
 
 cpu_usage {
