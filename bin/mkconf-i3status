@@ -56,7 +56,7 @@ function write_memory {
 
 cat <<ENDCAT
 memory {
-  format = "MEM: %available"
+  format = "M: %available"
   threshold_degraded = "1G"
   format_degraded = "MEMORY < %available"
 }
@@ -147,7 +147,7 @@ battery all {
 }
 
 cpu_usage {
-  format = "CPU: %usage"
+  format = "C: %usage"
 }
 
 ENDCAT
