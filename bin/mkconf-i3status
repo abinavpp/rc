@@ -138,7 +138,7 @@ ethernet _first_ {
 }
 
 disk "/" {
-  format = "🖴 %avail"
+  format = "/: %avail"
 }
 
 battery all {
