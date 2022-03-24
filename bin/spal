@@ -1,0 +1,21 @@
+#! /usr/bin/env python3
+
+import sys
+import re
+
+pat = re.compile('^(# )?\*\*\* IR Dump After (?P<pass>.{,30}) .* \*\*\*:?$')
+scope = None
+out = open(sys.argv[1])
+i = -1
+
+with open(sys.argv[1]) as inp:
+    for line in inp:
+        mat = pat.match(line)
+        if mat is not None:
+            i = i + 1
+            out.close()
+            name = f"{i:04d}-{mat['pass']}.ll"
+            out = open(name.replace('/', '|'), 'w+')
+
+        if i != -1:
+            out.write(line)
