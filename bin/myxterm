@@ -21,13 +21,13 @@ cmd="xterm
   -xrm 'XTerm*metaSendsEscape: true'
   -xrm 'XTerm*selectToClipboard: true'"
 
-if [[ $run == 'min' ]]; then
+if [[ $run == '1' ]]; then
+  cmd+="
+    -xrm 'XTerm*faceName: DejaVu Sans Mono:size=12:antialias=true'"
+else
   cmd+="
     -xrm 'XTerm*faceName: DejaVu Sans Mono:size=12:antialias=false'
     -xrm 'XTerm*allowBoldFonts: false'"
-else
-  cmd+="
-    -xrm 'XTerm*faceName: DejaVu Sans Mono:size=12:antialias=true'"
 fi
 
 cmd=$(echo $cmd -T xterm -e /bin/bash)
