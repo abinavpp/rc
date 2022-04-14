@@ -245,6 +245,7 @@ nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>w <C-w>
 nnoremap <Leader>a :Files<CR>
 nnoremap <Leader>f :Buffers<CR>
+nnoremap <Leader>x :bd<CR>
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
 nnoremap <Leader>lt :TagbarToggle<CR>
