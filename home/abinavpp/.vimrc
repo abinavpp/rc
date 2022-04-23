@@ -177,10 +177,6 @@ function! CopyToClipboard(str)
   endif
 endfunction
 
-function! FoldIfDef()
-  set foldmarker=#if,#endif foldmethod=marker
-endfunction
-
 function! ToggleSet(s)
   exe 'set ' . a:s . '! | set ' . a:s . '?'
 endfunction
@@ -212,7 +208,7 @@ com! Vs :call Vp('\*\*\* IR Dump ')
 com! Vl :call Vp('\v^\p+:$')
 com! Vd :call Vp(expand("<cword>") . '.*=')
 com! Gnu :call Gnu()
-com! Fif :call FoldIfDef()
+com! Fif :set foldmarker=#if,#endif foldmethod=marker
 com! Cdb :lcd %:p:h
 com! Cds :call Cds()
 com! Gbl :Git blame
