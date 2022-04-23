@@ -229,7 +229,7 @@ au FileType c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
 " ========
-call Map('<Leader>d', '"_d')
+call Map('<Leader>d', '"_d') | call Map('<Leader>D', '"_D')
 call Map('x', '"_x') | call Map('X', '"_X')
 call Map('c', '"_c') | call Map('C', '"_C')
 call Map('I', '^') | call Map('A', '$')
