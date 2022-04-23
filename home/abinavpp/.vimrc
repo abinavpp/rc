@@ -54,7 +54,7 @@ endif
 
 " Functions
 " =========
-function! CleanMe()
+function! Clean()
   silent! exec '%s/\v\ +$//g'
   silent! exec '%s/\v[^\x00-\x7F]+//g'
 endfunction
@@ -205,7 +205,7 @@ endfunction
 
 " Commands
 " ========
-com! Cl :call CleanMe()
+com! Cl :call Clean()
 com! -nargs=1 R :call FindAMDGPUReg("<args>")
   \ <bar> :call feedkeys("\<Esc>\<Esc>n")
 com! Vs :call Vp('\*\*\* IR Dump ')
