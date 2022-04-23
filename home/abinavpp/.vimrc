@@ -99,11 +99,6 @@ function! Vp(p)
   echo l:n . ': ' . getline(l:n)
 endfunction
 
-function! Gnu()
-  set tabstop=8
-  match none
-endfunction
-
 function! CPair()
   let l:buf = bufname('%')
   let l:pair = system('srcerer ' . l:buf)
@@ -207,7 +202,6 @@ com! -nargs=1 R :call FindAMDGPUReg("<args>")
 com! Vs :call Vp('\*\*\* IR Dump ')
 com! Vl :call Vp('\v^\p+:$')
 com! Vd :call Vp(expand("<cword>") . '.*=')
-com! Gnu :call Gnu()
 com! Fif :set foldmarker=#if,#endif foldmethod=marker
 com! Cdb :lcd %:p:h
 com! Cds :call Cds()
