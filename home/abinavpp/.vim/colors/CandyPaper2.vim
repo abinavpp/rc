@@ -12,6 +12,7 @@ let s:yellow = "#ffdf00"
 let s:cheddar = "#d75f00"
 let s:orange = "#d78700"
 let s:pink = "#d75faf"
+let s:darkpink = "#af005f"
 let s:red = "#d70000"
 let s:darkred = "#5f0000"
 
@@ -202,7 +203,7 @@ call s:fg("MoreMsg", s:orange)
 call s:fg("Question", s:orange)
 call s:fg("WarningMsg", s:green)
 
-call s:bg("Search", s:purple)
+call s:bg("Search", s:darkpink)
 call s:bg("IncSearch", s:cheddar)
 
 call s:bg("StatusLine", s:darkpurple)
@@ -212,10 +213,10 @@ call s:bg("TabLine", s:darkestgrey)
 call s:bg("TabLineFill", s:darkestgrey)
 call s:bg("TabLineSel", s:darkpurple)
 
-call s:bg("PMenu", "NONE")
-call s:bg("PMenuSel", s:darkpurple)
-call s:bg("PMenuSBar", s:darkpurple)
-call s:bg("PMenuThumb", "NONE")
+call s:bg("Pmenu", s:lightblack)
+call s:bg("PmenuSel", s:darkpurple)
+call s:bg("PmenuSbar", s:darkpurple)
+call s:bg("PmenuThumb", "NONE")
 
 call s:bg("Folded", s:cheddar)
 call s:bg("FoldColumn", "NONE")
