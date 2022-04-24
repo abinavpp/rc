@@ -54,6 +54,23 @@ endif
 
 " Functions
 " =========
+function! StatusLine()
+  let l:d = {'n': 'StatusLine', 'c': 'StatusLine', 't': 'StatusLine',
+    \ 'v': 'SLv', 'V': 'SLv', "\<C-V>": 'SLvB', 'i': 'SLi'}
+  let l:c = '%#SLu#'
+  if has_key(l:d, mode())
+    let l:c = '%#' . l:d[mode()] . '#'
+  endif
+  if g:statusline_winid != win_getid(winnr())
+    let l:c = ''
+  endif
+  let l:s = l:c . " %{mode()} %<%F  %{exists('g:loaded_tagbar') ?"
+  let l:s .= "tagbar#currenttag('%s', '', '%f') : ''} %m %r"
+  let l:s .= "%=%{exists('g:loaded_fugitive') ? fugitive#statusline() : ''}"
+  let l:s .= " %{&ff}%y [%{strlen(&fenc) ? &fenc : 'none'}] %v %l/%L"
+  return l:s
+endfunction
+
 function! Clean()
   silent! exec '%s/\v\ +$//g'
   silent! exec '%s/\v[^\x00-\x7F]+//g'
@@ -262,17 +279,7 @@ set clipboard^=unnamed,unnamedplus mouse=a termguicolors background=dark
 au FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au FileType mlir setlocal commentstring=//\ %s
 au FileType cpp,tablegen setlocal commentstring=//\ %s | set comments^=:///
-
-set laststatus=2 statusline=
-set statusline+=\ %{mode()}\ %<%F " Mode and truncated path
-set statusline+=\ \ %{exists('g:loaded_tagbar')?
-      \tagbar#currenttag('%s','','%f'):''}
-set statusline+=%m\ %r " Modified and read-only flag
-set statusline+=%=
-set statusline+=%{exists('g:loaded_fugitive')?fugitive#statusline():''}
-set statusline+=\ %{&ff}%y " File format and type
-set statusline+=[%{strlen(&fenc)?&fenc:'none'}] " File encoding
-set statusline+=\ %v\ %l/%L " Column, line and total lines
+set laststatus=2 statusline=%!StatusLine()
 
 au BufRead,BufNewFile *.cl set filetype=c
 au BufRead,BufNewFile *.{hip,inc,def} set filetype=cpp

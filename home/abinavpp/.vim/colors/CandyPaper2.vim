@@ -208,6 +208,10 @@ call s:bg("IncSearch", s:cheddar)
 
 call s:bg("StatusLine", s:darkpurple)
 call s:bg("StatusLineNC", s:darkestgrey)
+call s:bg("SLv", s:darkblue)
+call s:bg("SLvB", s:teal)
+call s:bg("SLi", s:darkergreen)
+call s:bg("SLu", s:red)
 
 call s:bg("TabLine", s:darkestgrey)
 call s:bg("TabLineFill", s:darkestgrey)
@@ -289,5 +293,3 @@ call s:fg("SpecialComment", s:darkgrey)
 
 au VimEnter * highlight trailingSpace ctermbg=red guibg=red
   \| match trailingSpace /\s\+\%#\@<!$/
-au InsertLeave * call s:bg("StatusLine", s:darkpurple)
-au InsertEnter * call s:bg("StatusLine", s:darkergreen)
