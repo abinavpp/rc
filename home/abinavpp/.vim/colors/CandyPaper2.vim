@@ -219,8 +219,8 @@ call s:bg("TabLineSel", s:darkpurple)
 
 call s:bg("Pmenu", s:lightblack)
 call s:bg("PmenuSel", s:darkpurple)
-call s:bg("PmenuSbar", s:darkpurple)
-call s:bg("PmenuThumb", "NONE")
+call s:bg("PmenuSbar", s:lightblack)
+call s:bg("PmenuThumb", s:darkpurple)
 
 call s:bg("Folded", s:cheddar)
 call s:bg("FoldColumn", "NONE")
