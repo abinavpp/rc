@@ -71,11 +71,6 @@ function! StatusLine()
   return l:s
 endfunction
 
-function! Clean()
-  silent! exec '%s/\v\ +$//g'
-  silent! exec '%s/\v[^\x00-\x7F]+//g'
-endfunction
-
 function! ToggleDiff()
   if &diff == 0
     exe 'windo difft'
@@ -213,7 +208,7 @@ endfunction
 
 " Commands
 " ========
-com! Cl :call Clean()
+com! Cl :sil! exe '%s/\v\ +$//g' <bar> :sil! exe '%s/\v[^\x00-\x7F]+//g'
 com! -nargs=1 R :call FindAMDGPUReg("<args>")
   \ <bar> :call feedkeys("\<Esc>\<Esc>n")
 com! Vs :call Vp('\*\*\* IR Dump ')
