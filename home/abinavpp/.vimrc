@@ -111,14 +111,6 @@ function! Vp(p)
   echo l:n . ': ' . getline(l:n)
 endfunction
 
-function! CPair()
-  let l:buf = bufname('%')
-  let l:pair = system('srcerer ' . l:buf)
-  if l:pair != ""
-    exec 'vsp ' . l:pair
-  endif
-endfunction
-
 function! Cds()
   let l:root = system('srcerer')
   if l:root != ""
@@ -227,7 +219,6 @@ com! Csi :call CSInv()
 com! Dcl :call DelCommentLines()
 com! Df :call ToggleDiff()
 com! Sv :so $MYVIMRC
-au FileType c,cpp,cuda com! Cp :call CPair()
 
 " Mappings
 " ========
