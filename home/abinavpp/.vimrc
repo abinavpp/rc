@@ -111,13 +111,6 @@ function! Vp(p)
   echo l:n . ': ' . getline(l:n)
 endfunction
 
-function! Cds()
-  let l:root = system('srcerer')
-  if l:root != ""
-    exec 'cd ' . l:root
-  endif
-endfunction
-
 function! CSInv()
   if g:color_theme == "light"
     let g:color_theme = 'dark'
@@ -208,7 +201,6 @@ com! Vl :call Vp('\v^\p+:$')
 com! Vd :call Vp(expand("<cword>") . '.*=')
 com! Fif :set foldmarker=#if,#endif foldmethod=marker
 com! Cdb :lcd %:p:h
-com! Cds :call Cds()
 com! Gbl :Git blame
 com! -range Glg call Glog(<range>, <line1>, <line2>)
 com! Gr :Gedit
