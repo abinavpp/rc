@@ -282,7 +282,6 @@ call Lsp(['typescript-language-server', '--stdio'], ['javascript',
 syntax on
 filetype plugin indent on
 colo CandyPaper2
-hi link llvmKeyword Special
 
 " .post-vimrc
 " ===========
