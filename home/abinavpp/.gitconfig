@@ -3,9 +3,10 @@
   cfg = config --global -l
   lg = log --oneline
   lgg = log --graph --oneline
-  sh = show --no-patch --oneline
+  sho = show --no-patch --oneline
   shs = show --stat --oneline
   st = status
+  sh = stash
   cm = commit
   cma = commit --amend
   ch = checkout
