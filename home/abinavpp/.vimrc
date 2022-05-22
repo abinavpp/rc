@@ -206,7 +206,8 @@ com! -range Glg call Glog(<range>, <line1>, <line2>)
 com! Gr :Gedit
 com! -nargs=? Gd :call Gdiff("<args>")
 com! -nargs=? GD :call Gdiff("<args>")
-com! Gd1 :call Gdiff("HEAD~1")
+com! Gd1 :call Gdiff("@~1")
+com! Gd2 :call Gdiff("@~2")
 com! Csi :call CSInv()
 com! Dcl :call DelCommentLines()
 com! Df :call ToggleDiff()
@@ -273,7 +274,7 @@ au CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " Syntax and colors
 " =================
-call Lsp(['clangd'], ['c', 'cpp', 'objc', 'objcpp', 'cuda'])
+call Lsp(['clangd', '-cross-file-rename'], ['c', 'cpp', 'objc', 'objcpp', 'cuda'])
 call Lsp(['rust-analyzer'], ['rust'])
 call Lsp(['pyls'], ['python'])
 call Lsp(['typescript-language-server', '--stdio'], ['javascript',
