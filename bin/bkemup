@@ -106,4 +106,4 @@ if ($opt_dump_size) {
   exit 0;
 }
 
-system("tar", "-c", "-z", "-f", "$host.tar.gz", "-C", "$dest", @backup_paths);
+system("tar", "-c", "-z", "-f", "$dest/$host.tar.gz", @backup_paths);
