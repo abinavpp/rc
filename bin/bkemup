@@ -38,7 +38,8 @@ my @backup_paths = (
   "$ENV{HOME}/rc",
   "$ENV{HOME}/bin",
   "$ENV{HOME}/tst/bkp",
-  "$ENV{HOME}/tst/my",
+  "$ENV{HOME}/tst/run",
+  "$ENV{HOME}/tst/tkt",
   "$ENV{HOME}/www",
 
   "$chrome_config_path/Local State",
