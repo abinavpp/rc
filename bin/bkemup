@@ -28,8 +28,6 @@ sub delete_array_elements {
 
 my $host = hostname();
 
-my $chrome_config_path = "$ENV{HOME}/.config/google-chrome";
-
 my @backup_paths = (
   "$ENV{HOME}/bkp",
   "$ENV{HOME}/doc",
@@ -41,19 +39,7 @@ my @backup_paths = (
   "$ENV{HOME}/tst/run",
   "$ENV{HOME}/tst/tkt",
   "$ENV{HOME}/www",
-
-  "$chrome_config_path/Local State",
-  "$chrome_config_path/First Run",
-  "$chrome_config_path/Default/Bookmarks",
-  "$chrome_config_path/Default/Extensions",
-  "$chrome_config_path/Default/Extension Rules",
-  "$chrome_config_path/Default/Extension State",
-  "$chrome_config_path/Default/Sync Extension Settings",
-  "$chrome_config_path/Default/Preferences",
-  "$chrome_config_path/Default/Secure Preferences",
-  "$chrome_config_path/Default/Local Extension Settings",
-  "$chrome_config_path/Default/Local Storage",
-
+  "$ENV{HOME}/.config/google-chrome",
   "$ENV{HOME}/.mozilla/",
 );
 
