@@ -1,0 +1,6 @@
+#! /bin/bash
+
+refs="$1"; shift
+cmd="${@//%r/%(refname:short)}"
+
+git for-each-ref --format="$cmd" --shell refs/heads/$refs | bash

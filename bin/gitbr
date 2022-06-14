@@ -1,9 +1,0 @@
-#! /bin/bash
-
-branches="${@: -1}";
-set -- "${@:1:$(($#-1))}"
-cmd="$@"
-
-git for-each-ref \
-  --format="git $cmd %(refname:short)" \
-  --shell refs/heads/$branches | bash
