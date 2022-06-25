@@ -239,6 +239,7 @@ nnoremap <Leader>lb <C-t>
 nnoremap <Leader>sf :set filetype
 nnoremap <Leader>sl :set list!<CR>
 nnoremap <Leader>ss :call ToggleSet('spell')<CR>
+nnoremap <Leader>si :call ToggleSet('smartindent')<CR>
 nnoremap <Leader>st :call TrailingSpaceMatch()<CR>
 nnoremap <Leader>sw :set wrap!<CR>
 nnoremap <Leader>sx :set textwidth=
