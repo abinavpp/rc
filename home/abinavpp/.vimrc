@@ -237,11 +237,11 @@ nnoremap <Leader>le :SyntasticCheck<CR>
 nnoremap <Leader>lt :TagbarToggle<CR>
 nnoremap <Leader>lb <C-t>
 nnoremap <Leader>sf :set filetype
-nnoremap <Leader>sl :set list!<CR>
+nnoremap <Leader>sl :call ToggleSet('list')<CR>
 nnoremap <Leader>ss :call ToggleSet('spell')<CR>
+nnoremap <Leader>sw :call ToggleSet('wrap')<CR>
 nnoremap <Leader>si :call ToggleSet('smartindent')<CR>
 nnoremap <Leader>st :call TrailingSpaceMatch()<CR>
-nnoremap <Leader>sw :set wrap!<CR>
 nnoremap <Leader>sx :set textwidth=
 inoremap <C-p> <C-x>
 inoremap { d{<Left><BS><Right>
