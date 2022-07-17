@@ -4,10 +4,10 @@ use File::Basename;
 
 my $this = basename($0);
 
-my $dmesg_cmd = "/bin/dmesg -T ";
+my $dmesg_cmd = "/bin/dmesg -T @ARGV";
 
 if ($this eq 'dmesge') {
-  $dmesg_cmd .= "--level alert,crit,emerg,err "
+  $dmesg_cmd .= " --level alert,crit,emerg,err"
 }
 
 my $dmesg_restrict = `sysctl -n kernel.dmesg_restrict`;
