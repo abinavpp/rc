@@ -84,6 +84,7 @@ define d
   down
 end
 
+set breakpoint pending on
 set follow-fork-mode child
 set detach-on-fork off
 set disassembly intel
