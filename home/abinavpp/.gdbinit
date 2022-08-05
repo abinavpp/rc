@@ -36,8 +36,6 @@ IsPointer()
 
 end
 
-skip -gfi /usr/include/c++/*/bits/*.h
-
 define asm
   layout asm
 end
