@@ -36,6 +36,11 @@ IsPointer()
 
 end
 
+define q
+  set confirm off
+  quit
+end
+
 define asm
   layout asm
 end
