@@ -11,16 +11,6 @@ src('/usr/share/gdb/python/gdb/command/pretty_printers.py')
 src(os.environ['HOME'] +
     '/pj/llvm-project/llvm/utils/gdb-scripts/prettyprinters.py')
 
-class LLDump(gdb.Function):
-  def __init__(self):
-    super(LLDump, self).__init__("llDump")
-
-  def invoke(self, var, name):
-    if var.type.code == gdb.TYPE_CODE_PTR:
-      return 'TODO'
-    else:
-      return 'TODO'
-
 class IsPointer(gdb.Function):
   def __init__(self):
     super(IsPointer, self).__init__("isPointer")
@@ -31,7 +21,6 @@ class IsPointer(gdb.Function):
     else:
       return False
 
-LLDump()
 IsPointer()
 
 end
