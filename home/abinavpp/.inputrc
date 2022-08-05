@@ -5,7 +5,24 @@ set editing-mode vi
 $if mode=vi
   set keymap vi-command
   "\C-l": clear-screen
-
   set keymap vi-insert
   "\C-l": clear-screen
+
+  # See https://sourceware.org/bugzilla/show_bug.cgi?id=15163
+  set keymap vi-insert
+  "\C-x\C-a": tui-switch-mode
+  "\C-xa": tui-switch-mode
+  "\C-xA": tui-switch-mode
+  "\C-x1": tui-delete-other-windows
+  "\C-x2": tui-change-windows
+  "\C-xo": tui-other-window
+  "\C-xs": next-keymap
+  set keymap vi-command
+  "\C-x\C-a": tui-switch-mode
+  "\C-xa": tui-switch-mode
+  "\C-xA": tui-switch-mode
+  "\C-x1": tui-delete-other-windows
+  "\C-x2": tui-change-windows
+  "\C-xo": tui-other-window
+  "\C-xs": next-keymap
 $endif
