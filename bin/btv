@@ -1,10 +1,13 @@
 #! /bin/bash
 
 function br() { echo; }
+function h1() { head -n 1; }
 
-cmake --version | head -n 1; br
-ccache --version | head -n 1; br
-clangd --version | head -n 1; br
-clang --version | head -n 1; br
-clang++ --version | head -n 1; br
-ld.lld --version | head -n 1;
+cmake --version | h1; br
+ccache --version | h1; br
+cc --version | h1; br
+c++ --version | h1; br
+clang --version | h1; clang -v |& grep 'Selected GCC installation'; br
+clang++ --version | h1; clang++ -v |& grep 'Selected GCC installation'; br
+clangd --version | h1; br
+ld.lld --version | h1;
