@@ -55,9 +55,10 @@ define ub
   delete
 end
 
-define sub
-  start
-  ub $arg0
+define rub
+  break $arg0
+  run
+  delete
 end
 
 define dm
