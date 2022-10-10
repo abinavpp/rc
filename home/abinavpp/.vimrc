@@ -263,7 +263,6 @@ set laststatus=2 statusline=%!StatusLine()
 
 au BufRead,BufNewFile *.cl set filetype=c
 au BufRead,BufNewFile *.{hip,inc,def} set filetype=cpp
-au BufRead,BufNewFile *.s set filetype=xasm
 au BufRead,BufNewFile *.{ll,mir} set filetype=llvm
 au BufRead,BufNewFile *.mlir set filetype=mlir
 au BufRead,BufNewFile lit.*cfg set filetype=python
