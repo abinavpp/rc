@@ -20,7 +20,7 @@ for my $env (@eoi) {
 
 print $fh "\nmycmake \\\n";
 foreach my $i (0 .. $#ARGV) {
-  print $fh "  \"$ARGV[$i]\"";
+  print $fh "  '$ARGV[$i]'";
   if ($i == $#ARGV) {
     print $fh "\n"
   } else {
