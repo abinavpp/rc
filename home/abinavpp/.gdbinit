@@ -69,6 +69,11 @@ define dm
   end
 end
 
+# TODO: Integrate this with dm()
+define dmr
+  p getRegisterName(TRI, $arg0).c_str()
+end
+
 define u
   up
 end
