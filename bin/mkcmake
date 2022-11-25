@@ -1,0 +1,27 @@
+#! /bin/bash
+
+src="$s" ins="$i" dbg="$d" shl="$sh" dyl="$dy"
+
+function llvm() {
+  pjs="$1"; shift; cmd="$@"
+  c="mycmake -G Ninja $src -DCMAKE_INSTALL_PREFIX=$ins -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
+  c+=" -DLLVM_ENABLE_ASSERTIONS=ON -DLLVM_CCACHE_BUILD=ON -DLLVM_USE_LINKER=lld -DLLVM_ENABLE_PROJECTS='$pjs'"
+
+  if [[ -n $dbg ]]; then
+    c+=' -DCMAKE_BUILD_TYPE=Debug -DLLVM_USE_SPLIT_DWARF=ON -DCMAKE_SHARED_LINKER_FLAGS="-Wl,--gdb-index -fuse-ld=lld" -DCMAKE_EXE_LINKER_FLAGS_DEBUG="-Wl,--gdb-index -fuse-ld=lld" -DLLVM_OPTIMIZED_TABLEGEN=ON'
+  else
+    c+=' -DCMAKE_BUILD_TYPE=Release'
+  fi
+
+  if [[ -n $shl ]]; then
+    c+=' -DBUILD_SHARED_LIBS=ON'
+  elif [[ -n $dbg ]]; then
+    c+=' -DLLVM_PARALLEL_LINK_JOBS=4'
+  fi
+
+  [[ -n $dyl ]] && c+=' -DLLVM_BUILD_LLVM_DYLIB=ON'
+
+  bash -c "$c"
+}
+
+llvm "$@"
