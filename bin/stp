@@ -1,0 +1,139 @@
+#! /bin/bash
+
+function stp_centos() {
+  yum install -y tmux ranger graphviz apcalc ctags
+}
+
+function stp_sles() {
+  zypper install -y tmux ranger graphviz calc universal-ctags
+}
+
+function stp_xpkg() {
+  apt-get update || exit 1
+  apt-get install -y tigervnc-standalone-server tigervnc-common i3-wm i3status \
+    dmenu xterm xsel x11-xserver-utils zathura || exit 1
+}
+
+function stp_pkg() {
+  # apt-get update should fail for non-trivial 404s
+  apt-get update
+  apt-get install -y lsb-release software-properties-common || exit 1
+  rel=`lsb_release -sc`
+  mkdir -p ~/bkp; cp /etc/apt/sources.list ~/bkp
+  sed -i "/^# deb-src .* $rel main restricted$/s/^# //" \
+    /etc/apt/sources.list
+  wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+  add-apt-repository -y \
+    "deb http://apt.llvm.org/$rel/ llvm-toolchain-$rel-12 main"
+  add-apt-repository -y ppa:git-core/ppa
+  apt-get update
+
+  apt-get install -y bash-completion git tmux ranger graphviz apcalc htop xsel \
+    binutils-dev gdb ninja-build clang-12 clang-format-12 clangd-10 lld-12 \
+    exuberant-ctags ccache || exit 1
+  pip3 install 'python-language-server[all]'
+
+  update-alternatives --install /usr/bin/clang clang /usr/bin/clang-12 12
+  update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-12 12
+  update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-12 12
+  update-alternatives --install /usr/bin/git-clang-format git-clang-format /usr/bin/git-clang-format-12 12
+  update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-12 12
+
+  update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-10 10
+}
+
+function stp_vim() {
+  local orig_pwd="$(pwd)" ver='9.0.0135'
+  mkdir ~/eph; cd ~/eph;
+  wget https://github.com/vim/vim/archive/v$ver/vim-$ver.tar.gz || exit 1
+  tar -xf vim-$ver.tar.gz
+
+  cd vim-$ver
+  ./configure \
+    --prefix=/usr \
+    --localstatedir=/var/lib/vim \
+    --with-features=huge \
+    --with-compiledby='abinavpp' \
+    --enable-gpm \
+    --enable-acl \
+    --with-x=yes \
+    --enable-gui=gtk3 \
+    --enable-multibyte \
+    --enable-cscope \
+    --enable-netbeans \
+    --enable-perlinterp=dynamic \
+    --enable-python3interp=dynamic \
+    --enable-rubyinterp=dynamic \
+    --enable-luainterp=dynamic \
+    --enable-tclinterp=dynamic \
+    --enable-canberra || exit 1
+  make VIMRUNTIMEDIR=~/.local/share/vim/runtime -j || exit 1
+  mkdir -p ~/.local/bin ~/.local/share/vim/; cp src/vim ~/.local/bin/vim
+  rm -rf ~/.local/share/vim/runtime; cp -r runtime ~/.local/share/vim/
+  ln -sf ~/.local/bin/vim ~/.local/bin/vimdiff
+  mkdir -p ~/.cache/vim/swap
+
+  cd ..; rm -rf vim-$ver vim-$ver.tar.gz; cd $orig_pwd
+}
+
+function stp_gdb() {
+  local orig_pwd="$(pwd)" ver='12.1'
+  local ins=~/.local/
+  mkdir ~/eph; cd ~/eph;
+  wget https://ftp.gnu.org/gnu/gdb/gdb-$ver.tar.xz || exit 1
+  tar -xf gdb-$ver.tar.xz
+
+  cd gdb-$ver; mkdir build install; cd build
+  ../configure \
+    --prefix=$ins \
+    --disable-nls \
+    --enable-tui \
+    --with-system-readline \
+    --with-python=/usr/bin/python \
+    --without-guile \
+    --with-system-gdbinit=/etc/gdb/gdbinit || exit 1
+  make -j || exit 1
+  make -j -C gdb/data-directory install
+  make -j -C gdb install
+
+  cd ../..; rm -rf gdb-$ver gdb-$ver.tar.xz; cd $orig_pwd
+}
+
+function stp_home() {
+  mkdir -p ~/bin ~/.local/bin ~/bkp ~/doc/scr ~/eph ~/port ~/pj/build/rel ~/pj/install/rel ~/tst
+
+  git -C ~/rc pull 2> /dev/null || git clone https://github.com/abinavpp/rc ~/rc
+  ~/rc/bin/rcsync out -H abinavpp
+
+  rm -f ~/.profile
+}
+
+function stp_lazy() {
+  stp_home
+
+  local cmds=' export USER=$(whoami);'
+  cmds+=' export LANG=C.UTF-8;'
+  cmds+=' sudo ~/bin/stp pkg;'
+  cmds+=' apt-get build-dep -y vim-gtk3;'
+  cmds+=' ~/bin/stp home vim;'
+  cmds+=' echo "PS1='
+    cmds+="'[\j] \W \[\e[38;5;9m\]$\[\e[0m\] '"
+    cmds+='" > ~/.post-bashrc;'
+  cmds+=' . ~/.bashrc;'
+  cmds+=' ~/.vim/stp;'
+  cmds+=' echo "set-window-option -g window-status-current-style bg=default,fg=colour9" > ~/.post-tmux.conf;'
+  cmds+=' tmux;'
+
+  ~/rc/bin/fkinp "$cmds"
+}
+
+for run in "$@"; do
+  [[ $run == "pkg" ]] && stp_pkg
+  [[ $run == "xpkg" ]] && stp_xpkg
+  [[ $run == "vim" ]] && stp_vim
+  [[ $run == "gdb" ]] && stp_gdb
+  [[ $run == "home" ]] && stp_home
+  [[ $run == "lazy" ]] && stp_lazy
+done
+
+# vim: tw=0
