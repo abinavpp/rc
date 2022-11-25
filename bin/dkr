@@ -1,0 +1,32 @@
+#! /bin/bash
+
+img="$i"; cont="$c"
+
+base='docker run -it --network=host'
+base+=' --cap-add=SYS_PTRACE --security-opt=seccomp=unconfined'
+base+=' --cap-add=SYS_ADMIN --device=/dev/fuse'
+base+=' --security-opt=apparmor:unconfined'
+
+function get_home() {
+  local home=$($base --name "$USER-eph_" $img bash -c 'cd ~; pwd')
+  docker rm "$USER-eph_" &> /dev/null
+  echo -n "${home::-1}"
+}
+
+img_home=$(get_home)
+
+c="$base $@"
+c+=' -e=DISPLAY --detach-keys="ctrl-\\,ctrl-q"'
+
+function def_bind() {
+  local cont_home="$1"
+  c+=" -v ~/.Xauthority:$cont_home/.Xauthority:ro"
+  c+=" -v ~/bin:$cont_home/bin:ro"
+  c+=" -v ~:/host:ro"
+}
+
+def_bind $img_home
+
+[[ -z $cont ]] && cont="$USER-$img"
+c+=" --name=$cont $img $r"
+bash -c "$c"
