@@ -3,17 +3,17 @@
 function raw_tty() {
   ! dumpkeys &> /dev/null && return 1;
   local keymap=`dumpkeys | head -n 1`
-  cat <(cat <<E
+  cat <<E > ~/.cache/mytty.map
 $keymap
-keycode 58 Escape
-keycode 1 Caps_Lock
-keycode 56 SCtrl
-keycode 100 SAlt
-keycode 42 SShift
-keycode 54 SShift
-# keycode 125 SMeta
+keycode 58 = Escape
+keycode 1 = Caps_Lock
+keycode 56 = SCtrl
+keycode 100 = SAlt
+keycode 42 = SShift
+keycode 54 = SShift
+# keycode 125 = SMeta
 E
-)
+  loadkeys ~/.cache/mytty.map
 }
 
 raw_tty;
