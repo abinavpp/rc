@@ -13,7 +13,7 @@ alias readelf='readelf --wide'
 alias gdb='gdb -q --args'
 alias cmus='TERM=xterm-256color cmus'
 alias tmux='tmux -u -2'
-alias lsblk='lsblk -o +FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC,MODEL,UUID'
+alias lsblk='lsblk -o NAME,MOUNTPOINTS,SIZE,UUID,LABEL,MODEL,FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC'
 alias mkfs.ntfs='mkfs.ntfs -Q'
 
 function eref() {
