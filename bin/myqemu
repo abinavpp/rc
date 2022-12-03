@@ -60,20 +60,22 @@ sub run {
   system($cmd);
 }
 
+my $prof = "";
 GetOptions(
-  'p=s' => \my $prof,
+  'p=s' => \$prof,
   'c=s' => \my $cd,
-  'd=s' => \my $drv)
-  or die();
+  'd=s' => \my $drv);
 
 die unless (defined $drv);
 
-my $cmd = "qemu-system-x86_64" . smp . mem . kvm . net . gpu
-  . drive("raw", $drv) . ' ' . join (' ', @ARGV);
+my $cmd = "qemu-system-x86_64" . kvm . net . gpu . drive("raw", $drv)
+  . ' ' . join (' ', @ARGV);
 
-if (defined $prof and $prof eq "cdb") {
+if ($prof eq "cdb") {
   die unless (defined $cd);
   $cmd .= boot_cd($cd);
+} elsif ($prof eq "full") {
+  $cmd .= smp . mem;
 }
 
 run($cmd);
