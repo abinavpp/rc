@@ -265,14 +265,15 @@ function _comp_scrnt() { _comp_nt ~/doc/scr; }
 function _comp_culnt() { _comp_nt ~/doc/cul; }
 
 set -o ignoreeof
-PROMPT_COMMAND=
+shopt -s histappend
+PROMPT_COMMAND='history -a'
+export HISTSIZE=32768
+export HISTFILESIZE=32768
 PS1='[\j] \W \[\e[38;5;76m\]$\[\e[0m\] '
 export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo.
 export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble.
 export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
-export HISTSIZE=32768
-export HISTFILESIZE=32768
 export FZF_DEFAULT_OPTS="--color 16"
 export LESSHISTFILE=/dev/null
 export QT_QPA_PLATFORMTHEME=qt5ct
