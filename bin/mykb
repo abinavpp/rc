@@ -16,4 +16,45 @@ E
   loadkeys ~/.cache/mytty.map
 }
 
-raw_tty;
+function xmap() {
+  local src=$1 dst=$2
+  local map=`cat /usr/share/X11/xkb/keycodes/evdev | grep "$src"`
+  [[ -z $map ]] && return
+  local kc=`echo $map | awk '{print $3}' | sed 's/.$//'`
+  echo "keycode $kc = $dst"
+}
+
+function xmm() {
+  local a
+  for a in "$@"; do
+    xmodmap -e "$a"
+  done
+}
+
+function x() {
+  xkbset sticky -twokey
+  xkbset exp 1 =sticky
+  setxkbmap -option caps:swapescape
+  xmm "clear control" "clear mod1"
+  xmm "keycode 64 = Control_L" "keycode 135 = Alt_L Meta_L"
+  xmm "add control = Control_L Control_R" "add mod1 = Alt_L Meta_L"
+}
+
+function x2() {
+  xkbset sticky -twokey
+  xkbset exp 1 =sticky
+  xmap '<CAPS>' 'Escape';
+  xmap '<ESC>' 'Caps_Lock';
+  xmap '<LALT>' 'Control_L';
+  xmap '<COMP>' 'Alt_L Meta_L';
+}
+
+run=$1; shift
+
+if [[ $run == 'tty' ]]; then
+  raw_tty
+elif [[ $run == 'x2' ]]; then
+  x2
+else
+  x
+fi
