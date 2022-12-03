@@ -1,3 +1,5 @@
+exec_always --no-startup-id myxterm
+
 set $black #000000
 set $grey #303030
 set $white #ffffff
