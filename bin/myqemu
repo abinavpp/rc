@@ -27,13 +27,15 @@ sub gpu {
 }
 
 sub mem {
+  my ($perc) = (@_);
   my $mem = (`cat /proc/meminfo |  grep "MemTotal" | awk '{print \$2}'`);
-  return " -m " . int ($mem / 1024) . "M";
+  return " -m " . int (int ($mem / 1024) * ($perc / 100)). "M";
 }
 
 sub smp {
+  my ($perc) = (@_);
   my $nproc = (`nproc`); chomp($nproc);
-  return " -smp $nproc";
+  return " -smp " . int(int ($nproc) * ($perc / 100));
 }
 
 sub virtfs {
@@ -54,14 +56,9 @@ sub boot_cd {
   return " -cdrom $file -boot once=d";
 }
 
-sub run {
-  my ($cmd) = (@_);
-  print "$cmd\n";
-  system($cmd);
-}
-
 my $prof = "";
 GetOptions(
+  'dry' => \my $dry,
   'p=s' => \$prof,
   'c=s' => \my $cd,
   'd=s' => \my $drv);
@@ -74,8 +71,9 @@ my $cmd = "qemu-system-x86_64" . kvm . net . gpu . drive("raw", $drv)
 if ($prof eq "cdb") {
   die unless (defined $cd);
   $cmd .= boot_cd($cd);
-} elsif ($prof eq "full") {
-  $cmd .= smp . mem;
+} elsif ($prof =~ /[0-9]+/) {
+  $cmd .= smp(int($prof)) . mem(int($prof));
 }
 
-run($cmd);
+print "$cmd\n";
+system($cmd) unless $dry;
