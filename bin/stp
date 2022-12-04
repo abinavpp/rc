@@ -30,8 +30,8 @@ function stp_pkg() {
   add-apt-repository -y ppa:git-core/ppa
   apt update
 
-  apt install -y bash-completion git tmux ranger graphviz apcalc htop \
-    binutils-dev ninja-build clang-$llvm_ver clang-format-$llvm_ver \
+  apt install -y bash-completion git tmux ranger graphviz apcalc htop python3-is-python \
+    binutils-dev cmake ninja-build clang-$llvm_ver clang-format-$llvm_ver \
     clangd-$llvm_ver lld-$llvm_ver exuberant-ctags ccache || exit 1
   pip3 install 'python-language-server[all]'
 
