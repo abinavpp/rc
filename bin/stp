@@ -9,9 +9,9 @@ function stp_sles() {
 }
 
 function stp_xpkg() {
-  apt update || exit 1
-  apt install -y tigervnc-standalone-server tigervnc-common i3-wm i3status \
-    dmenu xterm xsel x11-xserver-utils xkbset zathura || exit 1
+  apt update
+  apt install -y tigervnc-standalone-server tigervnc-common xinit i3-wm \
+    i3status dmenu xterm xsel x11-xserver-utils xkbset zathura || exit 1
 }
 
 function stp_pkg() {
