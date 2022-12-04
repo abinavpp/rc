@@ -9,41 +9,42 @@ function stp_sles() {
 }
 
 function stp_xpkg() {
-  apt-get update || exit 1
-  apt-get install -y tigervnc-standalone-server tigervnc-common i3-wm i3status \
-    dmenu xterm xsel x11-xserver-utils zathura || exit 1
+  apt update || exit 1
+  apt install -y tigervnc-standalone-server tigervnc-common i3-wm i3status \
+    dmenu xterm xsel x11-xserver-utils xkbset zathura || exit 1
 }
 
 function stp_pkg() {
-  # apt-get update should fail for non-trivial 404s
-  apt-get update
-  apt-get install -y lsb-release software-properties-common || exit 1
-  rel=`lsb_release -sc`
+  apt update
+  apt install -y lsb-release software-properties-common || exit 1
+  local rel=`lsb_release -sc`
+  local llvm_ver=15
+  local llvm_pri=$(($llvm_ver * 10))
+
   mkdir -p ~/bkp; cp /etc/apt/sources.list ~/bkp
   sed -i "/^# deb-src .* $rel main restricted$/s/^# //" \
     /etc/apt/sources.list
   wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
   add-apt-repository -y \
-    "deb http://apt.llvm.org/$rel/ llvm-toolchain-$rel-12 main"
+    "deb http://apt.llvm.org/$rel/ llvm-toolchain-$rel-$llvm_ver main"
   add-apt-repository -y ppa:git-core/ppa
-  apt-get update
+  apt update
 
-  apt-get install -y bash-completion git tmux ranger graphviz apcalc htop xsel \
-    binutils-dev gdb ninja-build clang-12 clang-format-12 clangd-10 lld-12 \
-    exuberant-ctags ccache || exit 1
+  apt install -y bash-completion git tmux ranger graphviz apcalc htop \
+    binutils-dev ninja-build clang-$llvm_ver clang-format-$llvm_ver \
+    clangd-$llvm_ver lld-$llvm_ver exuberant-ctags ccache || exit 1
   pip3 install 'python-language-server[all]'
 
-  update-alternatives --install /usr/bin/clang clang /usr/bin/clang-12 12
-  update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-12 12
-  update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-12 12
-  update-alternatives --install /usr/bin/git-clang-format git-clang-format /usr/bin/git-clang-format-12 12
-  update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-12 12
-
-  update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-10 10
+  update-alternatives --install /usr/bin/clang clang /usr/bin/clang-$llvm_ver $llvm_pri
+  update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-$llvm_ver $llvm_pri
+  update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-$llvm_ver $llvm_pri
+  update-alternatives --install /usr/bin/git-clang-format git-clang-format /usr/bin/git-clang-format-$llvm_ver $llvm_pri
+  update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-$llvm_ver $llvm_pri
+  update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-$llvm_ver $llvm_pri
 }
 
 function stp_vim() {
-  local orig_pwd="$(pwd)" ver='9.0.0135'
+  local orig_pwd="$(pwd)" ver='9.0.0910'
   mkdir ~/eph; cd ~/eph;
   wget https://github.com/vim/vim/archive/v$ver/vim-$ver.tar.gz || exit 1
   tar -xf vim-$ver.tar.gz
@@ -114,7 +115,7 @@ function stp_lazy() {
   local cmds=' export USER=$(whoami);'
   cmds+=' export LANG=C.UTF-8;'
   cmds+=' sudo ~/bin/stp pkg;'
-  cmds+=' apt-get build-dep -y vim-gtk3;'
+  cmds+=' apt build-dep -y vim-gtk3;'
   cmds+=' ~/bin/stp home vim;'
   cmds+=' echo "PS1='
     cmds+="'[\j] \W \[\e[38;5;9m\]$\[\e[0m\] '"
