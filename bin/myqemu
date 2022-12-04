@@ -56,22 +56,22 @@ sub boot_cd {
   return " -cdrom $file -boot once=d";
 }
 
-my $prof = "";
 GetOptions(
   'dry' => \my $dry,
-  'p=s' => \$prof,
+  'p=i' => \my $prof,
   'c=s' => \my $cd,
-  'd=s' => \my $drv);
+  'd=s' => \my $drv) or die;
 
 die unless (defined $drv);
 
 my $cmd = "qemu-system-x86_64" . kvm . net . gpu . drive("raw", $drv)
   . ' ' . join (' ', @ARGV);
 
-if ($prof eq "cdb") {
-  die unless (defined $cd);
+if (defined $cd) {
   $cmd .= boot_cd($cd);
-} elsif ($prof =~ /[0-9]+/) {
+}
+
+if (defined $prof and $prof =~ /[0-9]+/) {
   $cmd .= smp(int($prof)) . mem(int($prof));
 }
 
