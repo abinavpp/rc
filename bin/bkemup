@@ -31,7 +31,6 @@ my $host = hostname();
 my @backup_paths = (
   "$ENV{HOME}/bkp",
   "$ENV{HOME}/doc",
-  "$ENV{HOME}/eph",
   "$ENV{HOME}/pj/my",
   "$ENV{HOME}/rc",
   "$ENV{HOME}/bin",
