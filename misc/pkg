@@ -24,10 +24,8 @@
 0 reflector
 0 bash-completion
 0 alsa-utils alsa-tools alsa-plugins
-0 rsync
+0 rsync tree ranger mlocate
 0 lsof htop
-0 mlocate
-0 tree ranger
 0 zip unzip unrar
 0 dialog
 0 bc calc
@@ -71,7 +69,7 @@
 
 # Display server
 # ==============
-2 xorg-xset xorg-xrandr xorg-xinit xorg-xinput
+2 xorg-server xorg-xset xorg-xrandr xorg-xinit xorg-xinput
 # 2 nvidia-xrun-git # [AUR]
 # 2 nvidia nvidia-settings nvidia-utils
 
