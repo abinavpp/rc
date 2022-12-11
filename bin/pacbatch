@@ -37,17 +37,15 @@ sub pacbatch_get_filtered_list {
 
 sub pacman_is_in_repo {
   my ($pkg) = @_;
-  my $is_pkg = `pacman -Si $pkg &> /dev/null; echo -n \$?`;
-  my $is_group = `pacman -Sg $pkg &> /dev/null; echo -n \$?`;
-
+  my $is_pkg = system("pacman -Si $pkg &> /dev/null");
+  my $is_group = system("pacman -Sg $pkg &> /dev/null");
   return !$is_pkg || !$is_group;
 }
 
 sub pacman_is_in_sys {
   my ($pkg) = @_;
-  my $is_pkg = `pacman -Q $pkg &> /dev/null; echo -n \$?`;
-  my $is_group = `pacman -Qg $pkg &> /dev/null; echo -n \$?`;
-
+  my $is_pkg = system("pacman -Qi $pkg &> /dev/null");
+  my $is_group = system("pacman -Qg $pkg &> /dev/null");
   return !$is_pkg || !$is_group;
 }
 
@@ -57,13 +55,13 @@ sub pacbatch_list_verify_S {
   for (my $i = 0; $i < scalar @$pacbatch_list; $i++) {
     my $pacbatch_pkg = @$pacbatch_list[$i];
     if (!pacman_is_in_repo($pacbatch_pkg)) {
-      die "$pacbatch_pkg NOT in arch repo\nTerminating...\n";
+      die "$pacbatch_pkg NOT in arch repo\nTerminating ...\n";
     } else {
       print "$pacbatch_pkg in arch repo ";
       if (pacman_is_in_sys($pacbatch_pkg)) {
         print color('red');
         print "(in system, removing from batch)\n";
-        splice (@$pacbatch_list, $i--, 1); # arrghh, i--
+        splice (@$pacbatch_list, $i--, 1);
       } else {
         print color('green');
         print "(NOT in system, to be installed)\n";
