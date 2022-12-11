@@ -1,0 +1,93 @@
+# This is a comment.
+# <priority> <pkg1> <pkg2> ...
+# My priorities:
+# 0: Low storage CLI
+# 1: High storage CLI
+# 2: Window environment, essential GUI, multimedia CLI
+# 3: Misc GUI
+
+# Bare-bones
+# ==========
+0 base base-devel
+0 grub efibootmgr
+0 linux-headers
+
+# Hardware
+# ========
+0 gptfdisk parted hdparm smartmontools ntfs-3g dosfstools
+0 dmidecode lshw iotop sysstat
+0 acpi cpupower bluez
+
+# Base
+# ====
+0 arch-install-scripts
+0 reflector
+0 bash-completion
+0 alsa-utils alsa-tools alsa-plugins
+0 rsync
+0 lsof htop
+0 mlocate
+0 tree ranger
+0 zip unzip unrar
+0 dialog
+0 bc calc
+0 graphviz rst2pdf
+0 tmux
+0 perf
+0 parallel
+1 texlive-core texlive-formatsextra texlive-latexextra texlive-science
+2 qemu-desktop
+3 cmus faad2 libao libmad libmpcdec
+3 android-tools android-file-transfer
+
+# Development
+# ===========
+0 perl-number-bytes-human
+2 gvim
+0 gdb ltrace strace
+0 doxygen python-yaml
+0 git
+0 asp
+0 cmake ninja meson
+1 valgrind
+1 llvm clang lld lldb
+1 boost
+0 ccache cscope ctags python-lsp-server
+1 rust rust-analyzer typescript typescript-language-server
+# 0 ncurses5-compat-libs # [AUR] cuda-gdb needs it
+# 0 bear # [AUR]
+# 1 cuda
+
+# Network
+# =======
+0 iw wpa_supplicant ethtool wget
+0 traceroute nfs-utils iftop bind
+0 openssh sshfs
+0 elinks
+3 qbittorrent
+# 3 tor-browser # [AUR]
+# 3 google-chrome # [AUR]
+# 3 skypeforlinux-stable-bin # [AUR]
+
+# Display server
+# ==============
+2 xorg-xset xorg-xrandr xorg-xinit xorg-xinput
+# 2 nvidia-xrun-git # [AUR]
+# 2 nvidia nvidia-settings nvidia-utils
+
+# Base GUI
+# ========
+2 i3-wm i3status wmctrl picom dmenu hsetroot xsel xterm ttf-dejavu
+2 tigervnc
+3 hunspell breeze breeze-gtk qt5ct
+3 noto-fonts noto-fonts-emoji wqy-zenhei
+
+# Other GUI
+# =========
+3 pcmanfm-gtk3 ffmpegthumbnailer
+3 maim simplescreenrecorder
+3 ghostscript unoconv zathura zathura-pdf-mupdf zathura-ps
+3 libreoffice-fresh
+3 feh imagemagick
+3 mpv vlc libva-intel-driver
+3 freerdp
