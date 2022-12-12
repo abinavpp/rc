@@ -17,7 +17,7 @@ sub net {
   return " -net nic,model=virtio -net user";
 }
 
-sub drive {
+sub blk {
   my ($format, $file) = @_;
   return " -drive format=$format,file=$file";
 }
@@ -56,21 +56,32 @@ sub boot_cd {
   return " -cdrom $file -boot once=d";
 }
 
+sub efi {
+  return " -bios /usr/share/ovmf/x64/OVMF.fd";
+}
+
 GetOptions(
-  'dry' => \my $dry,
+  'd' => \my $dry,
+  'e' => \my $efi,
   'p=i' => \my $prof,
   'c=s' => \my $cd,
-  'd=s' => \my $drv) or die;
+  'm=s' => \my @mnt,
+  'b=s' => \my $blk) or die;
 
-die unless (defined $drv);
+die unless (defined $blk);
 
-my $cmd = "qemu-system-x86_64" . kvm . net . gpu . drive("raw", $drv)
+my $cmd = "qemu-system-x86_64" . kvm . net . gpu . blk("raw", $blk)
   . ' ' . join (' ', @ARGV);
 
 if (defined $cd) {
   $cmd .= boot_cd($cd);
 }
-
+if (defined $efi) {
+  $cmd .= efi();
+}
+if (scalar @mnt) {
+  $cmd .= virtfs(\@mnt);
+}
 if (defined $prof and $prof =~ /[0-9]+/) {
   $cmd .= smp(int($prof)) . mem(int($prof));
 }
