@@ -75,7 +75,7 @@
 
 # Base GUI
 # ========
-2 i3-wm i3status wmctrl picom dmenu hsetroot xsel xterm ttf-dejavu
+2 i3-wm i3status wmctrl picom dmenu hsetroot xsel xterm ttf-dejavu ttf-liberation
 2 tigervnc
 3 hunspell breeze breeze-gtk qt5ct qt6ct
 3 noto-fonts noto-fonts-emoji wqy-zenhei
