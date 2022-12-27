@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 my $invocation_file = "CMakeInvocation";
-system ("mkexec $invocation_file");
+system("mkexec $invocation_file");
 
 open(my $fh, '>', $invocation_file) or
   die "Could not open file '$invocation_file' $!";
