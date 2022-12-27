@@ -8,7 +8,7 @@
 
 # Bare-bones
 # ==========
-0 base base-devel
+0 base base-devel man-db
 0 grub efibootmgr
 0 linux-headers
 
@@ -75,17 +75,17 @@
 
 # Base GUI
 # ========
-2 i3-wm i3status wmctrl picom dmenu hsetroot xsel xterm ttf-dejavu ttf-liberation
+2 i3-wm i3status i3lock wmctrl picom dmenu hsetroot xsel xterm ttf-dejavu ttf-liberation
 2 tigervnc
 3 hunspell breeze breeze-gtk qt5ct qt6ct
 3 noto-fonts noto-fonts-emoji wqy-zenhei
 
 # Other GUI
 # =========
+3 pavucontrol-qt
 3 pcmanfm-gtk3 ffmpegthumbnailer
 3 maim simplescreenrecorder
-3 ghostscript unoconv zathura zathura-pdf-mupdf zathura-ps
-3 libreoffice-fresh
+3 libreoffice-fresh ghostscript unoconv zathura zathura-pdf-mupdf zathura-ps
 3 feh imagemagick gthumb
 3 mpv vlc libva-intel-driver
 3 freerdp
