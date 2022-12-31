@@ -2,12 +2,11 @@
 
 use strict;
 use warnings;
+require File::Temp;
+use File::Temp();
 
 my $invocation_file = "CMakeInvocation";
-system("mkexec $invocation_file");
-
-open(my $fh, '>', $invocation_file) or
-  die "Could not open file '$invocation_file' $!";
+my $fh = File::Temp->new(TEMPLATE => '/tmp/CMakeInvocation.XXXX', UNLINK => 1);
 
 my @eoi = ('PATH', 'LD_LIBRARY_PATH', 'LIBRARY_PATH',
   'CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH');
@@ -30,3 +29,6 @@ foreach my $i (0 .. $#ARGV) {
 
 splice @ARGV, 0, 0, '-DCMAKE_EXPORT_COMPILE_COMMANDS=1';
 system("cmake", @ARGV);
+
+system("cp $fh $invocation_file");
+system("mkexec $invocation_file");
