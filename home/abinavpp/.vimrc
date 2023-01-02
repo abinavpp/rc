@@ -269,6 +269,7 @@ au BufRead,BufNewFile lit.*cfg set filetype=python
 au BufRead,BufNewFile *.td set filetype=tablegen
 au BufRead,BufNewFile *.c.* set filetype=rtl
 au BufRead,BufNewFile *.{gvy,Jenkinsfile} set filetype=groovy
+au BufRead,BufNewFile ~/pj/solidity/* set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
 
 au CompleteDone * if pumvisible() == 0 | pclose | endif
 
