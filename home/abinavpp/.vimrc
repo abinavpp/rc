@@ -260,16 +260,15 @@ au FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au FileType mlir setlocal commentstring=//\ %s
 au FileType cpp,tablegen setlocal commentstring=//\ %s | set comments^=:///
 set laststatus=2 statusline=%!StatusLine()
-
-au BufRead,BufNewFile *.cl set filetype=c
-au BufRead,BufNewFile *.{hip,inc,def} set filetype=cpp
-au BufRead,BufNewFile *.{ll,mir} set filetype=llvm
-au BufRead,BufNewFile *.mlir set filetype=mlir
-au BufRead,BufNewFile lit.*cfg set filetype=python
-au BufRead,BufNewFile *.td set filetype=tablegen
-au BufRead,BufNewFile *.c.* set filetype=rtl
-au BufRead,BufNewFile *.{gvy,Jenkinsfile} set filetype=groovy
-au BufRead,BufNewFile ~/pj/solidity/* set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
+au BufEnter *.cl set filetype=c
+au BufEnter *.{hip,inc,def} set filetype=cpp
+au BufEnter *.{ll,mir} set filetype=llvm
+au BufEnter *.mlir set filetype=mlir
+au BufEnter lit.*cfg set filetype=python
+au BufEnter *.td set filetype=tablegen
+au BufEnter *.c.* set filetype=rtl
+au BufEnter *.{gvy,Jenkinsfile} set filetype=groovy
+au BufEnter ~/pj/solidity/* set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
 
 au CompleteDone * if pumvisible() == 0 | pclose | endif
 
