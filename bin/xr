@@ -1,0 +1,32 @@
+#! /bin/bash
+
+function pri() {
+  echo `xrandr -q | grep ' connected primary' | awk '{print $1}'`
+}
+
+function sec() {
+  echo `xrandr -q | grep -P ' connected (?!primary)' | awk '{print $1}'`
+}
+
+function res() {
+  local out=$1
+  [[ -z `$out` ]] && return 1
+
+  xrandr --output `$out` --off
+  xrandr --output `$out` --auto
+}
+
+function rgb() {
+  local out=$1
+  [[ -z `$out` ]] && return 1
+
+  xrandr --output `$out` --set "Broadcast RGB" "Full"
+}
+
+for run in "$@"; do
+  [[ $run == "p" ]] && pri
+  [[ $run == "s" ]] && sec
+  [[ $run == "rs-p" ]] && res pri
+  [[ $run == "rs-s" ]] && res sec
+  [[ $run == "rgb-s" ]] && rgb sec
+done
