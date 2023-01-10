@@ -1,32 +1,34 @@
 #! /bin/bash
 
-function pri() {
-  echo `xrandr -q | grep ' connected primary' | awk '{print $1}'`
+function show() {
+  local op=$1 run=$2 l mode
+  if [[ $op == "pri" ]]; then
+    l=`xrandr -q | grep ' connected primary'`
+    mode=`echo "$l" | awk '{print $4}'`
+  else
+    l=`xrandr -q | grep -P ' connected (?!primary)'`
+    mode=`echo "$l" | awk '{print $3}'`
+  fi
+
+  if [[ $run == "res" ]]; then
+    echo "$mode" | awk -F+ '{print $1}'
+  else
+    echo "$l" | awk '{print $1}'
+  fi
 }
 
-function sec() {
-  echo `xrandr -q | grep -P ' connected (?!primary)' | awk '{print $1}'`
-}
+function p0() {
+  local pri=`show pri` pri_res=`show pri res`
+  local sec=`show sec` sec_res=`show sec res`
+  [[ -z $pri || -z $sec ]] && return
 
-function res() {
-  local out=$1
-  [[ -z `$out` ]] && return 1
-
-  xrandr --output `$out` --off
-  xrandr --output `$out` --auto
-}
-
-function rgb() {
-  local out=$1
-  [[ -z `$out` ]] && return 1
-
-  xrandr --output `$out` --set "Broadcast RGB" "Full"
+  [[ $pri_res != $sec_res ]] && xrandr --output $pri --mode $sec_res
+  xrandr --output $sec --auto --same-as $pri
+  xrandr --output $sec --set "Broadcast RGB" "Full"
 }
 
 for run in "$@"; do
-  [[ $run == "p" ]] && pri
-  [[ $run == "s" ]] && sec
-  [[ $run == "rs-p" ]] && res pri
-  [[ $run == "rs-s" ]] && res sec
-  [[ $run == "rgb-s" ]] && rgb sec
+  [[ $run == "p" ]] && show pri
+  [[ $run == "s" ]] && show sec
+  [[ $run == "p0" ]] && p0
 done
