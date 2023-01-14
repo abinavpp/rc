@@ -1,19 +1,17 @@
 #! /bin/bash
 
 function show() {
-  local op=$1 run=$2 l mode
+  local op=$1 run=$2 o
   if [[ $op == "pri" ]]; then
-    l=`xrandr -q | grep ' connected primary'`
-    mode=`echo "$l" | awk '{print $4}'`
+    o=`xrandr -q | grep -A1 ' connected primary'`
   else
-    l=`xrandr -q | grep -P ' connected (?!primary)'`
-    mode=`echo "$l" | awk '{print $3}'`
+    o=`xrandr -q | grep -P -A1 ' connected (?!primary)'`
   fi
 
   if [[ $run == "res" ]]; then
-    echo "$mode" | awk -F+ '{print $1}'
+    echo "$o" | awk 'NR == 2 {print $1}'
   else
-    echo "$l" | awk '{print $1}'
+    echo "$o" | awk 'NR == 1 {print $1}'
   fi
 }
 
