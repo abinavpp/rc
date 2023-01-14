@@ -6,7 +6,7 @@ elseif exists("b:current_syntax")
   finish
 endif
 
-syn keyword yulKeyword object code let leave for while if case switch default break continue
+syn keyword yulKeyword object code function let leave for while if case switch default break continue
 syn region yulLineComment start=+\/\/+ end=+$+ contains=yulCommentTodo,@Spell
 syn region yulLineComment start=+^\s*\/\/+ skip=+\n\s*\/\/+ end=+$+ contains=yulCommentTodo,@Spell fold
 syn region yulComment start="/\*"  end="\*/" contains=yulCommentTodo,@Spell fold
