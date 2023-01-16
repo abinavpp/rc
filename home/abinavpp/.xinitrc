@@ -8,5 +8,5 @@ picom -b 2> /dev/null
 mkconf-i3status
 
 xr p0
-. ~/.post-xinitrc &> /dev/null
+[ -r ~/.post-xinitrc ] && . ~/.post-xinitrc
 exec i3
