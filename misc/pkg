@@ -16,14 +16,14 @@
 # ========
 0 gptfdisk parted hdparm smartmontools ntfs-3g dosfstools
 0 dmidecode lshw iotop sysstat
-0 acpi cpupower bluez
+0 acpi cpupower bluez bluez-utils
 
 # Base
 # ====
 0 arch-install-scripts
 0 reflector
 0 bash-completion
-0 alsa-utils alsa-tools pulseaudio pulseaudio-bluetooth
+0 alsa-utils alsa-tools pipewire-pulse
 0 rsync tree ranger mlocate
 0 lsof htop
 0 zip unzip unrar
@@ -51,7 +51,7 @@
 1 llvm clang lld lldb
 1 boost
 0 ccache cscope ctags python-lsp-server
-1 rust rust-analyzer typescript typescript-language-server
+1 go rust rust-analyzer typescript typescript-language-server
 # 0 ncurses5-compat-libs # [AUR] cuda-gdb needs it
 # 0 bear # [AUR]
 # 1 cuda
