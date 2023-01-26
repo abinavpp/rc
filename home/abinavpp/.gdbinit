@@ -87,6 +87,7 @@ set follow-fork-mode child
 set detach-on-fork off
 set disassembly intel
 set auto-load safe-path /
+set index-cache enabled
 
 tui enable
 foc cmd
