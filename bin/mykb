@@ -31,15 +31,6 @@ function xmm() {
   done
 }
 
-function depr_x() {
-  xkbset sticky -twokey
-  xkbset exp 1 =sticky
-  setxkbmap -option caps:swapescape
-  xmm "clear control" "clear mod1"
-  xmm "keycode 64 = Control_L" "keycode 135 = Alt_L Meta_L"
-  xmm "add control = Control_L Control_R" "add mod1 = Alt_L Meta_L"
-}
-
 function x() {
   xkbset sticky -twokey
   xkbset exp 1 =sticky
