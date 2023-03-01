@@ -36,9 +36,12 @@ function x() {
   xmm 'remove control = Control_L' 'remove mod1 = Meta_L'
   xmap '<LALT>' 'Control_L'
   xmm 'add control = Control_L'
-  xmm 'remove shift = Shift_L' 'remove mod4 = Super_L'
-  xmap '<LWIN>' 'Shift_L'
+  xmm 'remove shift = Shift_L' 'remove mod1 = Meta_R'
+  xmap '<RALT>' 'Shift_L'
   xmm 'add shift = Shift_L'
+  xmm 'remove mod1 = Meta_L' 'remove mod4 = Super_L'
+  xmap '<LWIN>' 'Meta_L'
+  xmm 'add mod1 = Meta_L'
 }
 
 run=$1; shift
