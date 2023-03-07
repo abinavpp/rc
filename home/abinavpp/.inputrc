@@ -1,6 +1,7 @@
 set completion-query-items 512
 set page-completions off
 set editing-mode vi
+set show-all-if-ambiguous on
 
 $if mode=vi
   set keymap vi-command
