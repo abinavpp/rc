@@ -269,7 +269,8 @@ au BufEnter *.td set filetype=tablegen
 au BufEnter *.c.* set filetype=rtl
 au BufEnter *.{gvy,Jenkinsfile} set filetype=groovy
 au BufEnter *.yul set filetype=yul
-au BufEnter ~/pj/solidity/* set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
+au FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+au BufEnter ~/pj/solidity/*.{cpp,h} setlocal tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
 
 au CompleteDone * if pumvisible() == 0 | pclose | endif
 
@@ -277,7 +278,7 @@ au CompleteDone * if pumvisible() == 0 | pclose | endif
 " =================
 call Lsp(['clangd', '-cross-file-rename'], ['c', 'cpp', 'objc', 'objcpp', 'cuda'])
 call Lsp(['rust-analyzer'], ['rust'])
-call Lsp(['pyls'], ['python'])
+call Lsp(['pylsp'], ['python'])
 call Lsp(['typescript-language-server', '--stdio'], ['javascript',
   \ 'typescript'])
 
