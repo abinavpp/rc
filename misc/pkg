@@ -44,7 +44,7 @@
 2 gvim
 0 gdb ltrace strace
 0 doxygen python-yaml
-0 git
+0 git github-cli
 0 asp
 0 cmake ninja meson
 1 valgrind
