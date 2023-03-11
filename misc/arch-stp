@@ -1,0 +1,66 @@
+#! /bin/bash
+
+crypt=true
+efi_part=/dev/sda1
+efi_label=EFI
+root_part=/dev/sda2
+root_mnt=/mnt
+root_label=ARCH_ROOT
+root_map=/dev/mapper/$root_label
+root_uuid=
+
+function ins_grub() {
+  mount --mkdir $efi_part $root_mnt/efi
+  pacstrap $root_mnt linux linux-firmware grub intel-ucode
+  arch-chroot $root_mnt bash << END
+grub-install --target=x86_64-efi --efi-directory=/efi \
+  --boot-directory=/boot --bootloader-id=arch
+grub-mkconfig -o /boot/grub/grub.cfg
+exit
+END
+}
+
+function ins_systemd_boot() {
+  mount --mkdir $efi_part $root_mnt/boot
+  pacstrap $root_mnt linux linux-firmware intel-ucode
+  arch-chroot $root_mnt bash -c 'bootctl install'
+  cat << END > $root_mnt/boot/loader/loader.conf
+default arch.conf
+timeout 4
+console-mode max
+editor no
+END
+  local os_conf=$root_mnt/boot/loader/entries/arch.conf
+  cat << END > $os_conf
+title Arch Linux
+linux /vmlinuz-linux
+initrd /intel-ucode.img
+initrd /initramfs-linux.img
+END
+  if [[ $crypt == true ]]; then
+    echo "options cyrptdevice=UUID=$root_uuid:$root_label root=$root_map rw audit=0" >> $os_conf;
+  else
+    echo "options root=UUID=$root_uuid rw audit=0" >> $os_conf;
+  fi
+  arch-chroot $root_mnt bash -c 'bootctl update'
+  arch-chroot $root_mnt bash -c 'bootctl list'
+}
+
+mkfs.fat -n $efi_label -F32 $efi_part
+if [[ $crypt == true ]]; then
+  cryptsetup -y -v luksFormat $root_part
+  cryptsetup open $root_part $root_label
+  mkfs.ext4 -F -L $root_label $root_map
+  mount $root_map $root_mnt
+else
+  mkfs.ext4 -F -L $root_label $root_part
+  mount $root_part $root_mnt
+fi
+root_uuid=`blkid -s UUID -o value $root_part`
+
+pacman -Sy archlinux-keyring
+pacstrap $root_mnt base base-devel efibootmgr vim dhcpcd wpa_supplicant netctl dialog iwd
+ins_systemd_boot
+genfstab -U $root_mnt >> $root_mnt/etc/fstab
+passwd -e root
+# echo 'root:al' | chpasswd
