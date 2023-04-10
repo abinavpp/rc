@@ -11,7 +11,7 @@
   cma = commit --amend
   ch = checkout
   br = branch
-  df = diff
+  dfs = diff --stat
   rb = rebase
   rbi = rebase -i
   rbc = rebase --continue
