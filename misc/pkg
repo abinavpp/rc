@@ -20,7 +20,7 @@
 
 # Base
 # ====
-0 arch-install-scripts
+0 arch-install-scripts pacman-contrib
 0 reflector
 0 bash-completion
 0 alsa-utils alsa-tools pipewire-pulse

@@ -64,3 +64,5 @@ ins_systemd_boot
 genfstab -U $root_mnt >> $root_mnt/etc/fstab
 passwd -e root
 # echo 'root:al' | chpasswd
+
+# systemctl enable fstrim.timer paccache.timer thermald.service
