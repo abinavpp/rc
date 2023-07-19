@@ -4,4 +4,4 @@ sudo pacman -Syyu --noconfirm
 yay -Syu --answerdiff None --answerclean None --answerupgrade None
 pacman -Qdtq | sudo pacman -Rns --noconfirm -
 ~/.vim/stp
-sudo find /etc -type f \( -name '*.pacnew' -o -name '*-' \) -exec rm -v {} \;
+# sudo find /etc -type f \( -name '*.pacnew' -o -name '*.pacsave' -o -name '*-' \) -exec rm -v {} \;
