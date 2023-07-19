@@ -88,6 +88,7 @@ set detach-on-fork off
 set disassembly intel
 set auto-load safe-path /
 set index-cache enabled
+set print elements 0
 
 tui enable
 foc cmd
