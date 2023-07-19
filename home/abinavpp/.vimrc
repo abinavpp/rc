@@ -270,7 +270,7 @@ au BufEnter *.c.* set filetype=rtl
 au BufEnter *.{gvy,Jenkinsfile} set filetype=groovy
 au BufEnter *.yul set filetype=yul
 au FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
-au BufEnter ~/pj/solidity/*.{cpp,h} setlocal tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
+au BufEnter ~/pj/solidity/*.{cpp,h} setlocal textwidth=120 tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
 
 au CompleteDone * if pumvisible() == 0 | pclose | endif
 
