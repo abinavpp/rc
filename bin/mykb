@@ -32,10 +32,7 @@ function xmm() {
 function x() {
   xkbset sticky -twokey
   xkbset exp 1 =sticky
-  setxkbmap -option caps:swapescape
-  xmm 'remove control = Control_L' 'remove mod1 = Meta_L'
-  xmap '<LALT>' 'Control_L'
-  xmm 'add control = Control_L'
+  setxkbmap -option caps:ctrl_modifier
   xmm 'remove shift = Shift_L'
   xmap '<TAB>' 'Shift_L'
   xmm 'add shift = Shift_L'
