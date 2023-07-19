@@ -19,7 +19,9 @@ cmd="xterm
   -xrm 'XTerm*fontMenu*background: black'
   -xrm 'XTerm*fontMenu*foreground: white'
   -xrm 'XTerm*metaSendsEscape: true'
-  -xrm 'XTerm*selectToClipboard: true'"
+  -xrm 'XTerm*selectToClipboard: true'
+  -xrm 'XTerm*VT100*translations: #override \n\
+    Ctrl Shift <Key>V: insert-selection(SELECT, CUT_BUFFER0, PRIMARY)'"
 
 if [[ $run == '1' ]]; then
   cmd+="
