@@ -25,8 +25,20 @@ function p0() {
   xrandr --output $sec --set "Broadcast RGB" "Full"
 }
 
+function on() {
+  local pri=`show pri`
+  xrandr --output $pri --auto
+}
+
+function off() {
+  local pri=`show pri`
+  xrandr --output $pri --off
+}
+
 for run in "$@"; do
   [[ $run == "p" ]] && show pri
   [[ $run == "s" ]] && show sec
   [[ $run == "p0" ]] && p0
+  [[ $run == "on" ]] && on
+  [[ $run == "off" ]] && off
 done
