@@ -192,6 +192,10 @@ function! Glog(range, line1, line2)
   endif
 endfunction
 
+function SetTab(l)
+  exe 'setlocal tabstop=' . a:l . ' shiftwidth=' . a:l . ' softtabstop=' . a:l
+endfunction
+
 " Commands
 " ========
 com! Cl :sil! exe '%s/\v\ +$//g' <bar> :sil! exe '%s/\v[^\x00-\x7F]+//g'
@@ -213,6 +217,7 @@ com! Csi :call CSInv()
 com! Dcl :call DelCommentLines()
 com! Df :call ToggleDiff()
 com! Sv :so $MYVIMRC
+com! -nargs=1 St :call SetTab("<args>")
 
 " Mappings
 " ========
