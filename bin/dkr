@@ -1,32 +1,49 @@
 #! /bin/bash
 
 img="$i"; cont="$c"
+[[ -z $cont ]] && cont="$USER-$img"
+mnt_mode=""
 
-base='docker run -it --network=host'
-base+=' --cap-add=SYS_PTRACE --security-opt=seccomp=unconfined'
-base+=' --cap-add=SYS_ADMIN --device=/dev/fuse'
-base+=' --security-opt=apparmor:unconfined'
+function unused() {
+  c+=' --cap-add=SYS_PTRACE --security-opt=seccomp=unconfined'
+  c+=' --cap-add=SYS_ADMIN --device=/dev/fuse'
+  c+=' --security-opt=apparmor:unconfined'
+}
 
 function get_home() {
-  local home=$($base --name "$USER-eph_" $img bash -c 'cd ~; pwd')
+  local home=$(docker run -it --name "$USER-eph_" $img bash -c 'cd ~; pwd')
   docker rm "$USER-eph_" &> /dev/null
   echo -n "${home::-1}"
 }
 
-img_home=$(get_home)
-
-c="$base $@"
-c+=' -e=DISPLAY --detach-keys="ctrl-\\,ctrl-q"'
-
-function def_bind() {
-  local cont_home="$1"
+function display() {
+  c+=' --network=host' # Doesn't work without this; TODO: Why?
+  c+=' -e DISPLAY -e XAUTHORITY'
   c+=" -v ~/.Xauthority:$cont_home/.Xauthority:ro"
-  c+=" -v ~/bin:$cont_home/bin:ro"
+}
+
+function mnt_def() {
+  c+=" -v ~/bin:$cont_home/bin:$mnt_mode"
   c+=" -v ~:/host:ro"
 }
 
-def_bind $img_home
+function mnt_home_paths() {
+  local path
+  for path in "$@"; do
+    c+=" -v ~/$path:$cont_home/$path:$mnt_mode"
+  done
+}
 
-[[ -z $cont ]] && cont="$USER-$img"
-c+=" --name=$cont $img $r"
-bash -c "$c"
+cont_home="/home/abinavpp"
+
+# The default ctrl-p ctrl-q detach keys makes ctrl-p navigation slower
+c='docker run -it --detach-keys="ctrl-\\,ctrl-q"'
+display
+mnt_def
+mnt_home_paths .post-gitconfig .gnupg .ssh tst
+
+c+=" $@"
+c+=" --name=$cont $img"
+
+echo "$c"
+eval "$c"
