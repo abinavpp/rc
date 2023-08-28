@@ -1,6 +1,6 @@
 exec_always --no-startup-id myxterm
 
-set $m Mod4
+set $m Mod1
 set $black #000000
 set $grey #303030
 set $white #ffffff
