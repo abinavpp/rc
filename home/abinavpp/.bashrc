@@ -265,7 +265,7 @@ function _comp_scrnt() { _comp_nt ~/doc/scr; }
 function _comp_culnt() { _comp_nt ~/doc/cul; }
 
 set -o ignoreeof
-shopt -s histappend
+shopt -s histappend extglob
 PROMPT_COMMAND='history -a'
 export HISTSIZE=32768
 export HISTFILESIZE=32768
