@@ -10,17 +10,19 @@ my $profile = shift @ARGV;
 GetOptions(
   "b=s" => \my $opt_bg_col,
   "f=s" => \my $opt_fg_col,
+  "c=s" => \my $opt_cursor_col,
   "t=s" => \my $opt_target,
   "help" => \my $opt_help)
   or die "Error parsing cmdline";
 
 sub set_term {
-  my ($bg_col, $fg_col, $pty) = @_;
+  my ($bg_col, $fg_col, $cursor_col, $pty) = @_;
 
   $bg_col = "\e]11;$bg_col\007";
   $fg_col = "\e]10;$fg_col\007";
+  $cursor_col = "\e]12;$cursor_col\007";
   open(my $fh, '>', $pty) or return;
-  print({$fh} $bg_col . $fg_col);
+  print({$fh} $bg_col . $fg_col . $cursor_col);
   close($fh);
 }
 
@@ -34,7 +36,7 @@ sub set_all_term {
 
 if ($profile eq 'term') {
   if (defined($opt_target)) {
-    set_term($opt_bg_col, $opt_fg_col, $opt_target);
+    set_term($opt_bg_col, $opt_fg_col, $opt_cursor_col, $opt_target);
 
   } else {
     set_all_term($opt_bg_col, $opt_fg_col);
