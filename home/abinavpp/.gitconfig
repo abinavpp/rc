@@ -28,7 +28,7 @@
   rebase = true
 
 [commit]
-	gpgSign = true
+  gpgSign = true
 
 [include]
   path = ~/.post-gitconfig
