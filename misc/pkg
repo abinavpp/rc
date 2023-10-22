@@ -34,7 +34,7 @@
 0 tmux
 0 perf
 0 parallel
-1 texlive-core texlive-formatsextra texlive-latexextra texlive-science
+1 texlive-core texlive-binextra texlive-formatsextra texlive-latexextra texlive-science
 2 qemu-desktop
 3 cmus faad2 libao libmad libmpcdec
 3 android-tools android-file-transfer
