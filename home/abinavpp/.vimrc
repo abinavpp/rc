@@ -192,8 +192,19 @@ function! Glog(range, line1, line2)
   endif
 endfunction
 
-function SetTab(l)
+function! SetTab(l)
   exe 'setlocal tabstop=' . a:l . ' shiftwidth=' . a:l . ' softtabstop=' . a:l
+endfunction
+
+" TODO: Infer this from clang-format
+function! Style(s)
+  if a:s == "d"
+    exe 'setlocal textwidth=80 expandtab'
+    call SetTab(2)
+  elseif a:s == "s"
+    exe 'setlocal textwidth=120 noexpandtab'
+    call SetTab(4)
+  endif
 endfunction
 
 " Commands
@@ -218,6 +229,7 @@ com! Dcl :call DelCommentLines()
 com! Df :call ToggleDiff()
 com! Sv :so $MYVIMRC
 com! -nargs=1 St :call SetTab("<args>")
+com! -nargs=1 S :call Style("<args>")
 
 " Mappings
 " ========
@@ -251,6 +263,13 @@ nnoremap <Leader>sx :set textwidth=
 inoremap <C-p> <C-x>
 inoremap { d{<Left><BS><Right>
 inoremap # d#<Left><BS><Right>
+if has('python')
+  nnoremap <Leader>c :%pyf /usr/share/clang/clang-format.py<CR>
+  vnoremap <Leader>c :pyf /usr/share/clang/clang-format.py<CR>
+elseif has('python3')
+  nnoremap <Leader>c :%py3f /usr/share/clang/clang-format.py<CR>
+  vnoremap <Leader>c :py3f /usr/share/clang/clang-format.py<CR>
+endif
 
 " Set
 " ===
@@ -274,8 +293,7 @@ au BufEnter *.td set filetype=tablegen
 au BufEnter *.c.* set filetype=rtl
 au BufEnter *.{gvy,Jenkinsfile} set filetype=groovy
 au BufEnter *.yul set filetype=yul
-au FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
-au BufEnter ~/pj/solidity/*.{cpp,h} setlocal textwidth=120 tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
+au FileType python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 
 au CompleteDone * if pumvisible() == 0 | pclose | endif
 
