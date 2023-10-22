@@ -1,12 +1,38 @@
 #! /bin/bash
 
+[[ -z $ty ]] && ty="mlir"
 [[ -z $s ]] && s="$HOME/pj/llvm-project"
 [[ -z $b ]] && b="$HOME/pj/build/rel/llvm-project"
 [[ -z $t ]] && t='AMDGPU'
 
-i="$s/llvm/lib/Target/$t/$t.td"
+function tgt() {
+  c="$b/bin/llvm-tblgen -I $b/include -I $s/llvm/include -I $s/llvm/lib/Target"
+  c+=" -I $s/llvm/lib/Target/$t -gen-ctags $s/llvm/lib/Target/$t/$t.td -o tags"
 
-c="$b/bin/llvm-tblgen -I $b/include -I $s/llvm/include -I $s/llvm/lib/Target"
-c+=" -I $s/llvm/lib/Target/$t -gen-ctags $i -o $s/llvm/tags"
+  echo $c
+  bash -c "$c"
+}
 
-bash -c "$c"
+function mlir() {
+  c="$b/bin/llvm-tblgen -I $b/include -I $s/llvm/include"
+  c+=" -I $s/mlir/include -I $b/tools/mlir/include -gen-ctags -o tags $@"
+
+  echo $c
+  bash -c "$c"
+}
+
+function mlir_com() {
+  local d f
+  > _tmp.td
+  for d in IR Interfaces Transforms; do
+    for f in $s/mlir/include/mlir/$d/*.td; do
+      f=`basename $f`
+      echo "include \"mlir/$d/$f\"" >> _tmp.td
+    done
+  done
+  mlir _tmp.td && rm _tmp.td
+}
+
+[[ $ty == "mlir" ]] && mlir "$@"
+[[ $ty == "tgt" ]] && tgt "$@"
+[[ $ty == "mlir-com" ]] && mlir_com "$@"
