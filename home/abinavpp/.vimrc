@@ -138,6 +138,7 @@ function! MapLsp()
   nnoremap <buffer><Leader>lp :LspPeekDefinition<CR>
   nnoremap <buffer><Leader>lP :LspPeekDeclaration<CR>
   nnoremap <buffer><Leader>lf :LspWorkspaceSymbol<CR>
+  nnoremap <buffer><Leader>la :LspCodeAction<CR>
 endfunction
 
 function! Lsp(cmd, fts)
@@ -299,7 +300,8 @@ au CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " Syntax and colors
 " =================
-call Lsp(['clangd', '-cross-file-rename'], ['c', 'cpp', 'objc', 'objcpp', 'cuda'])
+call Lsp(['clangd', '--header-insertion=iwyu'], ['c', 'cpp', 'objc', 'objcpp',
+  \ 'cuda'])
 call Lsp(['rust-analyzer'], ['rust'])
 call Lsp(['pylsp'], ['python'])
 call Lsp(['typescript-language-server', '--stdio'], ['javascript',
