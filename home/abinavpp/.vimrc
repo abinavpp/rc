@@ -210,7 +210,7 @@ endfunction
 
 " Commands
 " ========
-com! Cl :sil! exe '%s/\v\ +$//g' <bar> :sil! exe '%s/\v[^\x00-\x7F]+//g'
+com! Tidy :sil! exe '%s/\v\ +$//g' <bar> :sil! exe '%s/\v[^\x00-\x7F]+//g'
 com! -nargs=1 R :call FindAMDGPUReg("<args>")
   \ <bar> :call feedkeys("\<Esc>\<Esc>n")
 com! Vs :call Vp('\*\*\* IR Dump ')
@@ -231,6 +231,7 @@ com! Df :call ToggleDiff()
 com! Sv :so $MYVIMRC
 com! -nargs=1 St :call SetTab("<args>")
 com! -nargs=1 S :call Style("<args>")
+com! Cl :%bd|e#|bd#
 
 " Mappings
 " ========
