@@ -101,9 +101,9 @@ function stp_gdb() {
 }
 
 function stp_home() {
-  mkdir -p ~/bin ~/.local/bin ~/bkp ~/doc/scr ~/eph ~/port ~/pj/build/rel ~/pj/install/rel ~/tst
+  mkdir -p ~/bin ~/.local/bin ~/bkp ~/doc/scr ~/eph ~/port ~/pj/build/rel ~/pj/install/rel ~/tst ~/.cache/vim/swap
 
-  git -C ~/rc pull 2> /dev/null || git clone https://github.com/abinavpp/rc ~/rc
+  git -C ~/rc pull || git clone https://github.com/abinavpp/rc ~/rc
   ~/rc/bin/rcsync out -H abinavpp
 
   rm -f ~/.profile
