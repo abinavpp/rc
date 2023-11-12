@@ -133,6 +133,7 @@ function! MapLsp()
   nnoremap <buffer><Leader>lR :LspRename<CR>
   nnoremap <buffer><Leader>li :LspHover<CR>
   nnoremap <buffer><Leader>le :LspNextError<CR>
+  nnoremap <buffer><Leader>lE :LspNextDiagnostic<CR>
   nnoremap <buffer><Leader>ll :LspNextReference<CR>
   nnoremap <buffer><Leader>lL :LspPreviousReference<CR>
   nnoremap <buffer><Leader>lp :LspPeekDefinition<CR>
@@ -238,6 +239,8 @@ com! Cl :%bd|e#|bd#
 call Map('<Leader>d', '"_d') | call Map('<Leader>D', '"_D')
 call Map('x', '"_x') | call Map('X', '"_X')
 call Map('c', '"_c') | call Map('C', '"_C')
+" FIXME: vnoremap affects visual block. This breaks the 'I' to prepend in visual
+" block
 call Map('I', '^') | call Map('A', '$')
 nnoremap <Leader>z :call Save()<CR>
 nnoremap U <C-r>
