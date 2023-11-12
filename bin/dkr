@@ -2,7 +2,7 @@
 
 img="$i"; cont="$c"
 [[ -z $cont ]] && cont="$USER-$img"
-mnt_mode=""
+mnt_mode="rw"
 
 function unused() {
   c+=' --cap-add=SYS_PTRACE --security-opt=seccomp=unconfined'
