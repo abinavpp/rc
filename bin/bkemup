@@ -47,6 +47,10 @@ my @backup_globs = (
   "$ENV{HOME}/.post-*"
 );
 
+my @exclude_paths = (
+  "$ENV{HOME}/.config/google-chrome/Default/Service Worker/CacheStorage",
+);
+
 my $dest = ".";
 
 GetOptions(
@@ -85,10 +89,12 @@ for my $i (0 .. $#backup_paths) {
 
 delete_array_elements(\@backup_paths, @ignore_indices);
 
+my $backup_paths_args = join ' ', map { qq/'$_'/ } @backup_paths;
+my $exclude_paths_tar = join ' ', map { '--exclude="' . $_ . '"' } @exclude_paths;
+
 if ($opt_dump_size) {
-  my $du = "du -ch " . join ' ', map { qq/'$_'/ } @backup_paths;
-  system("$du | sort -h | tail -n30");
+  system("du -ch $exclude_paths_tar $backup_paths_args | sort -h | tail -n30");
   exit 0;
 }
 
-system("tar", "-c", "-z", "-f", "$dest/$host.tar.gz", @backup_paths);
+system("tar $exclude_paths_tar -czf $dest/$host.tar.gz $backup_paths_args");
