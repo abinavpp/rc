@@ -254,6 +254,8 @@ nnoremap <Leader>w <C-w>
 nnoremap <Leader>a :Files<CR>
 nnoremap <Leader>f :Buffers<CR>
 nnoremap <Leader>x :bd<CR>
+nnoremap <Leader>s ma
+nnoremap <Leader>S `a
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
 nnoremap <Leader>lt :TagbarToggle<CR>
@@ -307,6 +309,7 @@ au CompleteDone * if pumvisible() == 0 | pclose | endif
 call Lsp(['clangd', '--header-insertion=iwyu'], ['c', 'cpp', 'objc', 'objcpp',
   \ 'cuda'])
 call Lsp(['rust-analyzer'], ['rust'])
+call Lsp(['mlir-lsp-server'], ['mlir'])
 call Lsp(['pylsp'], ['python'])
 call Lsp(['typescript-language-server', '--stdio'], ['javascript',
   \ 'typescript'])
