@@ -254,8 +254,8 @@ nnoremap <Leader>w <C-w>
 nnoremap <Leader>a :Files<CR>
 nnoremap <Leader>f :Buffers<CR>
 nnoremap <Leader>x :bd<CR>
-nnoremap <Leader>s ma
-nnoremap <Leader>S `a
+nnoremap <Leader>r ma
+nnoremap <Leader>R `a
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
 nnoremap <Leader>lt :TagbarToggle<CR>
