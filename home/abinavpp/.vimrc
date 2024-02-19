@@ -209,6 +209,20 @@ function! Style(s)
   endif
 endfunction
 
+function! FileCheck(range, line1, line2)
+  let l:comment_prefix = split(&commentstring, '%s')[0]
+  let l:cmd = 's/^/' . escape(comment_prefix, '/') . 'CHECK-NEXT: /g'
+
+  " TODO: Verify (Copied from the Glog function).
+  if a:range == 0
+    execute '0' . l:cmd . '!'
+  elseif a:range == 1
+    execute a:line1 . l:cmd
+  else
+    execute a:line1 . ',' . a:line2 . l:cmd
+  endif
+endfunction
+
 " Commands
 " ========
 com! Tidy :sil! exe '%s/\v\ +$//g' <bar> :sil! exe '%s/\v[^\x00-\x7F]+//g'
@@ -233,6 +247,7 @@ com! Sv :so $MYVIMRC
 com! -nargs=1 St :call SetTab("<args>")
 com! -nargs=1 S :call Style("<args>")
 com! Cl :%bd|e#|bd#
+com! -range Fc :call FileCheck(<range>, <line1>, <line2>)
 
 " Mappings
 " ========
