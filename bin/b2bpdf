@@ -1,0 +1,25 @@
+#! /bin/bash
+
+front_doc="$1" rear_doc="$2" out_doc="$3"
+
+function die {
+  echo "$1"; exit 1
+}
+
+[[ -f $front_doc && -f $rear_doc && -n $3 ]] || die "Invalid cmdline"
+
+tmp_dir=$(mktemp -dt b2bpdf_XXXXXX)
+trap 'rm -rf -- "$tmp_dir"' EXIT
+
+pdfseparate "$front_doc" $tmp_dir/front-%d
+page_cnt=`ls $tmp_dir | wc -l`
+pdfseparate "$rear_doc" $tmp_dir/rear-%d
+(( $page_cnt * 2 == `ls $tmp_dir | wc -l` )) ||
+  die "Front pages count != rear pages count"
+
+list=""
+for ((i = 1, j=$page_cnt; i <= $page_cnt; ++i, --j )); do
+  list+="$tmp_dir/front-$i $tmp_dir/rear-$j "
+done
+
+pdfunite $list "$out_doc"
