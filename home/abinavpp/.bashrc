@@ -269,7 +269,7 @@ shopt -s histappend extglob
 PROMPT_COMMAND='history -a'
 export HISTSIZE=32768
 export HISTFILESIZE=32768
-PS1='[\j] \W \[\e[38;5;76m\]$\[\e[0m\] '
+PS1='[\j] \W \[\e[38;5;76m\]$([[ -n `eref -d` ]] && echo \*)$\[\e[0m\] '
 export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo.
 export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble.
