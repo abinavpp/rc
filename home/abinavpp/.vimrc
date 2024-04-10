@@ -322,8 +322,7 @@ au CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " Syntax and colors
 " =================
-call Lsp(['clangd', '--header-insertion=iwyu'], ['c', 'cpp', 'objc', 'objcpp',
-  \ 'cuda'])
+call Lsp(['clangd'], ['c', 'cpp', 'objc', 'objcpp', 'cuda'])
 call Lsp(['rust-analyzer'], ['rust'])
 call Lsp(['mlir-lsp-server'], ['mlir'])
 call Lsp(['pylsp'], ['python'])
