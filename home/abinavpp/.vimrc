@@ -326,6 +326,7 @@ call Lsp(['clangd'], ['c', 'cpp', 'objc', 'objcpp', 'cuda'])
 call Lsp(['rust-analyzer'], ['rust'])
 call Lsp(['mlir-lsp-server'], ['mlir'])
 call Lsp(['pylsp'], ['python'])
+call Lsp(['esbonio'], ['rst']) " FIXME: This doesn't work!
 call Lsp(['typescript-language-server', '--stdio'], ['javascript',
   \ 'typescript'])
 
