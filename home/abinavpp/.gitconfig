@@ -1,21 +1,25 @@
 [alias]
   cfl = config --local -l
   cfg = config --global -l
-  lg = log --oneline
+  lg = log
   lgg = log --graph --oneline
-  sho = show --no-patch --oneline
-  shs = show --stat --oneline
+  so = show
+  soq = show --no-patch --oneline
+  sos = show --stat --oneline
   st = status
   sh = stash
+  shl = stash list
   cm = commit
   cma = commit --amend
   ch = checkout
   br = branch
   dfs = diff --stat
+  dfc = diff --cached
   rb = rebase
   rbi = rebase -i
   rbc = rebase --continue
-  dfc = diff --cached
+  cp = cherry-pick
+  cpc = cherry-pick --continue
   them = ls-files --others --directory
 
 [core]
