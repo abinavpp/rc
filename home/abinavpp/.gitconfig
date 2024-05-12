@@ -1,6 +1,4 @@
 [alias]
-  cfl = config --local -l
-  cfg = config --global -l
   lg = log
   lgg = log --graph --oneline
   so = show
@@ -20,6 +18,9 @@
   rbc = rebase --continue
   cp = cherry-pick
   cpc = cherry-pick --continue
+  cld = clang-format --diff
+  cfl = config --local -l
+  cfg = config --global -l
   them = ls-files --others --directory
 
 [core]
