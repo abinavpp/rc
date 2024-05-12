@@ -21,16 +21,8 @@ cmd="xterm
   -xrm 'XTerm*metaSendsEscape: true'
   -xrm 'XTerm*selectToClipboard: true'
   -xrm 'XTerm*VT100*translations: #override \n\
-    Ctrl Shift <Key>V: insert-selection(SELECT, CUT_BUFFER0, PRIMARY)'"
-
-if [[ $run == '1' ]]; then
-  cmd+="
-    -xrm 'XTerm*faceName: DejaVu Sans Mono:size=12:antialias=true'"
-else
-  cmd+="
-    -xrm 'XTerm*faceName: DejaVu Sans Mono:size=12:antialias=false'
-    -xrm 'XTerm*allowBoldFonts: false'"
-fi
+    Ctrl Shift <Key>V: insert-selection(SELECT, CUT_BUFFER0, PRIMARY)'
+  -xrm 'XTerm*faceName: Liberation Mono:size=12'"
 
 cmd=$(echo $cmd -T xterm -e /bin/bash)
 exec bash -c "$cmd"
