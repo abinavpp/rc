@@ -20,6 +20,9 @@
   cp = cherry-pick
   cpa = cherry-pick --abort
   cpc = cherry-pick --continue
+  fc = fetch
+  fca = fetch --all
+  fcap = fetch --all --prune
   cld = clang-format --diff
   cfl = config --local -l
   cfg = config --global -l
