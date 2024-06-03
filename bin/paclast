@@ -1,0 +1,3 @@
+#! /bin/bash
+
+grep -P 'pacman \-S\w*?u' /var/log/pacman.log | tail -n1
