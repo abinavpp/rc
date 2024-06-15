@@ -1,3 +1,6 @@
 #! /bin/bash
 
-man "$@" | $EDITOR -c 'nnoremap q ZQ' -
+num_line_width=$((`man "$@" | wc -l | wc -c` - 1))
+
+# Consider vim's line-num-column's width in MANWIDTH.
+MANWIDTH=$((`tput cols` - num_line_width)) man "$@" | $EDITOR -c 'nnoremap q ZQ' -
