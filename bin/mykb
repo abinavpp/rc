@@ -22,20 +22,12 @@ function xmap() {
   xmodmap -e "keycode $kc = $dst"
 }
 
-function xmm() {
-  local a
-  for a in "$@"; do
-    xmodmap -e "$a"
-  done
-}
-
 function x() {
   xkbset sticky -twokey
   xkbset exp 1 =sticky
   setxkbmap -option caps:ctrl_modifier
-  xmm 'remove shift = Shift_L'
+  # FIXME: xmodmap + xkb config is buggy; Replace xmodmap ones with xkb.
   xmap '<TAB>' 'Shift_L'
-  xmm 'add shift = Shift_L'
 }
 
 run=$1; shift
