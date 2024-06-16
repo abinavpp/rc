@@ -1,15 +1,12 @@
 #! /bin/bash
 
 function raw_tty() {
-  ! dumpkeys &> /dev/null && return 1;
+  ! dumpkeys &> /dev/null && return 1
   local keymap=`dumpkeys | head -n 1`
   cat <<E > ~/.cache/mytty.map
 $keymap
-keycode 58 = Escape
-keycode 1 = Caps_Lock
-keycode 56 = SCtrl
-keycode 100 = SAlt
-keycode 125 = SShift
+keycode 15 = SShift
+keycode 58 = SCtrl
 E
   loadkeys ~/.cache/mytty.map
 }
@@ -29,8 +26,8 @@ function x() {
   xkbset sticky -twokey
   xkbset exp 1 =sticky
 
-  setxkbmap -symbols '+capslock(ctrl_modifier)'
   setxkbmap -symbols '+tab(shift)'
+  setxkbmap -symbols '+capslock(ctrl_modifier)'
 }
 
 run=$1; shift
