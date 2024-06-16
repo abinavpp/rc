@@ -1,0 +1,5 @@
+hidden partial modifier_keys
+xkb_symbols "shift" {
+    key <TAB> { [ Shift_L ], type[group1] = "ONE_LEVEL" };
+    modifier_map Shift { <TAB> };
+};

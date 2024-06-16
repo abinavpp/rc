@@ -23,11 +23,14 @@ function xmap() {
 }
 
 function x() {
+  # Discard existing options.
+  setxkbmap -option
+
   xkbset sticky -twokey
   xkbset exp 1 =sticky
-  setxkbmap -option caps:ctrl_modifier
-  # FIXME: xmodmap + xkb config is buggy; Replace xmodmap ones with xkb.
-  xmap '<TAB>' 'Shift_L'
+
+  setxkbmap -symbols '+capslock(ctrl_modifier)'
+  setxkbmap -symbols '+tab(shift)'
 }
 
 run=$1; shift
