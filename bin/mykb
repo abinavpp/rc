@@ -26,8 +26,8 @@ function x() {
   xkbset sticky -twokey
   xkbset exp 1 =sticky
 
-  setxkbmap -symbols '+tab(shift)'
-  setxkbmap -symbols '+capslock(ctrl_modifier)'
+  setxkbmap -symbols '+shift2(tab)'
+  setxkbmap -symbols '+ctrl(nocaps)'
 }
 
 run=$1; shift
