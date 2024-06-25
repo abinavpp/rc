@@ -30,7 +30,7 @@
 0 zip unzip unrar
 0 dialog
 0 bc calc
-0 graphviz rst2pdf
+0 graphviz rst2pdf qpdf
 0 tmux
 0 perf
 0 parallel
@@ -84,7 +84,7 @@
 # Other GUI
 # =========
 3 pavucontrol-qt
-3 pcmanfm-gtk3 ffmpegthumbnailer
+3 pcmanfm-qt ffmpegthumbnailer
 3 maim simplescreenrecorder
 3 libreoffice-fresh ghostscript unoconv zathura zathura-pdf-mupdf zathura-ps
 3 feh imagemagick gthumb
