@@ -286,7 +286,7 @@ edelimvar ':' PATH -p ~/bin ~/.local/bin ~/rc/bin ~/.vim/plugged/fzf/bin
 __git_complete gitr __git_main &> /dev/null
 __git_complete gitrq __git_main &> /dev/null
 __git_complete gitfr git_checkout &> /dev/null
-complete -F _man mn
+complete -F _comp_cmd_man mn
 complete -F _comp_sysnt sysnt
 complete -F _comp_cmpnt cmpnt
 complete -F _comp_scrnt scrnt
