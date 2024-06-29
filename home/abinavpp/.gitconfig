@@ -28,6 +28,10 @@
   cfg = config --global -l
   them = ls-files --others --directory
 
+[grep]
+  lineNumber = true
+  patternType = perl
+
 [core]
   editor = vim -i NONE
 
