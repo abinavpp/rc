@@ -85,7 +85,7 @@
 # =========
 3 pavucontrol-qt
 3 pcmanfm-qt ffmpegthumbnailer
-3 maim simplescreenrecorder
+3 maim
 3 libreoffice-fresh ghostscript unoconv zathura zathura-pdf-mupdf zathura-ps
 3 feh imagemagick gthumb
 3 mpv vlc libva-intel-driver
