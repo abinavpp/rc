@@ -253,6 +253,8 @@ com! -range Fc :call FileCheck(<range>, <line1>, <line2>)
 
 " Mappings
 " ========
+" FIXME: :q causes E173 if > 1 file in cmdline.
+cabbrev q qa
 call Map('<Leader>d', '"_d') | call Map('<Leader>D', '"_D')
 call Map('x', '"_x') | call Map('X', '"_X')
 call Map('c', '"_c') | call Map('C', '"_C')
@@ -309,6 +311,7 @@ au FileType mlir setlocal commentstring=//\ %s
 au FileType mlir,tablegen setlocal matchpairs+=<:>
 au FileType cpp,tablegen setlocal commentstring=//\ %s | set comments^=:///
 set laststatus=2 statusline=%!StatusLine()
+filetype plugin indent on
 au BufEnter *.cl set filetype=c
 au BufEnter *.{hip,inc,def} set filetype=cpp
 au BufEnter *.{ll,mir} set filetype=llvm
@@ -319,11 +322,12 @@ au BufEnter *.c.* set filetype=rtl
 au BufEnter *.{gvy,Jenkinsfile} set filetype=groovy
 au BufEnter *.yul set filetype=yul
 au FileType python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
-
 au CompleteDone * if pumvisible() == 0 | pclose | endif
+syntax on
+colo CandyPaper2
 
-" Syntax and colors
-" =================
+" LSP
+" ===
 call Lsp(['clangd'], ['c', 'cpp', 'objc', 'objcpp', 'cuda'])
 call Lsp(['rust-analyzer'], ['rust'])
 call Lsp(['mlir-lsp-server'], ['mlir'])
@@ -331,10 +335,6 @@ call Lsp(['pylsp'], ['python'])
 call Lsp(['esbonio'], ['rst']) " FIXME: This doesn't work!
 call Lsp(['typescript-language-server', '--stdio'], ['javascript',
   \ 'typescript'])
-
-syntax on
-filetype plugin indent on
-colo CandyPaper2
 
 " .post-vimrc
 " ===========
