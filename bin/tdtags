@@ -27,6 +27,10 @@ function mlir_com() {
   for d in IR Interfaces Transforms; do
     for f in $s/mlir/include/mlir/$d/*.td; do
       f=`basename $f`
+      if [[ $f == "BuiltinDialectBytecode.td" || \
+            $f == "BytecodeBase.td" ]];then
+        continue;
+      fi
       echo "include \"mlir/$d/$f\"" >> _tmp.td
     done
   done
