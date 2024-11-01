@@ -39,7 +39,7 @@ function eref() {
     local filter_cmd
     printf -v filter_cmd '%s' 'sed -E /^(opt|filter_cmd|PPID|PWD|OLDPWD' \
       '|BASH_ARGC|BASH_ARGV|BASH_LINENO|BASH_REMATCH|BASH_SOURCE|COLUMNS' \
-      '|LINES|FUNCNAME|TMUX_PANE|_.*' \
+      '|LINES|FUNCNAME|TMUX|WINDOWID|TMUX_PANE|_.*' \
       '|cur|prev|words|cword|arg|PLUGIN)=/d'
     [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
 
