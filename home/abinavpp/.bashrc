@@ -37,17 +37,20 @@ function eref() {
     [[ ! -d $ref_dir ]] && return 1
 
     local filter_cmd
+
     printf -v filter_cmd '%s' 'sed -E /^(opt|filter_cmd|PPID|PWD|OLDPWD' \
       '|BASH_ARGC|BASH_ARGV|BASH_LINENO|BASH_REMATCH|BASH_SOURCE|COLUMNS' \
       '|LINES|FUNCNAME|TMUX|WINDOWID|TMUX_PANE|_.*' \
       '|cur|prev|words|cword|arg|PLUGIN)=/d'
     [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
-
     diff <(cat $ref_dir/variable | $filter_cmd) \
       <(set -o posix; set | $filter_cmd)
 
+    filter_cmd='sed -E /^complete_fullquote[[:space:]]/d'
+    [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
+    diff <(cat $ref_dir/shopt | $filter_cmd ) <(shopt | $filter_cmd)
+
     diff <(cat $ref_dir/set) <(set -o)
-    diff <(cat $ref_dir/shopt) <(shopt)
     diff <(cat $ref_dir/alias) <(alias)
     return
   fi
