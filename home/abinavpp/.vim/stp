@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-my $wget = "wget --no-check-certificate --tries 3 --hsts-file /dev/null";
+my $wget = "wget --no-check-certificate --tries 30 --hsts-file /dev/null";
 
 sub setup_vim {
   system("mkdir -p $ENV{HOME}/.cache/vim/swap");
