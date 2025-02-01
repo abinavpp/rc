@@ -282,7 +282,7 @@ export LESSHISTFILE=/dev/null
 edelimvar ':' PATH -a "."
 edelimvar ':' PATH -p ~/bin ~/.local/bin ~/rc/bin ~/.vim/plugged/fzf/bin
 
-. ~/.vim/plugged/fzf/shell/key-bindings.bash &> /dev/null
+eval "$(fzf --bash)"
 . /usr/share/bash-completion/completions/git &> /dev/null
 . /usr/share/bash-completion/completions/man &> /dev/null
 . /usr/share/bash-completion/completions/pacman &> /dev/null
