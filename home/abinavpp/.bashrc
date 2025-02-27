@@ -37,28 +37,25 @@ function eref() {
     [[ ! -d $ref_dir ]] && return 1
 
     local filter_cmd
-
-    printf -v filter_cmd '%s' 'sed -E /^(opt|filter_cmd|PPID|PWD|OLDPWD' \
-      '|BASH_ARGC|BASH_ARGV|BASH_LINENO|BASH_REMATCH|BASH_SOURCE|COLUMNS' \
-      '|LINES|FUNCNAME|TMUX|WINDOWID|TMUX_PANE|_.*' \
-      '|cur|prev|words|cword|arg|PLUGIN)=/d'
+    printf -v filter_cmd '%s' 'sed -nE /^(PATH|LIBRARY_PATH|LD_LIBRARY_PATH' \
+      '|CPATH|LANG)=/p'
     [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
-    diff <(cat $ref_dir/variable | $filter_cmd) \
+    diff -u <(cat $ref_dir/variable | $filter_cmd) \
       <(set -o posix; set | $filter_cmd)
 
     filter_cmd='sed -E /^complete_fullquote[[:space:]]/d'
     [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
-    diff <(cat $ref_dir/shopt | $filter_cmd ) <(shopt | $filter_cmd)
+    diff -u <(cat $ref_dir/shopt | $filter_cmd ) <(shopt | $filter_cmd)
 
-    diff <(cat $ref_dir/set) <(set -o)
-    diff <(cat $ref_dir/alias) <(alias)
+    diff -u <(cat $ref_dir/set) <(set -o)
+    diff -u <(cat $ref_dir/alias) <(alias)
     return
   fi
 
   if [[ $opt == '-f' ]]; then
     [[ ! -d $ref_dir ]] && return 1
 
-    diff <(cat $ref_dir/function) <(declare -f)
+    diff -u <(cat $ref_dir/function) <(declare -f)
   fi
 }
 
