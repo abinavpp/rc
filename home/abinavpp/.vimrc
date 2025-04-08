@@ -333,6 +333,7 @@ call Lsp(['rust-analyzer'], ['rust'])
 call Lsp(['mlir-lsp-server'], ['mlir'])
 call Lsp(['pylsp'], ['python'])
 call Lsp(['esbonio'], ['rst']) " FIXME: This doesn't work!
+call Lsp(['marksman'], ['markdown'])
 call Lsp(['typescript-language-server', '--stdio'], ['javascript',
   \ 'typescript'])
 
