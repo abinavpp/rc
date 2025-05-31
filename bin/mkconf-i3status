@@ -1,40 +1,23 @@
 #! /bin/bash
 
-path_hwmon="/sys/class/hwmon"
-
 function write_temperature {
-  local count=0
-  local hwmon_i temperature
+  path=$(find /sys/devices/platform/coretemp.0/hwmon/ \
+    -name temp1_input -print -quit)
+  [ -n "$path" ] || return
 
-  for hwmon_i in $path_hwmon/*; do
-    if [[ -d $hwmon_i ]]; then
-      # consider only the first temp*_input
-      temp_input=`ls $hwmon_i/temp*_input 2> /dev/null | head -n1`
-      if [[ ! -e $temp_input ]]; then
-        continue;
-      fi
-
-      ((++count))
-      [[ $1 == "get_count" ]] && continue;
-
-      echo "cpu_temperature $((count - 1)) {"
-      echo -e "\tformat = \"%degrees °C\"" # echo -e "\u00B0"
-      echo -e "\tmax_threshold = \"75\""
-      echo -e "\tpath = \"$temp_input\""
-      echo -e "}\n"
-    fi
-  done
-
-  if [[ $1 == "get_count" ]]; then
-    echo $((count))
-  fi
+  cat <<EOF
+cpu_temperature 0 {
+  format = "%degrees °C"
+  max_threshold = "75"
+  path = $path
+}
+EOF
 }
 
 function write_order_temperature {
-  local n=$(write_temperature get_count)
-  for ((i = 0; i < $n; i++)) do
-    echo "order += \"cpu_temperature $i\""
-  done
+  path=$(find /sys/devices/platform/coretemp.0/hwmon/ \
+    -name temp1_input -print -quit)
+  [ -n "$path" ] && echo "order += \"cpu_temperature 0\""
 }
 
 function is_memory_supported {
