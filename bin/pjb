@@ -1,22 +1,22 @@
 #! /bin/bash
 
-function die() { echo "$@" 1>&2; exit 1; }
+profile="$1"
+worktree="$2"
+shift 2
 
-[[ ! $# -ge 1 ]] && die "Usage: pjb <project> <build-cmd>"
+dir=~/pj/$worktree
+build="$dir/build/$profile"
+target="$dir/target/$profile"
 
-pj="$1"; shift
-build_dir="$HOME/pj/build/$pj"
-[[ ! -d "$build_dir" ]] && die "Project doesn't exist."
-cd "$build_dir"
-
-export PATH="$RESET_PATH"
-export LD_LIBRARY_PATH="$RESET_LD_LIBRARY_PATH"
-export LIBRARY_PATH="$RESET_LIBRARY_PATH"
-export CPATH="$RESET_CPATH"
-
-if [[ -e build.ninja ]]; then
-  ninja "$@"
-
-elif [[ -e Makefile ]]; then
-  make "$@"
+if [ -d "$build" ]; then
+    cd "$build" || exit 1
+    [ -f build.ninja ] && ninja "$@" && exit
+    [ -f Makefile ] && make "$@" && exit
+    exit 1
+elif [ -d "$target" ]; then
+    cd "$dir" || exit 1
+    [ "$profile" = "debug" ] && profile="dev"
+    cargo build --profile "$profile" "$@"
+else
+    exit 1
 fi
