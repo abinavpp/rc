@@ -5,8 +5,8 @@ use warnings;
 require File::Temp;
 use File::Temp();
 
-my $invocation_file = "CMakeInvocation";
-my $fh = File::Temp->new(TEMPLATE => '/tmp/CMakeInvocation.XXXX', UNLINK => 1);
+my $invocation_file = "cmake-invocation";
+my $fh = File::Temp->new(TEMPLATE => '/tmp/cmake-invocation.XXXX', UNLINK => 1);
 
 my @eoi = ('PATH', 'LD_LIBRARY_PATH', 'LIBRARY_PATH',
   'CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH');
