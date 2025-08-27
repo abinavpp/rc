@@ -25,7 +25,7 @@ function eref() {
   if [[ $opt == '-s' ]]; then
     mkdir $ref_dir 2> /dev/null
 
-    (set -o posix; set > $ref_dir/variable)
+    (printenv > $ref_dir/variable)
     declare -f > $ref_dir/function
     set -o > $ref_dir/set
     shopt > $ref_dir/shopt
@@ -36,26 +36,25 @@ function eref() {
   if [[ $opt == '-d' || $opt == '-D' ]]; then
     [[ ! -d $ref_dir ]] && return 1
 
-    local filter_cmd
-    printf -v filter_cmd '%s' 'sed -nE /^(PATH|LIBRARY_PATH|LD_LIBRARY_PATH' \
-      '|CPATH|LANG)=/p'
-    [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
-    diff -u <(cat $ref_dir/variable | $filter_cmd) \
-      <(set -o posix; set | $filter_cmd)
+    local filt
+    filt='sed -E /^(PWD|OLDPWD|SHLVL|TERM_PROGRAM.*|TMUX.*|WINDOWID|PLUGIN)=/d'
+    [[ $opt == '-D' ]] && filt='tee /dev/null'
+    diff -u --color=always <(cat $ref_dir/variable | $filt) \
+      <(printenv | $filt)
 
-    filter_cmd='sed -E /^complete_fullquote[[:space:]]/d'
-    [[ $opt == '-D' ]] && filter_cmd='tee /dev/null'
-    diff -u <(cat $ref_dir/shopt | $filter_cmd ) <(shopt | $filter_cmd)
+    filt='sed -E /^complete_fullquote[[:space:]]/d'
+    [[ $opt == '-D' ]] && filt='tee /dev/null'
+    diff -u --color=always <(cat $ref_dir/shopt | $filt ) <(shopt | $filt)
 
-    diff -u <(cat $ref_dir/set) <(set -o)
-    diff -u <(cat $ref_dir/alias) <(alias)
+    diff -u --color=always <(cat $ref_dir/set) <(set -o)
+    diff -u --color=always <(cat $ref_dir/alias) <(alias)
     return
   fi
 
   if [[ $opt == '-f' ]]; then
     [[ ! -d $ref_dir ]] && return 1
 
-    diff -u <(cat $ref_dir/function) <(declare -f)
+    diff -u --color=always <(cat $ref_dir/function) <(declare -f)
   fi
 }
 
@@ -240,10 +239,9 @@ function rn {
   /bin/rm -f -- "$tmp_file"
 }
 
-function sysnt { vim "$HOME/doc/cs/sys/$1"; }
-function cmpnt { vim "$HOME/doc/cs/cmp/$1"; }
-function scrnt { vim "$HOME/doc/scr/$1"; }
-function culnt { vim "$HOME/doc/cul/$1"; }
+function sysnt { vim "$HOME/Documents/cs/sys/$1"; }
+function cmpnt { vim "$HOME/Documents/cs/cmp/$1"; }
+function scrnt { vim "$HOME/Documents/scr/$1"; }
 
 function _comp_nt() {
   local dir=$1
@@ -259,10 +257,10 @@ function _comp_nt() {
   COMPREPLY=( $(compgen -W "$words" -- $cur) )
 }
 
-function _comp_sysnt() { _comp_nt ~/doc/cs/sys; }
-function _comp_cmpnt() { _comp_nt ~/doc/cs/cmp; }
-function _comp_scrnt() { _comp_nt ~/doc/scr; }
-function _comp_culnt() { _comp_nt ~/doc/cul; }
+function _comp_sysnt() { _comp_nt ~/Documents/cs/sys; }
+function _comp_cmpnt() { _comp_nt ~/Documents/cs/cmp; }
+function _comp_scrnt() { _comp_nt ~/Documents/scr; }
+function _comp_culnt() { _comp_nt ~/Documents/cul; }
 
 set -o ignoreeof
 shopt -s histappend extglob

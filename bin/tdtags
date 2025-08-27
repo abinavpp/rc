@@ -1,8 +1,8 @@
 #! /bin/bash
 
 [[ -z $ty ]] && ty="mlir"
-[[ -z $s ]] && s="$HOME/pj/llvm-project"
-[[ -z $b ]] && b="$HOME/pj/build/rel/llvm-project"
+[[ -z $s ]] && s="$HOME/pj/llvm-project/ml"
+[[ -z $b ]] && b="$s/build/rel"
 [[ -z $t ]] && t='AMDGPU'
 
 function tgt() {
