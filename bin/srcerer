@@ -4,7 +4,7 @@ function get_root() {
   local orig_pwd=$(pwd)
 
   while [[ $(pwd) != "/" ]]; do
-    if [[ -e ".git" || -e ".clang-format" || -x "configure" ]]; then
+    if [[ -e ".git" ]]; then
       echo $(pwd);
       break;
     fi
