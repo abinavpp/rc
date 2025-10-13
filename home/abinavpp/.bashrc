@@ -272,7 +272,6 @@ export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo.
 export EDITOR="$VISUAL" # Use $EDITOR if `function vim` creates trouble.
 export MANSECT="2:3:1:8:9:5:4:7:0:n:l"
-export FZF_DEFAULT_OPTS="--color 16"
 export LESSHISTFILE=/dev/null
 edelimvar ':' PATH -a "."
 edelimvar ':' PATH -p ~/bin ~/.local/bin ~/rc/bin ~/.vim/plugged/fzf/bin

@@ -1,3 +1,6 @@
+" Frequent sequences:
+" - mc mz mle (in C++)
+
 " Environment variables
 " =====================
 let $PATH = $RESET_PATH
