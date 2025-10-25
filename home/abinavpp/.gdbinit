@@ -9,9 +9,9 @@ def src(file):
 src(os.environ['HOME'] + '/.pre-gdbinit')
 src('/usr/share/gdb/python/gdb/command/pretty_printers.py')
 src(os.environ['HOME'] +
-    '/pj/llvm-project/llvm/utils/gdb-scripts/prettyprinters.py')
+    '/pj/llvm-project/us/llvm/utils/gdb-scripts/prettyprinters.py')
 src(os.environ['HOME'] +
-    '/pj/llvm-project/mlir/utils/gdb-scripts/prettyprinters.py')
+    '/pj/llvm-project/us/mlir/utils/gdb-scripts/prettyprinters.py')
 
 class IsPointer(gdb.Function):
   def __init__(self):
