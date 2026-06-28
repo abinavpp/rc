@@ -1,10 +1,15 @@
 #! /bin/bash
 
 sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+sudo pacman -Sy --noconfirm archlinux-keyring
 sudo pacman -Syyu --noconfirm
 yes | yay -Syu --answerdiff None --answerclean None --answerupgrade None
 pacman -Qdtq | sudo pacman -Rns --noconfirm -
 ~/.vim/stp
+gh extension upgrade --all
+pipx upgrade-all
+cargo install-update -a
+npm update -g
 # sudo find /etc -type f \( -name '*.pacnew' -o -name '*.pacsave' -o -name '*-' \) -exec rm -v {} \;
 
 # fwupdmgr refresh; fwupdmgr get-updates

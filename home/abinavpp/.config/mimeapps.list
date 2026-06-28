@@ -21,3 +21,5 @@ video/x-msvideo=mpv.desktop
 x-scheme-handler/html=google-chrome.desktop
 x-scheme-handler/msteams=teams.desktop
 x-scheme-handler/receiver=receiver.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
+x-scheme-handler/slack=slack.desktop

@@ -34,8 +34,7 @@ let s:trailing_space_match_state = 1
 let g:color_theme = "dark"
 let g:tagbar_left = 1
 let g:tagbar_show_linenumbers = 2
-let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0,
-  \ 'relative': v:true, 'yoffset': 1.0 } }
+let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0 } }
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],
   \ 'passive_filetypes': [] }
 let g:syntastic_auto_loc_list = 1
@@ -323,6 +322,8 @@ au BufEnter *.{gvy,Jenkinsfile} set filetype=groovy
 au BufEnter *.yul set filetype=yul
 au FileType python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 au CompleteDone * if pumvisible() == 0 | pclose | endif
+" Force vim-lsp to resync the buffer on :e (workaround for stale didOpen).
+au BufReadPre * if &buftype ==# '' | silent! doautocmd <nomodeline> BufDelete | endif
 syntax on
 colo CandyPaper2
 
