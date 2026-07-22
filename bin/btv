@@ -2,12 +2,13 @@
 
 function br() { echo; }
 function h1() { head -n 1; }
+function p() { type -p "$1"; }
 
-cmake --version | h1; br
-ccache --version | h1; br
-cc --version | h1; br
-c++ --version | h1; br
-clang --version | h1; clang -v |& grep 'Selected GCC installation'; br
-clang++ --version | h1; clang++ -v |& grep 'Selected GCC installation'; br
-clangd --version | h1; br
-ld.lld --version | h1;
+p cmake; cmake --version | h1; br
+p ccache; ccache --version | h1; br
+p cc; cc --version | h1; br
+p c++; c++ --version | h1; br
+p clang; clang --version | h1; clang -v |& grep 'Selected GCC installation'; br
+p clang++; clang++ --version | h1; clang++ -v |& grep 'Selected GCC installation'; br
+p clangd; clangd --version | h1; br
+p ld.lld; ld.lld --version | h1;

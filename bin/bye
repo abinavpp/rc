@@ -1,0 +1,72 @@
+#! /bin/bash
+
+# :qa every vim (refuses on unsaved buffers), then report whatever still
+# holds the system: surviving vims, active pacman, running jobs/agents.
+# Says bye back when nothing does.
+
+ok=1
+block() { ok=0; sed 's/^/[halt] /' <<< "$*"; }
+warn() { ok=0; sed 's/^/[warn] /' <<< "$*"; }
+
+# tmux pane of a tty if tmux is up, the bare tty otherwise.
+locate() {
+  local tty=${1,,} pane
+  pane=$(tmux list-panes -a \
+    -F '#{pane_tty} #{session_name}:#{window_index}.#{pane_index}' \
+    2>/dev/null | awk -v t="$tty" '$1 == t {print "tmux "$2}')
+  echo "${pane:-$tty}"
+}
+
+# "comm in <location>" per process matching $1, deduped.
+report() {
+  local pid comm tty
+  for pid in $(pgrep -x "$1"); do
+    read -r comm tty <<< "$(ps -o comm=,tty= -p "$pid")"
+    [[ -z $comm ]] && continue
+    if [[ $tty == '?' ]]; then
+      echo "$comm (no tty)"
+    else
+      echo "$comm in $(locate "/dev/$tty")"
+    fi
+  done | sort -u
+}
+
+if [[ -e /var/lib/pacman/db.lck ]] || pgrep -x 'pacman|yay' > /dev/null; then
+  block "pacman/yay active"
+fi
+
+servers=$(vim --serverlist 2>/dev/null)
+for s in $servers; do
+  vim --servername "$s" --remote-send '<C-\><C-N>:qa<CR>' 2>/dev/null
+done
+for _ in {1..15}; do
+  servers=$(vim --serverlist 2>/dev/null)
+  [[ -z $servers ]] && break
+  sleep 0.2
+done
+
+# Server names are the uppercased $(tty) of the wrapper-launched vim.
+expr='join(map(filter(range(1,bufnr("$")),
+  "getbufvar(v:val,'\''&modified'\'')"),
+  "empty(bufname(v:val))?'\''[No Name]'\'':bufname(v:val)"), ",")'
+for s in $servers; do
+  mod=$(timeout 2 vim --servername "$s" --remote-expr "$expr" 2>/dev/null)
+  block "vim in $(locate "$s") unsaved: ${mod:-unresponsive}"
+done
+
+for pid in $(pgrep -x vim); do
+  tty=$(ps -o tty= -p "$pid" | tr -d ' ')
+  [[ -z $tty ]] && continue
+  [[ $tty == '?' ]] && { block "vim without tty, unchecked"; continue; }
+  grep -qix "/dev/$tty" <<< "$servers" ||
+    block "vim in $(locate "/dev/$tty") unchecked (no server)"
+done
+
+jobs=$(report 'ninja|cargo|rustc|make|cc1.*|rsync')
+[[ -n $jobs ]] && warn "$jobs"
+
+agents=$(report 'claude|codex')
+[[ -n $agents ]] && warn "$agents"
+
+((ok)) && echo bye
+exit $((!ok))

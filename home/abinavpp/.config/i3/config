@@ -64,6 +64,12 @@ bindsym $m+Shift+8 move container to workspace 8
 bindsym $m+Shift+9 move container to workspace 9
 bindsym $m+Shift+0 move container to workspace 10
 
+bindsym $m+a exec myxterm
+bindsym $m+t layout toggle splith splitv tabbed
+bindsym $m+x kill
+bindsym $m+z exec --no-startup-id systemctl suspend
+bindsym --release $m+m exec --no-startup-id xset dpms force off
+bindsym --release Mod4+p exec --no-startup-id xset dpms force off
 bindsym $m+r exec dmenu_run -fn "-xos4--medium" -nb "#000000" -sb "#000000" -sf "#ffffff"
 bindsym $m+q exec pactl set-sink-volume @DEFAULT_SINK@ -5%
 bindsym $m+w exec pactl set-sink-volume @DEFAULT_SINK@ +5%
@@ -75,12 +81,9 @@ bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ to
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
 mode "mode-0" {
-  bindsym q kill; mode default
   bindsym h split h; mode default
   bindsym v split v; mode default
   bindsym s layout stacking; mode default
-  bindsym w layout tabbed; mode default
-  bindsym e layout toggle split; mode default
   bindsym f fullscreen toggle; mode default
   bindsym Shift+space floating toggle; mode default
   bindsym space focus mode_toggle; mode default
@@ -100,3 +103,8 @@ mode "mode-0" {
   bindsym Escape mode default
 }
 bindsym $m+c mode "mode-0"
+
+bindsym $m+p exec --no-startup-id maim "$HOME/eph/screenshot.png"
+bindsym $m+Shift+p exec --no-startup-id maim -s "$HOME/eph/screenshot.png"
+bindsym Print exec --no-startup-id maim "$HOME/eph/screenshot.png"
+bindsym Shift+Print exec --no-startup-id maim -s "$HOME/eph/screenshot.png"

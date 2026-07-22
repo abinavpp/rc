@@ -211,17 +211,14 @@ function vim {
 }
 
 function cd {
-  local srcroot=$(srcerer 2> /dev/null)
-
-  if [[ -z "$srcroot" ]]; then
-    command cd "$@"
-    return
-  fi
-
-  local arg="$1"
-  if [[ $arg == "" ]]; then
-    command cd "$srcroot/"
-    return
+  if (( $# == 0 )); then
+    local cdup
+    if cdup=$(git rev-parse --show-cdup 2> /dev/null); then
+      command cd "./$cdup"
+      return
+    fi
+  elif [[ -f "${@: -1}" ]]; then
+    set -- "${@:1:$#-1}" "$(dirname "${@: -1}")"
   fi
 
   command cd "$@"
@@ -264,7 +261,18 @@ function _comp_culnt() { _comp_nt ~/Documents/cul; }
 
 set -o ignoreeof
 shopt -s histappend extglob
-PROMPT_COMMAND='history -a'
+
+function tmux_status() {
+  [[ -z $TMUX ]] && return
+
+  local branch
+  branch=$(git symbolic-ref --short -q HEAD 2>/dev/null ||
+    git rev-parse --short HEAD 2>/dev/null)
+
+  tmux set -pt "$TMUX_PANE" @branch "$branch" \; refresh-client -S
+}
+
+PROMPT_COMMAND='history -a; tmux_status'
 export HISTSIZE=32768
 export HISTFILESIZE=32768
 PS1='[\j] \W \[\e[38;5;76m\]$([[ -n `eref -d` ]] && echo \*)$\[\e[0m\] '
