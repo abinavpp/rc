@@ -1,15 +1,19 @@
 #! /bin/bash
 
+# opt <probe> <cmd...>: run cmd iff probe exists
+opt() { command -v "$1" >/dev/null || return 0; shift; "$@"; }
+
 sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 sudo pacman -Sy --noconfirm archlinux-keyring
 sudo pacman -Syyu --noconfirm
 yes | yay -Syu --answerdiff None --answerclean None --answerupgrade None
-pacman -Qdtq | sudo pacman -Rns --noconfirm -
+orphans=$(pacman -Qdtq)
+[ "$orphans" ] && sudo pacman -Rns --noconfirm $orphans
 ~/.vim/stp
-gh extension upgrade --all
-pipx upgrade-all
-cargo install-update -a
-npm update -g
+opt gh gh extension upgrade --all
+opt pipx pipx upgrade-all
+opt cargo-install-update cargo install-update -a
+opt npm npm update -g
 # sudo find /etc -type f \( -name '*.pacnew' -o -name '*.pacsave' -o -name '*-' \) -exec rm -v {} \;
 
 # fwupdmgr refresh; fwupdmgr get-updates

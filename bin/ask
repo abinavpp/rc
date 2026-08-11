@@ -1,0 +1,5 @@
+#! /bin/bash
+
+mkdir -p ~/eph
+cd ~/eph
+exec claude --model opus "$@"

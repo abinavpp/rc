@@ -1,0 +1,25 @@
+[Unit]
+Description=rclone mount of Google Drive at ~/gdrive
+
+[Service]
+Type=notify
+# A busy mountpoint makes ExecStop fail and leaves a stale endpoint that
+# blocks the next start; clear it lazily before mounting.
+ExecStartPre=-/usr/bin/fusermount3 -uz %h/gdrive
+ExecStartPre=/usr/bin/mkdir -p %h/gdrive
+ExecStart=/usr/bin/rclone mount gdrive: %h/gdrive \
+  --vfs-cache-mode full \
+  --vfs-cache-max-size 100G \
+  --vfs-cache-max-age off \
+  --dir-cache-time 1000h \
+  --poll-interval 1m \
+  --vfs-refresh \
+  --exclude "/misc/wedding/wedding/**"
+ExecStop=/usr/bin/fusermount3 -u %h/gdrive
+# fusermount3 does not flush queued uploads; give them time to drain.
+TimeoutStopSec=300
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

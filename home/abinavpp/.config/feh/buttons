@@ -1,0 +1,6 @@
+# feh does not detect conflicting bindings, so 4/5 must be unbound from
+# their default actions before rebinding
+prev_img
+next_img
+zoom_in 4
+zoom_out 5

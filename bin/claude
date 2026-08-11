@@ -1,0 +1,21 @@
+#! /bin/bash
+
+# Model picker for a bare `claude`. Anything with arguments - --resume, -p,
+# scripted runs - passes straight through untouched.
+#
+# ~/rc/bin precedes /usr/bin in PATH, so this shadows the real binary; call it
+# by absolute path or this recurses.
+
+real=/usr/bin/claude
+
+if [ -t 0 ] && [ $# -eq 0 ]; then
+  printf '1) opus   2) fable   3) sonnet\n'
+  read -rp 'model> ' m
+  case "$m" in
+    1|opus)   set -- --model opus ;;
+    2|fable)  set -- --model fable ;;
+    3|sonnet) set -- --model sonnet ;;
+  esac
+fi
+
+exec "$real" "$@"

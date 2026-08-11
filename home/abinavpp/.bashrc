@@ -183,8 +183,8 @@ function vim {
   fi
 
   local cmd="$vim_bin -i NONE --servername $(tty)"
-  local bg_pid=$(pgrep -f "$cmd")
-  local args="" arg=""
+  local bg_pid=$(pgrep -f "$cmd( |\$)")
+  local arg=""
 
   # If we have a non-file argument and we have a background vim then run a new
   # vim.
@@ -195,14 +195,19 @@ function vim {
     fi
   done
 
+  local job=""
   if [[ $bg_pid ]]; then
+    job=$(jobs -l | gawk -v "pid=$bg_pid" '$2 == pid {print $1}' | \
+      /bin/grep -oE "[[:digit:]]+" | head -1)
+  fi
+
+  if [[ $job ]]; then
     for arg in "$@"; do
       arg=$(realpath "$arg")
       $cmd --remote-send "<Esc>:e $arg<CR>"
     done
 
-    fg $(jobs -l | gawk -v "pid=$bg_pid" '$2 == pid {print $1}' | \
-      /bin/grep -oE "[[:digit:]]+")
+    fg "%$job"
     return
 
   else
@@ -262,19 +267,9 @@ function _comp_culnt() { _comp_nt ~/Documents/cul; }
 set -o ignoreeof
 shopt -s histappend extglob
 
-function tmux_status() {
-  [[ -z $TMUX ]] && return
-
-  local branch
-  branch=$(git symbolic-ref --short -q HEAD 2>/dev/null ||
-    git rev-parse --short HEAD 2>/dev/null)
-
-  tmux set -pt "$TMUX_PANE" @branch "$branch" \; refresh-client -S
-}
-
-PROMPT_COMMAND='history -a; tmux_status'
+PROMPT_COMMAND='history -a'
 export HISTSIZE=32768
-export HISTFILESIZE=32768
+export HISTFILESIZE=-1
 PS1='[\j] \W \[\e[38;5;76m\]$([[ -n `eref -d` ]] && echo \*)$\[\e[0m\] '
 export TERM=xterm-256color
 export VISUAL="/usr/bin/vim -i NONE" # Disables ~/.viminfo.

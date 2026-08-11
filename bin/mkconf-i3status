@@ -85,6 +85,9 @@ cat <<ENDCAT
 general {
   colors = true
   interval = 1
+  # status_command pipes through a wrapper, so parent-process
+  # auto-detection picks plain text; force the JSON protocol.
+  output_format = i3bar
 }
 
 order += "tztime local"

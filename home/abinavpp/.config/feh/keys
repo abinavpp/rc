@@ -1,0 +1,9 @@
+# h/k are taken by toggle_pause/toggle_keep_vp; feh does not detect
+# conflicting bindings, so they move aside before hjkl takes over
+toggle_pause H
+toggle_keep_vp K
+
+zoom_in k Up KP_Add
+zoom_out j Down KP_Subtract
+prev_img h Left BackSpace
+next_img l Right space

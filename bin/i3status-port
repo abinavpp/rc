@@ -1,0 +1,17 @@
+#! /bin/bash
+
+# i3bar status_command wrapper: replace i3status's ♪ with the active
+# sink port (H = headphones, S = speaker).
+
+# U+FE0E forces the monochrome Noto Sans Symbols 2 glyph over color emoji.
+hp=$'\U1F3A7\UFE0E'
+sp=$'\U1F568'
+
+i3status | while IFS= read -r line; do
+  if pactl list sinks 2>/dev/null | grep -q 'Active Port:.*headphone'; then
+    p=$hp
+  else
+    p=$sp
+  fi
+  printf '%s\n' "${line//♪:/$p}"
+done

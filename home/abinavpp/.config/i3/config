@@ -1,4 +1,7 @@
 exec_always --no-startup-id myxterm
+exec --no-startup-id handy --start-hidden
+# dunst only reads origin from a config file; feed it one on stdin to avoid carrying one
+exec --no-startup-id printf '[global]\norigin=center\noffset=(0,0)\n' | dunst -conf /dev/stdin
 
 set $m Mod1
 set $black #000000
@@ -9,7 +12,7 @@ set $red #d70000
 font pango:: 11
 
 bar {
-  status_command i3status
+  status_command i3status | ~/rc/bin/i3status-port
   tray_output primary
   separator_symbol "|"
   colors {
@@ -65,16 +68,16 @@ bindsym $m+Shift+9 move container to workspace 9
 bindsym $m+Shift+0 move container to workspace 10
 
 bindsym $m+a exec myxterm
+bindsym $m+g exec myxterm ask
 bindsym $m+t layout toggle splith splitv tabbed
 bindsym $m+x kill
-bindsym $m+z exec --no-startup-id systemctl suspend
+bindsym $m+z exec --no-startup-id sh -c 'pactl list sinks | grep -q "Active Port: analog-output-headphones" && pactl set-sink-port @DEFAULT_SINK@ analog-output-speaker || pactl set-sink-port @DEFAULT_SINK@ analog-output-headphones'
 bindsym --release $m+m exec --no-startup-id xset dpms force off
 bindsym --release Mod4+p exec --no-startup-id xset dpms force off
 bindsym $m+r exec dmenu_run -fn "-xos4--medium" -nb "#000000" -sb "#000000" -sf "#ffffff"
 bindsym $m+q exec pactl set-sink-volume @DEFAULT_SINK@ -5%
 bindsym $m+w exec pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym $m+Shift+q exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
-bindsym $m+Shift+w exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
@@ -89,6 +92,7 @@ mode "mode-0" {
   bindsym space focus mode_toggle; mode default
   bindsym a focus parent; mode default
   bindsym d focus child; mode default
+  bindsym z exec --no-startup-id systemctl suspend; mode default
 
   bindsym Shift+c reload
   bindsym Shift+r restart
@@ -104,7 +108,5 @@ mode "mode-0" {
 }
 bindsym $m+c mode "mode-0"
 
-bindsym $m+p exec --no-startup-id maim "$HOME/eph/screenshot.png"
+bindsym $m+p exec --no-startup-id maim "$HOME/eph/screenshot.png" && notify-send -t 800 shot
 bindsym $m+Shift+p exec --no-startup-id maim -s "$HOME/eph/screenshot.png"
-bindsym Print exec --no-startup-id maim "$HOME/eph/screenshot.png"
-bindsym Shift+Print exec --no-startup-id maim -s "$HOME/eph/screenshot.png"
