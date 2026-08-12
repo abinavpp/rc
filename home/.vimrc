@@ -176,12 +176,50 @@ function! ToggleSet(s)
   exe 'set ' . a:s . '! | set ' . a:s . '?'
 endfunction
 
+function! GdiffClose()
+  for l:w in reverse(range(1, winnr('$')))
+    if bufname(winbufnr(l:w)) =~# '^fugitive://'
+      exe l:w . 'wincmd c'
+    endif
+  endfor
+  diffoff!
+
+  if exists('t:gdiff_spec')
+    unlet t:gdiff_spec
+  endif
+endfunction
+
 function! Gdiff(a)
+  " Unresolvable rev: fugitive opens it as a literal path instead of failing.
+  if a:a != "" && FugitiveExecute(['rev-parse', '--verify', '--quiet', a:a]).exit_status
+    echohl ErrorMsg | echo 'No such rev: ' . a:a | echohl None
+    return
+  endif
+
+  if &diff
+    let l:cur = exists('t:gdiff_spec') ? t:gdiff_spec : ''
+    call GdiffClose()
+    if l:cur ==# a:a
+      return
+    endif
+  endif
+
   if a:a == ""
     exe 'Gdiffsplit | wincmd l | wincmd H'
   else
     exe 'Gdiffsplit ' . a:a . ' | wincmd h'
   endif
+
+  let t:gdiff_spec = a:a
+endfunction
+
+function! GdiffNum()
+  let l:n = nr2char(getchar())
+  if l:n !~ '[1-9]'
+    return
+  endif
+
+  call Gdiff('@~' . l:n)
 endfunction
 
 function! Glog(range, line1, line2)
@@ -292,10 +330,6 @@ com! Cdb :lcd %:p:h
 com! Gbl :Git blame
 com! -range Glg call Glog(<range>, <line1>, <line2>)
 com! Gr :Gedit
-com! -nargs=? Gd :call Gdiff("<args>")
-com! -nargs=? GD :call Gdiff("<args>")
-com! Gd1 :call Gdiff("@~1")
-com! Gd2 :call Gdiff("@~2")
 com! Csi :call CSInv()
 com! Dcl :call DelCommentLines()
 com! Df :call ToggleDiff()
@@ -327,8 +361,11 @@ nnoremap <Leader>w <C-w>
 nnoremap <Leader>a :Files<CR>
 nnoremap <Leader>f :Buffers<CR>
 nnoremap <Leader>x :bd<CR>
-nnoremap <Leader>r ma
-nnoremap <Leader>R `a
+nnoremap <Leader>k ma
+nnoremap <Leader>K `a
+nnoremap <silent><Leader>e :call Gdiff('')<CR>
+nnoremap <silent><Leader>r :call Gdiff('@~1')<CR>
+nnoremap <silent><Leader>t :call GdiffNum()<CR>
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
 nnoremap <Leader>lt :TagbarToggle<CR>
