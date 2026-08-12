@@ -27,6 +27,7 @@
 0 bash-completion
 0 alsa-utils alsa-tools pipewire-pulse pipewire-alsa
 0 rsync tree ranger plocate fd ripgrep
+0 stow # links ~/rc/home into $HOME
 1 rclone
 0 lsof htop
 0 inotify-tools
