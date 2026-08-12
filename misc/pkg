@@ -29,6 +29,7 @@
 0 rsync tree ranger plocate fd ripgrep
 1 rclone
 0 lsof htop
+0 inotify-tools
 0 zip unzip unrar
 0 dialog
 0 bc calc

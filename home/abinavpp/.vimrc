@@ -68,8 +68,7 @@ function! StatusLine()
   endif
   let l:s = l:c . " %{mode()} %<%F  %{exists('g:loaded_tagbar') ?"
   let l:s .= "tagbar#currenttag('%s', '', '%f') : ''} %m %r"
-  let l:s .= "%=%{exists('g:loaded_fugitive') ? fugitive#statusline() : ''}"
-  let l:s .= " %{&ff}%y [%{strlen(&fenc) ? &fenc : 'none'}] %v %l/%L"
+  let l:s .= "%= %{v:servername} %y %v %l/%L"
   return l:s
 endfunction
 
@@ -224,6 +223,62 @@ function! FileCheck(range, line1, line2)
   endif
 endfunction
 
+" A FileChangedShell autocmd suppresses the 'autoread' reload, so ask for it
+" back explicitly. 'conflict' means the buffer is dirty too: mine wins.
+function! DiskChanged()
+  if v:fcs_reason ==# 'changed'
+    let v:fcs_choice = 'reload'
+    return
+  endif
+  let v:fcs_choice = ''
+  if v:fcs_reason ==# 'conflict'
+    echohl WarningMsg
+    echomsg 'disk changed, buffer dirty, kept mine: ' . expand('<afile>')
+    echohl None
+  endif
+endfunction
+
+" Watch the dirs, not the files: inotify keys on the inode, so a
+" temp-file-plus-rename writer leaves a file watch on a dead inode. Respawn
+" when the dir set changes or the watcher died - a dead watcher has to degrade
+" to ReloadTick's poll, not silently stop reloading.
+function! ReloadWatch()
+  let l:d = {}
+  for l:b in getbufinfo({'buflisted': 1})
+    if l:b.name !=# '' && filereadable(l:b.name)
+      let l:d[fnamemodify(l:b.name, ':p:h')] = 1
+    endif
+  endfor
+  let l:dirs = sort(keys(l:d))
+  let l:live = exists('g:reload_job') && job_status(g:reload_job) ==# 'run'
+  if l:live && l:dirs == get(g:, 'reload_dirs', [])
+    return
+  endif
+  if exists('g:reload_job')
+    call job_stop(g:reload_job)
+    unlet g:reload_job
+  endif
+  let g:reload_dirs = l:dirs
+  if empty(l:dirs) || !has('job') || !executable('inotifywait')
+    return
+  endif
+  let g:reload_job = job_start(['inotifywait', '-qm', '-e', 'close_write,moved_to',
+    \ '--format', '%w%f'] + l:dirs, {'out_cb': 'ReloadPush'})
+endfunction
+
+" Reloading under insert/cmdline is left to the InsertLeave/CmdlineLeave
+" checktime below.
+function! ReloadPush(ch, msg)
+  if mode() =~# '^[icR]' | return | endif
+  silent! checktime
+endfunction
+
+function! ReloadTick(t)
+  call ReloadWatch()
+  if mode() =~# '^[icR]' | return | endif
+  silent! checktime
+endfunction
+
 " Commands
 " ========
 com! Tidy :sil! exe '%s/\v\ +$//g' <bar> :sil! exe '%s/\v[^\x00-\x7F]+//g'
@@ -324,6 +379,15 @@ au FileType python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 au CompleteDone * if pumvisible() == 0 | pclose | endif
 " Force vim-lsp to resync the buffer on :e (workaround for stale didOpen).
 au BufReadPre * if &buftype ==# '' | silent! doautocmd <nomodeline> BufDelete | endif
+" inotify pushes the reload; the tick is a safety net for missed events and a
+" respawn hook, so it can stay slow. Not FocusGained-driven: the disk edit
+" lands while another window has focus.
+au FileChangedShell * call DiskChanged()
+au FocusGained,BufEnter,InsertLeave,CmdlineLeave * silent! checktime
+au BufReadPost,BufNewFile * call ReloadWatch()
+if !exists('s:reload_tick')
+  let s:reload_tick = timer_start(5000, 'ReloadTick', {'repeat': -1})
+endif
 syntax on
 colo CandyPaper2
 
