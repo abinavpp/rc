@@ -1,0 +1,14 @@
+{
+  "$schema": "https://platform.claude.com/docs/schemas/claude-code/keybindings.json",
+  "$docs": "https://code.claude.com/docs/en/keybindings",
+  "bindings": [
+    {
+      "context": "Chat",
+      "bindings": {
+        "ctrl+k": "chat:cycleMode",
+        "shift+tab": null,
+        "ctrl+s": null
+      }
+    }
+  ]
+}
