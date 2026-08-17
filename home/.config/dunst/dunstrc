@@ -1,0 +1,8 @@
+[global]
+origin = center
+offset = (0,0)
+
+# origin is global-only, so app toasts can't be moved off-center, only skipped
+[slack]
+appname = Slack
+skip_display = true

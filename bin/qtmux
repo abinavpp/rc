@@ -1,3 +1,0 @@
-#! /bin/bash
-
-tmux kill-server; /bin/rm -rf /tmp/tmux-$UID 2> /dev/null

@@ -1,0 +1,87 @@
+#! /bin/bash
+
+# Rebuild what bye snapshotted, in the layers it recorded: the tmux tree, what
+# runs inside it, then the windows. Assumes i3 is already running.
+#
+# Restore runs inside-out - a terminal can only attach to a session that exists,
+# and a window's command has to be in place before the window is created.
+
+# dmenu hands this down and i3 places windows by it, so everything spawned here
+# would inherit one stale token - including the tmux server, and so every pane.
+unset DESKTOP_STARTUP_ID
+
+manifest=~/.local/state/session-restore
+log=~/.cache/hi.log
+[ -r "$manifest" ] || { echo "hi: no snapshot at $manifest" >&2; exit 1; }
+echo "hi: snapshot from $(date -r "$manifest" '+%F %R')"
+: > "$log"
+
+tm() { tmux -L default "$@"; }
+classes() { wmctrl -lx | awk '{ sub(/^[^.]*\./, "", $3); print $3 }'; }
+
+# layer 3 - the command each tmux window should come up running
+declare -A run_in
+while IFS=$'\t' read -r tag ses win cmd; do
+  [ "$tag" = run ] && run_in[$ses:$win]=$cmd
+done < "$manifest"
+
+# layer 2 - the tmux tree. A window that outlived the snapshot is left alone.
+while IFS=$'\t' read -r tag ses win cwd; do
+  [ "$tag" = tmux ] || continue
+  [ -d "$cwd" ] || cwd=$HOME
+
+  cmd=${run_in[$ses:$win]}
+  # the trailing exec keeps the window once the command exits
+  run=
+  [ -n "$cmd" ] && run="$cmd; exec bash"
+
+  if ! tm has-session -t "=$ses" 2>/dev/null; then
+    tm new-session -d -s "$ses" -c "$cwd" ${run:+"$run"}
+    # new-session lands on base-index; move it if the snapshot says otherwise.
+    # A detached session reports no current window, so read it off the list.
+    made=$(tm list-windows -t "=$ses" -F '#{window_index}' | head -1)
+    [ "$made" = "$win" ] || tm move-window -s "=$ses:$made" -t "=$ses:$win"
+  elif ! tm list-windows -t "=$ses" -F '#{window_index}' | grep -qx "$win"; then
+    tm new-window -d -t "=$ses:$win" -c "$cwd" ${run:+"$run"}
+  fi
+done < "$manifest"
+
+# layer 1 - windows. A terminal maps fast enough to land on the workspace
+# switched to just before it; an app can take seconds, so it is placed below.
+placements=()
+while IFS=$'\t' read -r tag ws class rest; do
+  [ "$tag" = win ] || continue
+
+  if [ "$class" = XTerm ]; then
+    i3-msg -q workspace "$ws"
+    if [ "$rest" != - ] && tm has-session -t "=$rest" 2>/dev/null; then
+      myxterm tmux -L default attach -t "$rest" &
+    else
+      myxterm &
+    fi
+    disown
+    sleep 0.4
+    continue
+  fi
+
+  # a second window of the same app is the app's business, not ours
+  classes | grep -qxF "$class" && { echo "hi: $class already up, skipped"; continue; }
+  IFS=$'\t' read -ra argv <<< "$rest"
+  # an app that dies on launch has to leave a reason somewhere
+  "${argv[@]}" >> "$log" 2>&1 &
+  disown
+  placements+=("$class	$ws")
+done < "$manifest"
+
+for entry in "${placements[@]}"; do
+  IFS=$'\t' read -r class ws <<< "$entry"
+  for _ in {1..40}; do
+    classes | grep -qxF "$class" && break
+    sleep 0.25
+  done
+  if classes | grep -qxF "$class"; then
+    i3-msg -q "[class=\"^$class$\"] move container to workspace $ws"
+  else
+    echo "hi: $class never appeared, left unplaced" >&2
+  fi
+done

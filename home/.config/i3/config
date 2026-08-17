@@ -1,7 +1,5 @@
-exec_always --no-startup-id myxterm
 exec --no-startup-id handy --start-hidden
-# dunst only reads origin from a config file; feed it one on stdin to avoid carrying one
-exec --no-startup-id printf '[global]\norigin=center\noffset=(0,0)\n' | dunst -conf /dev/stdin
+exec --no-startup-id dunst
 
 set $m Mod1
 set $black #000000

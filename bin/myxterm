@@ -1,8 +1,6 @@
 #! /bin/bash
 
-run=$1
-
-cmd="xterm
+res=(
   -u8
   -xrm 'XTerm*background: black'
   -xrm 'XTerm*foreground: white'
@@ -20,9 +18,14 @@ cmd="xterm
   -xrm 'XTerm*fontMenu*foreground: white'
   -xrm 'XTerm*metaSendsEscape: true'
   -xrm 'XTerm*selectToClipboard: true'
-  -xrm 'XTerm*VT100*translations: #override \n\
-    Ctrl Shift <Key>V: insert-selection(SELECT, CUT_BUFFER0, PRIMARY)'
-  -xrm 'XTerm*faceName: Liberation Mono:size=12'"
+  # single quotes keep a newline and its indent literal, hence the odd wrap
+  -xrm 'XTerm*VT100*translations: #override \n Ctrl Shift <Key>V: '\
+'insert-selection(SELECT, CUT_BUFFER0, PRIMARY)'
+  -xrm 'XTerm*faceName: Liberation Mono:size=12'
+)
 
-cmd=$(echo $cmd -T "${run:-xterm}" -e "${run:-/bin/bash}")
-exec bash -c "$cmd"
+# myxterm CMD ARG... - the arguments have to reach xterm unsplit.
+if [ $# -gt 0 ]; then
+  exec xterm "${res[@]}" -T "$1" -e "$@"
+fi
+exec xterm "${res[@]}" -T xterm -e /bin/bash

@@ -63,11 +63,16 @@ if [ ${#quota[@]} -gt 0 ]; then
   line="$line | lim: $qstr"
 fi
 
+# The tty is asked first: COLUMNS reads 80 on the first paint after a start or
+# resume, which lays the row out for a terminal a third of the real width.
+# COLUMNS is the documented source, so it stays as the fallback for where no
+# tty is reachable.
+cols=$(stty size 2>/dev/null </dev/tty | cut -d' ' -f2)
+cols=${cols:-${COLUMNS:-$(tput cols 2>/dev/null </dev/tty)}}
 # The tag is flush right, minus the columns the harness keeps for its own
-# right-aligned "/rc active" badge. No tty on stdin here, so width comes
-# from /dev/tty; without it padding would wrap, so fall back to the left.
+# right-aligned "/rc active" badge. Falls back to the left when the meters
+# already ate the row.
 if [ -n "$tag" ]; then
-  cols=${COLUMNS:-$(tput cols </dev/tty 2>/dev/null)}
   bare=$(printf '%s' "$line" | sed 's/\x1b\[[0-9;]*m//g')
   room=$(( ${cols:-0} - ${#bare} - 14 ))
   if [ "$room" -ge 12 ]; then
@@ -79,4 +84,7 @@ if [ -n "$tag" ]; then
   fi
 fi
 
-printf "%s" "$line"
+# Second row: the last exchange, for windows returned to after a day.
+recap=$(~/.claude/recap.sh "$(echo "$input" | jq -r '.transcript_path // empty')" "${cols:-0}")
+
+printf "%s" "$line${recap:+$'\n'$recap}"

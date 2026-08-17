@@ -100,7 +100,7 @@
 # oscar20: manual install, ~/.local/opt/oscar20 (see its meta; AUR oscar-bin outdated)
 3 qt6-serialport # for oscar20 (CPAP serial import)
 3 obs-studio xarchiver
-# 3 handy-bin # [AUR] needs repo openblas (undeclared dep in PKGBUILD)
+# 3 handy-bin # [AUR]
 # 3 weasis-bin # [AUR]
 3 pavucontrol-qt
 3 pcmanfm-qt ffmpegthumbnailer
