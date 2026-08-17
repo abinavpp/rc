@@ -7,6 +7,15 @@
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
   },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash ~/.claude/recap-gen.sh" }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true

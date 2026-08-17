@@ -2,25 +2,124 @@
 
 # :qa every vim (refuses on unsaved buffers), then report whatever still
 # holds the system: surviving vims, active pacman, running jobs/agents.
-# Says bye back when nothing does.
+# Says bye back when nothing does, and offers hi a snapshot on the way out.
 
 ok=1
 block() { ok=0; sed 's/^/[halt] /' <<< "$*"; }
 warn() { ok=0; sed 's/^/[warn] /' <<< "$*"; }
 
-# tmux pane of a tty if tmux is up, the bare tty otherwise.
+# workspace name of wmctrl desktop index $1 - the index follows i3's order
+ws_name() { wmctrl -d | awk -v d="$1" '$1 == d {print $NF; exit}'; }
+
+# argv of pid $1, tab-separated so an argument may hold spaces. dmenu keeps no
+# history, so the process is the only record of how it was started.
+#
+# Chrome rewrites its own cmdline into one space-joined blob with no NUL left to
+# split on, hence the fallback.
+argv_of() {
+  local a
+  a=$(tr '\0' '\t' < "/proc/$1/cmdline" 2>/dev/null | sed 's/\t$//')
+  case $a in
+    *$'\t'*) printf '%s\n' "$a" ;;
+    *' '*) tr ' ' '\t' <<< "$a" ;;
+    *) printf '%s\n' "$a" ;;
+  esac
+}
+
+# tmux session the xterm $1 is attached to, '-' for a bare shell. The client
+# sits on the pty of the xterm's own child, so look down, not up.
+xterm_session() {
+  local tty
+  tty=$(ps --ppid "$1" -o tty= 2>/dev/null | head -1 | tr -d ' ')
+  [ "$tty" ] && [ "$tty" != '?' ] || { echo -; return; }
+  tmux -L default list-clients -F '#{client_tty} #{session_name}' 2>/dev/null |
+    awk -v t="/dev/$tty" '$1 == t {print $2; exit}' |
+    { read -r s; echo "${s:--}"; }
+}
+
+# "<session>:<window>.<pane> <cwd>" per claude, located by tty. A restored
+# session runs claude as a child of the pane's shell, so tmux reports the shell
+# as the pane's command. A claude on another socket matches no pane and drops.
+claude_panes() {
+  local pid tty
+  for pid in $(pgrep -x claude); do
+    tty=$(ps -o tty= -p "$pid" | tr -d ' ')
+    [ "$tty" ] && [ "$tty" != '?' ] || continue
+    tmux -L default list-panes -a \
+      -F '#{pane_tty} #{session_name}:#{window_index}.#{pane_index} #{pane_current_path}' \
+      2>/dev/null | awk -v t="/dev/$tty" '$1 == t { print $2, $3 }'
+  done
+}
+
+# newest transcript under cwd $1 that no earlier pane has claimed in file $2
+transcript() {
+  local f id
+  for f in $(ls -t ~/.claude/projects/"${1//\//-}"/*.jsonl 2>/dev/null); do
+    id=$(basename "$f" .jsonl)
+    grep -qxF "$id" "$2" && continue
+    echo "$id" >> "$2"
+    echo "$id"
+    return 0
+  done
+  return 1
+}
+
+# Three layers for hi: the windows and the workspace each sits on, the tmux tree
+# behind the terminals, and what to run inside it - claude only.
+#
+# No claude process carries its transcript id, so it comes from the newest
+# transcript under the pane's cwd; two claudes in one cwd can come back swapped.
+snapshot() {
+  local out=~/.local/state/session-restore tmp claimed
+  tmp=$(mktemp) claimed=$(mktemp)
+
+  # layer 1 - windows: workspace, class, then the tmux session an xterm hosts
+  # ('-' for a bare shell) or the argv that brings anything else back
+  wmctrl -lpx | while read -r _ desk pid class _; do
+    class=${class##*.}
+    if [ "$class" = XTerm ]; then
+      printf 'win\t%s\tXTerm\t%s\n' "$(ws_name "$desk")" "$(xterm_session "$pid")"
+    else
+      printf 'win\t%s\t%s\t%s\n' "$(ws_name "$desk")" "$class" "$(argv_of "$pid")"
+    fi
+  done >> "$tmp"
+
+  # layer 2 - the tmux tree those terminals attach to; hub is systemd's socket
+  tmux -L default list-panes -a \
+    -F 'tmux	#{session_name}	#{window_index}	#{pane_current_path}' \
+    2>/dev/null >> "$tmp"
+
+  # layer 3 - what runs inside a tmux window
+  claude_panes | while read -r label cwd; do
+    win=${label#*:}
+    id=$(transcript "$cwd" "$claimed") || continue
+    printf 'run\t%s\t%s\tclaude --resume %s\n' "${label%%:*}" "${win%%.*}" "$id"
+  done >> "$tmp"
+
+  mv "$tmp" "$out"
+  rm -f "$claimed"
+}
+
+# tmux pane of a tty if tmux is up, the bare tty otherwise. The claude hub
+# runs on its own socket, so the default server does not see every pane.
 locate() {
-  local tty=${1,,} pane
-  pane=$(tmux list-panes -a \
-    -F '#{pane_tty} #{session_name}:#{window_index}.#{pane_index}' \
-    2>/dev/null | awk -v t="$tty" '$1 == t {print "tmux "$2}')
+  local tty=${1,,} sock pane
+  for sock in default hub; do
+    pane=$(tmux -L "$sock" list-panes -a \
+      -F '#{pane_tty} #{session_name}:#{window_index}.#{pane_index}' \
+      2>/dev/null | awk -v t="$tty" '$1 == t {print "tmux "$2}')
+    [[ -n $pane ]] && break
+  done
   echo "${pane:-$tty}"
 }
 
-# "comm in <location>" per process matching $1, deduped.
+# "comm in <location>" per process matching $1, deduped, skipping any whose argv
+# matches $2.
 report() {
   local pid comm tty
   for pid in $(pgrep -x "$1"); do
+    [[ -n ${2:-} ]] &&
+      tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null | grep -q -- "$2" && continue
     read -r comm tty <<< "$(ps -o comm=,tty= -p "$pid")"
     [[ -z $comm ]] && continue
     if [[ $tty == '?' ]]; then
@@ -65,8 +164,16 @@ done
 jobs=$(report 'ninja|cargo|rustc|make|cc1.*|rsync')
 [[ -n $jobs ]] && warn "$jobs"
 
-agents=$(report 'claude|codex')
+# The hub session is always-on by design, so it can never be a reason to hold
+# the machine. Matched on argv, since it has no pane to name it by whenever its
+# socket is gone.
+agents=$(report 'claude|codex' '--remote-control')
 [[ -n $agents ]] && warn "$agents"
+
+if [[ -t 0 ]]; then
+  read -r -p "save snapshot? [y/N] " reply
+  [[ $reply == y ]] && snapshot
+fi
 
 ((ok)) && echo bye
 exit $((!ok))

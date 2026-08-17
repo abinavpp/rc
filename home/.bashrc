@@ -17,13 +17,13 @@ alias lsblk='lsblk -o NAME,MOUNTPOINTS,SIZE,UUID,LABEL,MODEL,FSTYPE,STATE,TRAN,P
 alias mkfs.ntfs='mkfs.ntfs -Q'
 
 function eref() {
-  [[ ! -d ~/.cache ]] && return 1
+  [[ ! -d ~/.local/state ]] && return 1
 
   local opt=$1; shift;
-  local ref_dir=~/.cache/eref
+  local ref_dir=~/.local/state/eref
 
   if [[ $opt == '-s' ]]; then
-    mkdir $ref_dir 2> /dev/null
+    mkdir -p $ref_dir 2> /dev/null
 
     (printenv > $ref_dir/variable)
     declare -f > $ref_dir/function

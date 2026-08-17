@@ -1,0 +1,551 @@
+#! /usr/bin/env python3
+
+# Runs when the box is already on fire, so every design call favours cheap over
+# complete: missing an offender is fine, adding to the load is not.
+
+import argparse
+import os
+import pwd
+import statistics
+import subprocess
+import sys
+import time
+
+HZ = os.sysconf('SC_CLK_TCK')
+PAGE = os.sysconf('SC_PAGE_SIZE')
+NCPU = os.cpu_count()
+MB = 1024 * 1024
+
+# Ancestry walk stops here: these own a pid, they don't explain it.
+BOUNDARY = {
+    'systemd', 'init', 'tmux', 'tmux: server', 'screen', 'sshd', 'login',
+    'i3', 'sway', 'xterm', 'urxvt', 'rxvt', 'st', 'alacritty', 'kitty',
+    'foot', 'konsole', 'gnome-terminal-', 'xfce4-terminal', 'wezterm-gui',
+    'dbus-daemon', 'containerd', 'dockerd',
+}
+SHELLS = {'sh', 'bash', 'zsh', 'fish', 'dash', 'ksh'}
+# Transparent: name the payload, not the wrapper.
+WRAPPERS = SHELLS | {
+    'python', 'python2', 'python3', 'perl', 'ruby', 'node', 'env', 'timeout',
+    'nice', 'ionice', 'sudo', 'doas', 'nohup', 'stdbuf', 'setsid', 'xargs',
+    'time', 'strace', 'valgrind',
+}
+
+parser = argparse.ArgumentParser(
+    description='who is eating this box, sampled over time and grouped by job')
+parser.add_argument('-t', type=float, default=2.0, metavar='SEC', help='total window')
+parser.add_argument('-s', type=int, default=5, metavar='N', help='samples in the window')
+parser.add_argument('-n', type=int, default=0, metavar='N', help='force N offenders')
+parser.add_argument('-m', type=int, default=12, metavar='N', help='cap on offenders')
+parser.add_argument('-c', type=float, default=100.0, metavar='PCT', help='cpu bar')
+parser.add_argument('-r', type=float, default=20.0, metavar='PCT', help='memory share bar')
+parser.add_argument('-g', type=float, default=100.0, metavar='MB', help='memory growth bar, per min')
+parser.add_argument('-M', type=float, default=50.0, metavar='PCT',
+                    help='free-memory floor; under it, list the biggest consumers whatever the bars say')
+parser.add_argument('-k', type=int, default=5, metavar='N', help='how many to list under -M')
+parser.add_argument('-p', action='store_true', help='exact shared-page accounting (walks every vma)')
+parser.add_argument('-u', action='store_true', help='only my processes')
+parser.add_argument('-v', action='store_true', help='show every pid in each group')
+parser.add_argument('-q', action='store_true', help='no progress dots')
+args = parser.parse_args()
+
+# never outrank the thing being diagnosed
+try:
+    os.nice(19)
+except OSError:
+    pass
+
+
+def read(path):
+    try:
+        with open(path, 'rb') as f:
+            return f.read()
+    except OSError:
+        return None
+
+
+CMD = {}
+
+
+def cmdline(pid):
+    if pid not in CMD:
+        raw = read(f'/proc/{pid}/cmdline')
+        if raw:
+            CMD[pid] = [a.decode('utf8', 'replace') for a in raw.split(b'\0') if a]
+        else:
+            CMD[pid] = ['[' + COMM.get(pid, '?') + ']']
+    return CMD[pid]
+
+
+def snapshot():
+    """The only thing done per pid per sample: one small read, no stat, no
+    cmdline, no cgroup. Everything else waits until the field is narrowed."""
+    procs = {}
+    for ent in os.listdir('/proc'):
+        if not ent.isdigit():
+            continue
+        raw = read(f'/proc/{ent}/stat')
+        if not raw:
+            continue
+        s = raw.decode('utf8', 'replace')
+        # comm is parenthesised and may itself contain parens and spaces
+        lp, rp = s.index('('), s.rindex(')')
+        f = s[rp + 2:].split()
+        pid = int(ent)
+        COMM[pid] = s[lp + 1:rp]
+        procs[pid] = {
+            'ppid': int(f[1]), 'tty': int(f[4]), 'cpu': int(f[11]) + int(f[12]),
+            'kids': int(f[13]) + int(f[14]), 'start': int(f[19]),
+            'rss': int(f[21]) * PAGE,
+        }
+    v = [int(x) for x in read('/proc/stat').decode().split('\n')[0].split()[1:]]
+    return procs, sum(v), sum(v) - v[3] - v[4], time.monotonic()
+
+
+COMM = {}
+
+
+def meminfo():
+    d = {}
+    for line in read('/proc/meminfo').decode().splitlines():
+        k, _, v = line.partition(':')
+        d[k] = int(v.split()[0]) * 1024
+    return d
+
+
+def uid_of(pid):
+    try:
+        return os.stat(f'/proc/{pid}').st_uid
+    except OSError:
+        return -1
+
+
+def pss(pid):
+    """Shared pages counted once. Off by default: the kernel walks every vma
+    under the target's mmap lock, which is a poor thing to do to a process that
+    is already thrashing."""
+    raw = read(f'/proc/{pid}/smaps_rollup')
+    if not raw:
+        return None
+    for line in raw.decode().splitlines():
+        if line.startswith('Pss:'):
+            return int(line.split()[1]) * 1024
+    return None
+
+
+def panes():
+    """pane_pid -> location. pane_pid is exact ancestry, no tty guessing."""
+    fmt = ('#{pane_pid}\t#{session_name}:#{window_index}.#{pane_index}'
+           '\t#{pane_tty}\t#{pane_current_path}')
+    try:
+        out = subprocess.run(['tmux', 'list-panes', '-a', '-F', fmt],
+                             capture_output=True, text=True, timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    m = {}
+    for line in out.stdout.splitlines():
+        p = line.split('\t')
+        if len(p) == 4 and p[0].isdigit():
+            m[int(p[0])] = (p[1], p[2], p[3])
+    return m
+
+
+def ttyname(dev):
+    if not dev:
+        return ''
+    mi, ma = os.major(dev), os.minor(dev)
+    if mi == 136:
+        return f'pts/{ma}'
+    return f'tty{ma}' if mi == 4 else ''
+
+
+def unit(pid):
+    raw = read(f'/proc/{pid}/cgroup')
+    if not raw:
+        return ''
+    for line in raw.decode().splitlines():
+        leaf = line.rsplit('/', 1)[-1]
+        if leaf.endswith(('.service', '.scope')):
+            return leaf
+    return ''
+
+
+LBL = {}
+
+
+def label(pid):
+    """Name the work, skipping wrappers that say nothing."""
+    if pid in LBL:
+        return LBL[pid]
+    argv = cmdline(pid)
+    out = '?'
+    if argv and argv[0].startswith('['):
+        out = argv[0]
+    elif argv:
+        # chrome & friends rewrite argv into one blob to set the process title
+        head = argv[0].split()
+        out = os.path.basename(head[0]) if head else argv[0]
+        if out in WRAPPERS:
+            for i, a in enumerate(argv[1:], 1):
+                if a == '-c' and i + 1 < len(argv):
+                    inner = argv[i + 1].split()
+                    out = os.path.basename(inner[0]) if inner else out
+                    break
+                if not a.startswith('-'):
+                    out = f'{out} {os.path.basename(a)}'
+                    break
+    LBL[pid] = out
+    return out
+
+
+def human(n):
+    for u in ('B', 'K', 'M', 'G', 'T'):
+        if abs(n) < 1024:
+            return f'{n:.0f}{u}'
+        n /= 1024
+    return f'{n:.0f}P'
+
+
+def pick(scores):
+    """Adaptive count: cut at a cliff once the leaders explain the load, but
+    never hide anything that clears a bar on its own."""
+    if not scores:
+        return 0
+    tot = sum(scores)
+    keep = 1
+    for i in range(1, len(scores)):
+        cliff = scores[i] < 0.35 * scores[i - 1]
+        covered = sum(scores[:i]) >= 0.8 * tot
+        if cliff and covered:
+            break
+        keep = i + 1
+    return max(keep, sum(1 for s in scores if s >= 1.0))
+
+
+def sustained(series, first):
+    """Median from first appearance on: one spike can't promote, and a job that
+    started mid-window is judged over its own life, not padded with zeroes."""
+    return statistics.median(series[first:]) if series[first:] else 0.0
+
+
+me = os.getuid()
+memtot = meminfo()['MemTotal']
+nsamp = max(2, args.s)
+nint = nsamp - 1
+gap = args.t / nint
+
+snaps = []
+for i in range(nsamp):
+    if i:
+        time.sleep(gap)
+    snaps.append(snapshot())
+    if not args.q:
+        print('.', end='', flush=True, file=sys.stderr)
+if not args.q:
+    print('\r     \r', end='', file=sys.stderr)
+
+live = snaps[-1][0]
+parent = {pid: p['ppid'] for pid, p in live.items()}
+
+# per-pid series, then prune hard: everything downstream is O(survivors), and
+# on a desktop that is ~50 pids out of ~1500
+cpu = {}
+rss = {}
+seen = {}
+for i in range(1, nsamp):
+    (pa, _, _, ta) = snaps[i - 1]
+    (pb, _, _, tb) = snaps[i]
+    win = (tb - ta) * HZ
+    for pid, p in pb.items():
+        q = pa.get(pid)
+        if not q or q['start'] != p['start']:
+            continue
+        own = (p['cpu'] - q['cpu']) / win * 100
+        # children reaped inside the window land on the parent: the only way a
+        # churny fan-out (ninja spawning a proc per edge) shows up at all
+        own += max((p['kids'] - q['kids']) / win * 100, 0.0)
+        cpu.setdefault(pid, [0.0] * nint)[i - 1] = own
+        rss.setdefault(pid, [0] * nint)[i - 1] = p['rss']
+        seen.setdefault(pid, []).append(i - 1)
+        parent[pid] = p['ppid']
+
+FLOOR = max(32 * MB, memtot // 2000)
+pids = [pid for pid in seen
+        if max(cpu[pid]) > 1.0 or rss[pid][seen[pid][-1]] >= FLOOR]
+if args.u:
+    pids = [pid for pid in pids if uid_of(pid) == me]
+
+# growth per pid, so a tree gaining a member is not a leak
+delta = {}
+for pid in pids:
+    d = [0] * nint
+    idx = seen[pid]
+    for a, b in zip(idx, idx[1:]):
+        if b == a + 1:
+            d[b] = rss[pid][b] - rss[pid][a]
+    delta[pid] = d
+
+# roll each survivor's series up into every ancestor
+sub_cpu = {}
+sub_rss = {}
+sub_del = {}
+sub_first = {}
+sub_top = {}
+for pid in pids:
+    first = seen[pid][0]
+    last = seen[pid][-1]
+    w = max(sustained(cpu[pid], first) / args.c, rss[pid][last] / memtot * 100 / args.r)
+    cur, hop = pid, 0
+    while hop < 40:
+        sc = sub_cpu.setdefault(cur, [0.0] * nint)
+        sr = sub_rss.setdefault(cur, [0] * nint)
+        sd = sub_del.setdefault(cur, [0] * nint)
+        for i in seen[pid]:
+            sc[i] += cpu[pid][i]
+            sr[i] += rss[pid][i]
+            sd[i] += delta[pid][i]
+        sub_first[cur] = min(sub_first.get(cur, first), first)
+        if w > sub_top.get(cur, (-1, 0))[0]:
+            sub_top[cur] = (w, pid)
+        par = parent.get(cur, 0)
+        if par in (0, 1) or par not in parent:
+            break
+        cur, hop = par, hop + 1
+
+kids = {}
+for pid, par in parent.items():
+    if pid in sub_cpu:
+        kids.setdefault(par, []).append(pid)
+
+def leaking(gd, first, nlive, bulk):
+    """A real leak climbs at every step; a burst of allocation does not."""
+    tail = gd[first + 1:]
+    if nlive <= 2 or bulk < 300 * MB or not tail or not all(x > 0 for x in tail):
+        return 0.0
+    return statistics.median(tail) / MB / (gap / 60)
+
+
+FLAG = {}
+
+
+def flagged(pid):
+    """Does this subtree clear a bar on its own?"""
+    if pid not in FLAG:
+        first = sub_first[pid]
+        bulk = sub_rss[pid][-1]
+        FLAG[pid] = (sustained(sub_cpu[pid], first) >= args.c
+                     or bulk / memtot * 100 >= args.r
+                     or leaking(sub_del[pid], first, nint - first, bulk) >= args.g)
+    return FLAG[pid]
+
+
+SPLIT = {}
+
+
+def splits(par):
+    """A parent hosting two differently-named flagged jobs is a supervisor, not
+    a job. A fan-out of the same work stays one job however wide it gets."""
+    if par not in SPLIT:
+        names = set()
+        for c in kids.get(par, []):
+            if flagged(c):
+                names.add(label(sub_top[c][1]))
+            if len(names) > 1:
+                break
+        SPLIT[par] = len(names) > 1
+    return SPLIT[par]
+
+
+ROOT = {}
+
+
+def root_of(pid):
+    cur, hop = pid, 0
+    while hop < 40:
+        if cur in ROOT:
+            return ROOT[cur]
+        par = parent.get(cur, 0)
+        if par in (0, 1) or par in pane_pids or par not in live:
+            break
+        pc = COMM.get(par, '')
+        if pc in BOUNDARY:
+            break
+        # a login/session shell owns its children, it isn't one of them
+        gp = parent.get(par, 0)
+        if pc in SHELLS and COMM.get(gp, '') in BOUNDARY:
+            break
+        if splits(par):
+            break
+        cur, hop = par, hop + 1
+    ROOT[pid] = cur
+    return cur
+
+
+pmap = panes()
+pane_pids = set(pmap)
+# tmux built with systemd puts each pane in its own tmux-spawn-<uuid>.scope, and
+# a daemonised child keeps the scope long after it has reparented to init: the
+# scope is the only thread back to the pane that started it
+scopemap = {}
+for p, loc in pmap.items():
+    s = unit(p)
+    if s:
+        scopemap[s] = loc
+
+groups = {}
+for pid in pids:
+    g = groups.setdefault(root_of(pid), {'pids': {}, 'parts': {}})
+    g['pids'][pid] = sustained(cpu[pid], seen[pid][0])
+    e = g['parts'].setdefault(label(pid), {'cpu': 0.0, 'pids': set()})
+    e['cpu'] += g['pids'][pid]
+    e['pids'].add(pid)
+
+hogs = []
+for r, g in groups.items():
+    first = min(seen[p][0] for p in g['pids'])
+    tot = [sum(cpu[p][i] for p in g['pids']) for i in range(nint)]
+    gd = [sum(delta[p][i] for p in g['pids']) for i in range(nint)]
+    now = {p: rss[p][seen[p][-1]] for p in g['pids']}
+    nlive = nint - first
+    hogs.append({
+        'root': r, 'cpu': sustained(tot, first), 'now': now, 'rss': sum(now.values()),
+        'gd': gd, 'first': first, 'parts': g['parts'], 'pids': g['pids'], 'nlive': nlive,
+        'cover': nlive / nint,
+    })
+
+free = meminfo()['MemAvailable'] / memtot * 100
+# ranking by summed rss puts a 20-process browser over a single 3G vm that
+# actually owns more of the box, so pay for the vma walk once it matters
+exact = args.p or free < args.M
+
+for h in hogs:
+    if exact and h['rss'] >= 200 * MB:
+        for pid in h['now']:
+            v = pss(pid)
+            if v is not None:
+                h['now'][pid] = v
+        h['rss'] = sum(h['now'].values())
+    h['share'] = h['rss'] / memtot * 100
+    h['grow'] = leaking(h['gd'], h['first'], h['nlive'], h['rss'])
+    why = []
+    if h['cpu'] >= args.c:
+        why.append(('cpu', h['cpu'] / args.c))
+    # steady-state bulk is not an offence on its own, growth is
+    if h['share'] >= args.r:
+        why.append(('mem', h['share'] / args.r))
+    if h['grow'] >= args.g:
+        why.append(('leak', h['grow'] / args.g))
+    h['why'] = why
+    h['score'] = max([s for _, s in why], default=0.0)
+    h['bulk'] = False
+
+over = sorted((h for h in hogs if h['score'] >= 1.0), key=lambda h: -h['score'])
+n = args.n or pick([h['score'] for h in over])
+shown = over[:min(n, args.m)]
+
+# under pressure the box can die with nobody over a bar: a hundred tabs at 3%
+# each is the answer, so rank on bulk instead and name the top few
+if free < args.M:
+    picked = {h['root'] for h in shown}
+    for h in sorted(hogs, key=lambda h: -h['rss']):
+        if len(shown) >= min(len(picked) + args.k, args.m):
+            break
+        if h['root'] in picked or h['share'] < 1.0:
+            continue
+        if not any(k == 'mem' for k, _ in h['why']):
+            h['why'].append(('mem', h['share'] / args.r))
+        h['bulk'] = True
+        shown.append(h)
+
+if not shown:
+    print('no offenders')
+    sys.exit(0)
+
+(_, tot0, bus0, _) = snaps[0]
+(_, tot1, bus1, _) = snaps[-1]
+frac = (bus1 - bus0) / (tot1 - tot0) * 100 if tot1 > tot0 else 0
+print(f'cpu {frac:.0f}%   memory {100 - free:.0f}%   '
+      f'load {os.getloadavg()[0]:.1f} / {NCPU} cores   '
+      f'{nsamp} samples over {args.t:g}s\n')
+for i, h in enumerate(shown, 1):
+    if h['bulk'] and (i == 1 or not shown[i - 2]['bulk']):
+        print(f'only {free:.0f}% memory free, biggest consumers:\n')
+    r = h['root']
+    cur, loc, tty, walked = r, '', '', set()
+    while cur in live and cur not in walked:
+        if cur in pmap:
+            loc, tty = f'tmux {pmap[cur][0]}', pmap[cur][1].replace('/dev/', '')
+            break
+        walked.add(cur)
+        cur = parent.get(cur, 0)
+    if not loc:
+        sc = unit(r)
+        if sc in scopemap:
+            loc, tty = f'tmux {scopemap[sc][0]}', scopemap[sc][1].replace('/dev/', '')
+        else:
+            tty = ttyname(live.get(r, {}).get('tty', 0))
+            loc = sc or ('tty' if tty else '-')
+
+    # the group is right but a bare shell names it badly: walk down the
+    # single-child chain to the first pid that says what the work is
+    d = r
+    for _ in range(10):
+        argv = cmdline(d)
+        if not argv or os.path.basename(argv[0]) not in SHELLS:
+            break
+        ch = [c for c in kids.get(d, []) if c in h['pids']]
+        if len(ch) != 1:
+            break
+        d = ch[0]
+    argv = cmdline(d)
+    cmd = ' '.join([os.path.basename(argv[0])] + argv[1:]) if argv else '?'
+    u = uid_of(r)
+    who = pwd.getpwuid(u).pw_name if u not in (me, -1) else ''
+
+    why = []
+    for kind, _ in sorted(h['why'], key=lambda kv: -kv[1]):
+        if kind == 'cpu':
+            why.append(f'cpu {h["cpu"]:.0f}% ({h["cpu"]/NCPU:.0f}% of box)')
+        elif kind == 'mem':
+            why.append(f'{human(h["rss"])} memory ({h["share"]:.0f}% of {human(memtot)})')
+        else:
+            why.append(f'memory +{h["grow"]:.0f}M/min, now {human(h["rss"])}')
+
+    where = loc
+    if tty:
+        where += f'  {tty}'
+    if who:
+        where += f'  [{who}]'
+    if h['cover'] < 0.99:
+        where += f'  ({h["cover"]*100:.0f}% of window)'
+    if r not in live:
+        where += '  (exited)'
+    print(f'{i:>2}  {"  |  ".join(why)}')
+    print(f'{"":>4}{where}')
+    print(f'{"":>4}{cmd[:106]}  ({d})')
+
+    # break the group down along the axis that got it flagged
+    bycpu = any(k == 'cpu' for k, _ in h['why'])
+
+    def weigh(v):
+        return v['cpu'] if bycpu else sum(h['now'].get(p, 0) for p in v['pids'])
+
+    parts = sorted(h['parts'].items(), key=lambda kv: -weigh(kv[1]))
+    tot = sum(weigh(v) for _, v in parts) or 1
+    if len(parts) > 1 or len(parts[0][1]['pids']) > 1:
+        for name, v in parts[:4]:
+            w = weigh(v)
+            if w < 0.05 * tot:
+                continue
+            tag = f'{len(v["pids"])}x {name[:46]}' if len(v['pids']) > 1 else name[:46]
+            print(f'{"":>4}- {f"{w:.0f}%" if bycpu else human(w)} {tag}')
+    if args.v:
+        for pid, c in sorted(h['pids'].items(), key=lambda kv: -kv[1]):
+            mark = COMM.get(pid, '?') if pid in live else '(exited)'
+            print(f'{"":>6}{c:6.0f}% {human(h["now"].get(pid, 0)):>7} {pid:>8} {mark}')
+    print()
+
+roots = {h['root'] for h in shown}
+rest = [h for h in over if h['root'] not in roots]
+if rest:
+    print(f'    + {len(rest)} more over a bar, worst {rest[0]["score"]:.1f}x')
