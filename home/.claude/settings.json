@@ -3,6 +3,7 @@
     "defaultMode": "auto"
   },
   "model": "opus",
+  "outputStyle": "Concise",
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"

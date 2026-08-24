@@ -355,7 +355,8 @@ nnoremap <Leader>vs `[v`]
 nnoremap <Leader>h :call ToggleSet('hls')<CR>
 nnoremap <silent><expr> n (v:searchforward ? 'n' : 'N') . ":SearchIndex<CR>"
 nnoremap <silent><expr> N (v:searchforward ? 'N' : 'n') . ":SearchIndex<CR>"
-nnoremap <Leader>b :call CopyToClipboard(expand('%:p') . ':' . line('.'))<CR>
+nnoremap <Leader>b :call CopyToClipboard(expand('%:p:h:t') . '/'
+  \ . expand('%:t') . ':' . line('.'))<CR>
 nnoremap <Leader>n :call CopyToClipboard(expand('%:p'))<CR>
 nnoremap <Leader>w <C-w>
 nnoremap <Leader>a :Files<CR>

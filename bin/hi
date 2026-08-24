@@ -26,6 +26,14 @@ while IFS=$'\t' read -r tag ses win cmd; do
 done < "$manifest"
 
 # layer 2 - the tmux tree. A window that outlived the snapshot is left alone.
+#
+# new-session's -c is also the session cwd, which every interactive new-window
+# and split inherits for the life of the session, so a restored pane's cwd must
+# never come in through it: tmux is started from $HOME. The window new-session
+# insists on creating is parked past any real index and dropped once the real
+# ones exist.
+park=9999
+parked=()
 while IFS=$'\t' read -r tag ses win cwd; do
   [ "$tag" = tmux ] || continue
   [ -d "$cwd" ] || cwd=$HOME
@@ -36,15 +44,19 @@ while IFS=$'\t' read -r tag ses win cwd; do
   [ -n "$cmd" ] && run="$cmd; exec bash"
 
   if ! tm has-session -t "=$ses" 2>/dev/null; then
-    tm new-session -d -s "$ses" -c "$cwd" ${run:+"$run"}
-    # new-session lands on base-index; move it if the snapshot says otherwise.
+    tm new-session -d -s "$ses" -c "$HOME" -n hi-park
     # A detached session reports no current window, so read it off the list.
     made=$(tm list-windows -t "=$ses" -F '#{window_index}' | head -1)
-    [ "$made" = "$win" ] || tm move-window -s "=$ses:$made" -t "=$ses:$win"
-  elif ! tm list-windows -t "=$ses" -F '#{window_index}' | grep -qx "$win"; then
-    tm new-window -d -t "=$ses:$win" -c "$cwd" ${run:+"$run"}
+    tm move-window -s "=$ses:$made" -t "=$ses:$park"
+    parked+=("$ses")
   fi
+  tm list-windows -t "=$ses" -F '#{window_index}' | grep -qx "$win" ||
+    tm new-window -d -t "=$ses:$win" -c "$cwd" ${run:+"$run"}
 done < "$manifest"
+
+for ses in "${parked[@]}"; do
+  tm kill-window -t "=$ses:$park"
+done
 
 # layer 1 - windows. A terminal maps fast enough to land on the workspace
 # switched to just before it; an app can take seconds, so it is placed below.

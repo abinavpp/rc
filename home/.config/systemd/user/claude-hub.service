@@ -8,7 +8,7 @@ Description=Claude hub - always-on remote control session
 Type=forking
 Environment=TERM=xterm-256color
 # Dedicated socket so this never joins the interactive tmux server.
-ExecStart=/usr/bin/tmux -L hub new-session -d -s hub /home/abinavpp/Documents/claude-hub/bin/hub-run.sh
+ExecStart=/usr/bin/tmux -L hub new-session -d -s hub /home/abinavpp/pj/claude-hub/bin/hub-run.sh
 ExecStop=/usr/bin/tmux -L hub kill-server
 Restart=on-failure
 RestartSec=10
