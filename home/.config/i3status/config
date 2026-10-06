@@ -1,0 +1,71 @@
+general {
+  colors = true
+  # not the default #ff0000: reserved for swappy annotations
+  color_bad = "#d70000"
+  interval = 1
+  # Under the i3status-port wrapper, parent-process detection picks plain
+  # text; force the JSON protocol.
+  output_format = i3bar
+}
+
+order += "tztime local"
+order += "ipv6"
+order += "wireless _first_"
+order += "ethernet _first_"
+order += "disk /"
+order += "battery all"
+order += "cpu_usage"
+order += "memory"
+order += "cpu_temperature 0"
+order += "volume master"
+
+tztime local {
+  format = "%Y-%m-%d [%a] %H:%M:%S"
+}
+
+ipv6 {
+  format_down = ""
+}
+
+wireless _first_ {
+  format_up = "W: (%quality at %essid) %ip"
+  format_down = ""
+}
+
+ethernet _first_ {
+  format_up = "E: %ip (%speed)"
+  format_down = ""
+}
+
+disk "/" {
+  format = "/: %avail"
+}
+
+battery all {
+  format = "%status %percentage %remaining"
+  format_down = ""
+}
+
+cpu_usage {
+  format = "C: %usage"
+}
+
+memory {
+  format = "M: %available"
+  threshold_degraded = "1G"
+  format_degraded = "MEMORY < %available"
+}
+
+# i3status-port prefixes the active sink port's icon.
+volume master {
+  format = "%volume"
+  format_muted = "muted (%volume)"
+  device = "default"
+}
+
+# Intel only: the CPU package sensor. The hwmon number varies per boot.
+cpu_temperature 0 {
+  format = "%degrees °C"
+  max_threshold = "75"
+  path = "/sys/devices/platform/coretemp.0/hwmon/hwmon*/temp1_input"
+}

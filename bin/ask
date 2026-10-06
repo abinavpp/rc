@@ -2,4 +2,7 @@
 
 mkdir -p ~/eph
 cd ~/eph
-exec claude --model opus "$@"
+n=0
+while tmux has-session -t "=ask-$n" 2>/dev/null; do n=$((n + 1)); done
+trap 'tmux kill-session -t "=ask-'"$n"'" 2>/dev/null' EXIT HUP
+tmux new-session -s "ask-$n" "$(printf '%q ' claude "$@")"

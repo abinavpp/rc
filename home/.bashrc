@@ -15,6 +15,7 @@ alias cmus='TERM=xterm-256color cmus'
 alias tmux='tmux -u -2'
 alias lsblk='lsblk -o NAME,MOUNTPOINTS,SIZE,UUID,LABEL,MODEL,FSTYPE,STATE,TRAN,PHY-SEC,LOG-SEC'
 alias mkfs.ntfs='mkfs.ntfs -Q'
+alias pgrep='pgrep -a'
 
 function eref() {
   [[ ! -d ~/.local/state ]] && return 1
@@ -183,7 +184,7 @@ function vim {
   fi
 
   local cmd="$vim_bin -i NONE --servername $(tty)"
-  local bg_pid=$(pgrep -f "$cmd( |\$)")
+  local bg_pid=$(/usr/bin/pgrep -f "$cmd( |\$)")
   local arg=""
 
   # If we have a non-file argument and we have a background vim then run a new

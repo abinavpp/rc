@@ -1,0 +1,11 @@
+# systemd units to enable on a fresh install: <system|user> <unit>
+
+system thermald.service
+system lm_sensors.service
+system reflector.timer
+system paccache.timer
+system fstrim.timer
+system piavpn.service
+user claude-hub.service
+user rclone-gdrive.service
+user upgu.timer

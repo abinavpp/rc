@@ -1,8 +1,5 @@
 " Environment variables
 " =====================
-let $PATH = $RESET_PATH
-let $LIBRARY_PATH = $RESET_LIBRARY_PATH
-let $LD_LIBRARY_PATH = $RESET_LD_LIBRARY_PATH
 let $FZF_DEFAULT_COMMAND =
   \ 'fd --hidden -L --exclude ".cache/" --exclude ".git/"'
 
@@ -154,6 +151,58 @@ function! Lsp(cmd, fts)
   exe 'au FileType ' . join(a:fts, ',') . ' setlocal omnifunc=lsp#complete'
 endfunction
 
+" Names of the symbols in syms enclosing pos, outermost first.
+function! LspFuncFind(pos, syms)
+  let l:best = {}
+  let l:span = 0
+  for l:s in a:syms
+    let l:r = has_key(l:s, 'range') ? l:s.range : l:s.location.range
+    if a:pos.line < l:r.start.line || a:pos.line > l:r.end.line
+      continue
+    endif
+    if empty(l:best) || l:r.end.line - l:r.start.line < l:span
+      let l:best = l:s
+      let l:span = l:r.end.line - l:r.start.line
+    endif
+  endfor
+
+  if empty(l:best)
+    return []
+  endif
+  return [l:best.name] + LspFuncFind(a:pos, get(l:best, 'children', []))
+endfunction
+
+" Popup the symbol chain enclosing pos from a documentSymbol response.
+function! LspFuncShow(pos, data)
+  let l:res = get(get(a:data, 'response', {}), 'result', v:null)
+  if type(l:res) != v:t_list
+    return
+  endif
+
+  let l:chain = LspFuncFind(a:pos, l:res)
+  if empty(l:chain)
+    return
+  endif
+  call popup_atcursor(join(l:chain, ' > '),
+    \ {'moved': 'any', 'border': [], 'padding': [0, 1, 0, 1]})
+endfunction
+
+" Show the function under the cursor as a symbol chain, e.g. Class > method.
+function! LspFunc()
+  let l:servers = filter(lsp#get_allowed_servers(),
+    \ 'lsp#capabilities#has_document_symbol_provider(v:val)')
+  if empty(l:servers)
+    echohl ErrorMsg | echo 'No document symbol provider' | echohl None
+    return
+  endif
+
+  call lsp#send_request(l:servers[0], {
+    \ 'method': 'textDocument/documentSymbol',
+    \ 'params': {'textDocument': lsp#get_text_document_identifier()},
+    \ 'on_notification': function('LspFuncShow', [lsp#get_position()]),
+    \ })
+endfunction
+
 function! Save()
   if filewritable(bufname('%')) || empty(glob(bufname('%')))
     exe 'w'
@@ -189,6 +238,8 @@ function! GdiffClose()
   endif
 endfunction
 
+" Toggle a diff pane against rev a ('' = index); another rev replaces the open
+" one. The cursor stays put.
 function! Gdiff(a)
   " Unresolvable rev: fugitive opens it as a literal path instead of failing.
   if a:a != "" && FugitiveExecute(['rev-parse', '--verify', '--quiet', a:a]).exit_status
@@ -196,21 +247,54 @@ function! Gdiff(a)
     return
   endif
 
-  if &diff
-    let l:cur = exists('t:gdiff_spec') ? t:gdiff_spec : ''
+  " Not &diff: a reloaded buffer can keep the flag without a diff pane.
+  if exists('t:gdiff_spec')
+    let l:cur = t:gdiff_spec
     call GdiffClose()
     if l:cur ==# a:a
       return
     endif
   endif
 
+  let l:win = win_getid()
+  exe 'Gdiffsplit ' . a:a
   if a:a == ""
-    exe 'Gdiffsplit | wincmd l | wincmd H'
-  else
-    exe 'Gdiffsplit ' . a:a . ' | wincmd h'
+    wincmd r
   endif
+  call win_gotoid(l:win)
 
   let t:gdiff_spec = a:a
+endfunction
+
+" Go to the next (step 1) or previous (step -1) entry, wrapping at the ends.
+" If a diff is open, it follows to the new file.
+function! ReviewGo(step)
+  " Closing the diff returns the cursor to the window that owns the list.
+  if exists('t:gdiff_spec')
+    let l:spec = t:gdiff_spec
+    call GdiffClose()
+  endif
+
+  let l:len = len(getloclist(0))
+  if l:len
+    let l:idx = getloclist(0, {'idx': 0}).idx
+    exe 'll ' . ((l:idx - 1 + a:step + l:len) % l:len + 1)
+  endif
+
+  if exists('l:spec')
+    call Gdiff(l:spec)
+  endif
+  call ReviewEcho()
+endfunction
+
+" Re-echo the current entry's "(n of N): text" line after a redraw wiped it.
+function! ReviewEcho()
+  let l:items = getloclist(0)
+  if empty(l:items) | return | endif
+
+  redraw
+  let l:cur = getloclist(0, {'idx': 0}).idx
+  echo printf('(%d of %d): %s', l:cur, len(l:items), l:items[l:cur - 1].text)
 endfunction
 
 function! GdiffNum()
@@ -317,6 +401,75 @@ function! ReloadTick(t)
   silent! checktime
 endfunction
 
+" Load a titled location list of change sites and underline the changed lines.
+" qffile: file:line:col:text per line. linesfile: JSON {abs path: [line, ...]}.
+function! ReviewLoad(title, qffile, linesfile)
+  " Reloading the same title keeps the current entry.
+  let prev = {}
+  if getloclist(0, {'title': 1}).title ==# a:title
+    let idx = getloclist(0, {'idx': 0}).idx
+    let items = getloclist(0)
+    if idx > 0 && idx <= len(items) | let prev = items[idx - 1] | endif
+  endif
+
+  if exists('t:gdiff_spec')
+    let spec = t:gdiff_spec
+    call GdiffClose()
+  endif
+  " setloclist() from the list's own window overwrites it instead of pushing.
+  lclose
+
+  let g:review_lines = json_decode(join(readfile(a:linesfile), ''))
+  hi ReviewChange cterm=underline gui=underline
+  aug ReviewMatch | au! | au BufWinEnter * call ReviewMark() | aug END
+  for w in range(1, winnr('$'))
+    call win_execute(win_getid(w), 'call ReviewMark()')
+  endfor
+  " Location list, not quickfix: Enter opens in the list's own window, not one
+  " vim picks by layout (the diff pane).
+  call setloclist(0, [], ' ', {'title': a:title, 'efm': '%f:%l:%c:%m',
+    \ 'lines': readfile(a:qffile)})
+  " File-info message + (1 of N) line -> hit-enter prompt.
+  let sm = &shortmess
+  set shortmess+=F
+  lopen
+  exe 'll ' . max([ReviewSameEntry(prev), 1])
+  if exists('l:spec')
+    call Gdiff(spec)
+  endif
+  call ReviewEcho()
+  let &shortmess = sm
+endfunction
+
+" Index of the entry nearest prev's line: same file and text first, then same
+" file; 0 if none.
+function! ReviewSameEntry(prev)
+  if empty(a:prev) | return 0 | endif
+  for same_text in [1, 0]
+    let best = 0 | let dist = -1
+    for [i, e] in items(getloclist(0))
+      if e.bufnr != a:prev.bufnr || (same_text && e.text !=# a:prev.text)
+        continue
+      endif
+      let d = abs(e.lnum - a:prev.lnum)
+      if dist < 0 || d < dist | let best = i + 1 | let dist = d | endif
+    endfor
+    if best | return best | endif
+  endfor
+  return 0
+endfunction
+
+" Underline the current window's changed lines, replacing its old marks.
+function! ReviewMark()
+  for id in get(w:, 'review_ids', []) | silent! call matchdelete(id) | endfor
+  let w:review_ids = []
+  let lines = get(g:review_lines, expand('%:p'), [])
+  " matchaddpos() takes at most eight positions per call.
+  for i in range(0, len(lines) - 1, 8)
+    call add(w:review_ids, matchaddpos('ReviewChange', lines[i : i + 7]))
+  endfor
+endfunction
+
 " Commands
 " ========
 com! Tidy :sil! exe '%s/\v\ +$//g' <bar> :sil! exe '%s/\v[^\x00-\x7F]+//g'
@@ -367,9 +520,13 @@ nnoremap <Leader>K `a
 nnoremap <silent><Leader>e :call Gdiff('')<CR>
 nnoremap <silent><Leader>r :call Gdiff('@~1')<CR>
 nnoremap <silent><Leader>t :call GdiffNum()<CR>
+nnoremap <silent>[q :call ReviewGo(1)<CR>
+nnoremap <silent>]q :call ReviewGo(-1)<CR>
+nnoremap <silent><Leader>q :lopen<CR>
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
 nnoremap <Leader>lt :TagbarToggle<CR>
+nnoremap <Leader>lc :call LspFunc()<CR>
 nnoremap <Leader>lb <C-t>
 nnoremap <Leader>sf :set filetype
 nnoremap <Leader>sl :call ToggleSet('list')<CR>
@@ -397,6 +554,7 @@ set incsearch ignorecase smartcase completeopt=noselect,menuone,preview
 set splitright diffopt+=vertical autoread ttimeoutlen=50 hidden
 set tabstop=2 shiftwidth=2 softtabstop=2 smartindent smarttab expandtab
 set textwidth=80 scrolloff=5 backspace=2
+set modelines=1
 set clipboard^=unnamed,unnamedplus mouse=a termguicolors background=dark
 au FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au FileType mlir setlocal commentstring=//\ %s
@@ -416,10 +574,8 @@ au BufEnter *.yul set filetype=yul
 au FileType python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 au CompleteDone * if pumvisible() == 0 | pclose | endif
 " Force vim-lsp to resync the buffer on :e (workaround for stale didOpen).
-au BufReadPre * if &buftype ==# '' | silent! doautocmd <nomodeline> BufDelete | endif
-" inotify pushes the reload; the tick is a safety net for missed events and a
-" respawn hook, so it can stay slow. Not FocusGained-driven: the disk edit
-" lands while another window has focus.
+au BufReadPre * if &buftype ==# '' && expand('<afile>') !~# '^fugitive://'
+  \ | silent! doautocmd <nomodeline> BufDelete | endif
 au FileChangedShell * call DiskChanged()
 au FocusGained,BufEnter,InsertLeave,CmdlineLeave * silent! checktime
 au BufReadPost,BufNewFile * call ReloadWatch()

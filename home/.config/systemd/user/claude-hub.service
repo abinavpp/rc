@@ -3,14 +3,20 @@ Description=Claude hub - always-on remote control session
 # network-online.target does not exist in user scope, so there is nothing to
 # order against. The retry loop in hub-run.sh is what survives a boot that
 # beats the network up.
+# Never give up restarting. The default burst limit makes systemd stop
+# retrying after a few fast failures - exactly when nobody is here to notice.
+StartLimitIntervalSec=0
 
 [Service]
 Type=forking
 Environment=TERM=xterm-256color
 # Dedicated socket so this never joins the interactive tmux server.
-ExecStart=/usr/bin/tmux -L hub new-session -d -s hub /home/abinavpp/pj/claude-hub/bin/hub-run.sh
+ExecStart=/usr/bin/tmux -L hub new-session -d -s hub -n hub /home/abinavpp/pj/claude-hub/bin/hub-run.sh
+ExecStartPost=/home/abinavpp/pj/claude-hub/bin/hub-ready.sh
 ExecStop=/usr/bin/tmux -L hub kill-server
-Restart=on-failure
+# always, not on-failure: a tmux server that exits 0 (kill-server, a stray
+# kill) is just as dead as one that crashes.
+Restart=always
 RestartSec=10
 
 [Install]

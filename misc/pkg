@@ -26,7 +26,8 @@
 0 reflector
 0 bash-completion
 0 alsa-utils alsa-tools pipewire-pulse pipewire-alsa
-0 rsync tree ranger plocate fd ripgrep
+0 rsync tree plocate fd ripgrep
+# 0 ranger-git # [AUR] repo ranger is a 2019 snapshot; upstream hasn't tagged since
 0 stow # links ~/rc/home into $HOME
 1 rclone
 0 lsof htop
@@ -102,9 +103,11 @@
 3 obs-studio xarchiver
 # 3 handy-bin # [AUR]
 # 3 weasis-bin # [AUR]
+3 dcmtk gdcm python-pydicom # DICOM CLI: header dump, decode, render
 3 pavucontrol-qt
 3 pcmanfm-qt ffmpegthumbnailer
 3 maim
+3 swappy otf-font-awesome # font-awesome: swappy toolbar icons
 3 libreoffice-fresh ghostscript unoconv zathura zathura-pdf-mupdf zathura-ps
 3 feh imagemagick gthumb
 3 mpv vlc libva-intel-driver

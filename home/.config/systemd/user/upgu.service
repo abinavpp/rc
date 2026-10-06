@@ -1,0 +1,6 @@
+[Unit]
+Description=Upgrade non-root tool trees (vim plugins, gh extensions, pipx, cargo, npm)
+
+[Service]
+Type=oneshot
+ExecStart=%h/rc/bin/upgu

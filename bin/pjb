@@ -10,6 +10,9 @@ target="$dir/target/$profile"
 
 if [ -d "$build" ]; then
     cd "$build" || exit 1
+    if [ ! -f build.ninja ] && [ -x cmake-invocation ]; then
+        ./cmake-invocation || exit 1
+    fi
     [ -f build.ninja ] && ninja "$@" && exit
     [ -f Makefile ] && make "$@" && exit
     exit 1

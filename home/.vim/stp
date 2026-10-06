@@ -15,7 +15,12 @@ sub setup_vim {
 sub setup_vimplug {
   system("$wget -O $ENV{HOME}/.vim/autoload/plug.vim "
     . "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim");
-  system("vim -i NONE -c 'PlugInstall | PlugUpdate | quit | quit'");
+
+  # Headless (-es), which skips .vimrc, so -u loads it. -N because -u alone
+  # turns on vi-compatible mode, which can't parse .vimrc. --noplugin: a broken
+  # plugin can't block the update. --sync: wait for downloads before qa!.
+  system("vim -es -N --noplugin -u $ENV{HOME}/.vimrc -i NONE"
+    . " -c 'PlugInstall --sync' -c 'PlugUpdate --sync' -c 'qa!' < /dev/null");
 }
 
 sub setup_llvm {
@@ -42,6 +47,7 @@ sub setup_gcc {
     . " https://raw.githubusercontent.com/utensils/colors.vim/master/rtl.vim")
 }
 
+gethostbyname("github.com") or die "not connected to the internet\n";
 setup_vim;
 setup_llvm;
 setup_gcc;

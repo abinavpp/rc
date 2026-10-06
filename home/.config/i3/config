@@ -10,7 +10,7 @@ set $red #d70000
 font pango:: 11
 
 bar {
-  status_command i3status | ~/rc/bin/i3status-port
+  status_command ~/rc/bin/i3status-port
   tray_output primary
   separator_symbol "|"
   colors {
@@ -34,6 +34,8 @@ client.urgent $red $black $white $black
 floating_modifier $m
 
 workspace_layout tabbed
+
+for_window [class="Swappy"] floating disable
 
 bindsym $m+s focus left
 bindsym $m+f focus right
@@ -107,4 +109,7 @@ mode "mode-0" {
 bindsym $m+c mode "mode-0"
 
 bindsym $m+p exec --no-startup-id maim "$HOME/eph/screenshot.png" && notify-send -t 800 shot
-bindsym $m+Shift+p exec --no-startup-id maim -s "$HOME/eph/screenshot.png"
+bindsym $m+Shift+p exec --no-startup-id maim "$HOME/eph/screenshot.png" && swappy -f "$HOME/eph/screenshot.png" -o "$HOME/eph/screenshot.png"
+# Toggle recording. SIGINT, not TERM: ffmpeg writes the moov atom only on a
+# clean exit.
+bindsym $m+v exec --no-startup-id "p=$XDG_RUNTIME_DIR/scrrec.pid; if kill -INT $(cat $p 2>/dev/null) 2>/dev/null; then rm -f $p; else ffmpeg -nostdin -y -f x11grab -framerate 30 -i $DISPLAY -f pulse -i $(pactl get-default-sink).monitor -c:v libx264 -preset ultrafast -crf 28 -pix_fmt yuv420p -c:a aac $HOME/eph/screenrec.mp4 >$XDG_RUNTIME_DIR/scrrec.log 2>&1 & echo $! >$p; fi"

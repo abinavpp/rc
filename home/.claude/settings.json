@@ -3,7 +3,6 @@
     "defaultMode": "auto"
   },
   "model": "opus",
-  "outputStyle": "Concise",
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
@@ -12,7 +11,7 @@
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "bash ~/.claude/recap-gen.sh" }
+          { "type": "command", "command": "python3 ~/.claude/title-gen.py" }
         ]
       }
     ]
@@ -20,6 +19,16 @@
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true
+  },
+  "outputStyle": "Concise",
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "high"
+    },
+    "claude-fable-5-1": {},
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
   },
   "autoMemoryEnabled": false,
   "editorMode": "vim",
