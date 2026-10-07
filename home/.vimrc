@@ -13,7 +13,6 @@ if filereadable($HOME . "/.vim/autoload/plug.vim")
   Plug 'https://github.com/tpope/vim-surround'
   Plug 'https://github.com/google/vim-searchindex'
   Plug 'https://github.com/gioele/vim-autoswap'
-  Plug 'https://github.com/majutsushi/tagbar'
   Plug 'https://github.com/prabirshrestha/vim-lsp'
   Plug 'https://github.com/junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'https://github.com/junegunn/fzf.vim'
@@ -29,8 +28,6 @@ let fortran_more_precise = 1
 let fortran_do_enddo = 1
 let s:trailing_space_match_state = 1
 let g:color_theme = "dark"
-let g:tagbar_left = 1
-let g:tagbar_show_linenumbers = 2
 let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0 } }
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],
   \ 'passive_filetypes': [] }
@@ -63,8 +60,7 @@ function! StatusLine()
   if g:statusline_winid != win_getid(winnr())
     let l:c = ''
   endif
-  let l:s = l:c . " %{mode()} %<%F  %{exists('g:loaded_tagbar') ?"
-  let l:s .= "tagbar#currenttag('%s', '', '%f') : ''} %m %r"
+  let l:s = l:c . " %{mode()} %<%F  %{get(w:, 'lsp_func', '')} %m %r"
   let l:s .= "%= %{v:servername} %y %v %l/%L"
   return l:s
 endfunction
@@ -124,6 +120,8 @@ function! Map(lhs, rhs)
 endfunction
 
 function! MapLsp()
+  au TextChanged,InsertLeave <buffer> silent! call LspFunc()
+  au CursorHold,CursorHoldI <buffer> call LspFuncUpdate(0)
   nnoremap <buffer><Leader>ld :LspDefinition<CR>
   nnoremap <buffer><Leader>ls :LspDeclaration<CR>
   nnoremap <buffer><Leader>lr :LspReference<CR>
@@ -172,22 +170,30 @@ function! LspFuncFind(pos, syms)
   return [l:best.name] + LspFuncFind(a:pos, get(l:best, 'children', []))
 endfunction
 
-" Popup the symbol chain enclosing pos from a documentSymbol response.
-function! LspFuncShow(pos, data)
+" Cache a documentSymbol response for buf and refresh the statusline.
+function! LspFuncStore(buf, data)
   let l:res = get(get(a:data, 'response', {}), 'result', v:null)
   if type(l:res) != v:t_list
     return
   endif
 
-  let l:chain = LspFuncFind(a:pos, l:res)
-  if empty(l:chain)
-    return
+  call setbufvar(a:buf, 'lsp_syms', l:res)
+  if bufnr() == a:buf
+    call LspFuncUpdate(0)
   endif
-  call popup_atcursor(join(l:chain, ' > '),
-    \ {'moved': 'any', 'border': [], 'padding': [0, 1, 0, 1]})
 endfunction
 
-" Show the function under the cursor as a symbol chain, e.g. Class > method.
+" Symbol chain enclosing the cursor from the cache, e.g. Class > method.
+function! LspFuncUpdate(popup)
+  let w:lsp_func = join(LspFuncFind(lsp#get_position(),
+    \ get(b:, 'lsp_syms', [])), ' > ')
+  redrawstatus
+  if a:popup && !empty(w:lsp_func)
+    call popup_atcursor(w:lsp_func,
+      \ {'moved': 'any', 'border': [], 'padding': [0, 1, 0, 1]})
+  endif
+endfunction
+
 function! LspFunc()
   let l:servers = filter(lsp#get_allowed_servers(),
     \ 'lsp#capabilities#has_document_symbol_provider(v:val)')
@@ -199,7 +205,7 @@ function! LspFunc()
   call lsp#send_request(l:servers[0], {
     \ 'method': 'textDocument/documentSymbol',
     \ 'params': {'textDocument': lsp#get_text_document_identifier()},
-    \ 'on_notification': function('LspFuncShow', [lsp#get_position()]),
+    \ 'on_notification': function('LspFuncStore', [bufnr()]),
     \ })
 endfunction
 
@@ -525,8 +531,7 @@ nnoremap <silent>]q :call ReviewGo(-1)<CR>
 nnoremap <silent><Leader>q :lopen<CR>
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
-nnoremap <Leader>lt :TagbarToggle<CR>
-nnoremap <Leader>lc :call LspFunc()<CR>
+nnoremap <Leader>lc :call LspFuncUpdate(1)<CR>
 nnoremap <Leader>lb <C-t>
 nnoremap <Leader>sf :set filetype
 nnoremap <Leader>sl :call ToggleSet('list')<CR>
@@ -554,7 +559,7 @@ set incsearch ignorecase smartcase completeopt=noselect,menuone,preview
 set splitright diffopt+=vertical autoread ttimeoutlen=50 hidden
 set tabstop=2 shiftwidth=2 softtabstop=2 smartindent smarttab expandtab
 set textwidth=80 scrolloff=5 backspace=2
-set modelines=1
+set modelines=1 updatetime=300
 set clipboard^=unnamed,unnamedplus mouse=a termguicolors background=dark
 au FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au FileType mlir setlocal commentstring=//\ %s
@@ -573,6 +578,7 @@ au BufEnter *.{gvy,Jenkinsfile} set filetype=groovy
 au BufEnter *.yul set filetype=yul
 au FileType python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 au CompleteDone * if pumvisible() == 0 | pclose | endif
+au User lsp_buffer_enabled silent! call LspFunc()
 " Force vim-lsp to resync the buffer on :e (workaround for stale didOpen).
 au BufReadPre * if &buftype ==# '' && expand('<afile>') !~# '^fugitive://'
   \ | silent! doautocmd <nomodeline> BufDelete | endif

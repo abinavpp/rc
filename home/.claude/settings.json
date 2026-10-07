@@ -3,18 +3,21 @@
     "defaultMode": "auto"
   },
   "model": "opus",
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
-  },
   "hooks": {
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "python3 ~/.claude/title-gen.py" }
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/title-gen.py"
+          }
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
