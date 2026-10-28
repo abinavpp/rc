@@ -90,7 +90,7 @@
 
 # Base GUI
 # ========
-2 i3-wm i3status i3lock wmctrl picom dmenu hsetroot xsel xterm ttf-dejavu ttf-liberation
+2 i3-wm i3status i3lock wmctrl xdotool picom dmenu hsetroot xsel xterm ttf-dejavu ttf-liberation
 2 dunst libnotify # i3 screenshot bindings call notify-send
 2 tigervnc
 3 hunspell breeze5 breeze-gtk qt5ct qt6ct
@@ -98,9 +98,8 @@
 
 # Other GUI
 # =========
-# oscar20: manual install, ~/.local/opt/oscar20 (see its meta; AUR oscar-bin outdated)
-3 qt6-serialport # for oscar20 (CPAP serial import)
 3 obs-studio xarchiver
+# 3 oscar # [AUR]
 # 3 handy-bin # [AUR]
 # 3 weasis-bin # [AUR]
 3 dcmtk gdcm python-pydicom # DICOM CLI: header dump, decode, render

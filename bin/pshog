@@ -437,7 +437,6 @@ for h in hogs:
         why.append(('leak', h['grow'] / args.g))
     h['why'] = why
     h['score'] = max([s for _, s in why], default=0.0)
-    h['bulk'] = False
 
 over = sorted((h for h in hogs if h['score'] >= 1.0), key=lambda h: -h['score'])
 n = args.n or pick([h['score'] for h in over])
@@ -452,10 +451,8 @@ if free < args.M:
             break
         if h['root'] in picked or h['share'] < 1.0:
             continue
-        if not any(k == 'mem' for k, _ in h['why']):
-            h['why'].append(('mem', h['share'] / args.r))
-        h['bulk'] = True
         shown.append(h)
+shown.sort(key=lambda h: -h['rss'])
 
 if not shown:
     print('no offenders')
@@ -468,8 +465,6 @@ print(f'cpu {frac:.0f}%   memory {100 - free:.0f}%   '
       f'load {os.getloadavg()[0]:.1f} / {NCPU} cores   '
       f'{nsamp} samples over {args.t:g}s\n')
 for i, h in enumerate(shown, 1):
-    if h['bulk'] and (i == 1 or not shown[i - 2]['bulk']):
-        print(f'only {free:.0f}% memory free, biggest consumers:\n')
     r = h['root']
     cur, loc, tty, walked = r, '', '', set()
     while cur in live and cur not in walked:
@@ -502,14 +497,9 @@ for i, h in enumerate(shown, 1):
     u = uid_of(r)
     who = pwd.getpwuid(u).pw_name if u not in (me, -1) else ''
 
-    why = []
-    for kind, _ in sorted(h['why'], key=lambda kv: -kv[1]):
-        if kind == 'cpu':
-            why.append(f'cpu {h["cpu"]:.0f}% ({h["cpu"]/NCPU:.0f}% of box)')
-        elif kind == 'mem':
-            why.append(f'{human(h["rss"])} memory ({h["share"]:.0f}% of {human(memtot)})')
-        else:
-            why.append(f'memory +{h["grow"]:.0f}M/min, now {human(h["rss"])}')
+    why = f'{human(h["rss"])} memory ({h["share"]:.0f}% of {human(memtot)})'
+    if any(k == 'cpu' for k, _ in h['why']):
+        why += f'  |  cpu {h["cpu"]:.0f}%'
 
     where = loc
     if tty:
@@ -520,15 +510,12 @@ for i, h in enumerate(shown, 1):
         where += f'  ({h["cover"]*100:.0f}% of window)'
     if r not in live:
         where += '  (exited)'
-    print(f'{i:>2}  {"  |  ".join(why)}')
+    print(f'{i:>2}  {why}')
     print(f'{"":>4}{where}')
     print(f'{"":>4}{cmd[:106]}  ({d})')
 
-    # break the group down along the axis that got it flagged
-    bycpu = any(k == 'cpu' for k, _ in h['why'])
-
     def weigh(v):
-        return v['cpu'] if bycpu else sum(h['now'].get(p, 0) for p in v['pids'])
+        return sum(h['now'].get(p, 0) for p in v['pids'])
 
     parts = sorted(h['parts'].items(), key=lambda kv: -weigh(kv[1]))
     tot = sum(weigh(v) for _, v in parts) or 1
@@ -538,7 +525,7 @@ for i, h in enumerate(shown, 1):
             if w < 0.05 * tot:
                 continue
             tag = f'{len(v["pids"])}x {name[:46]}' if len(v['pids']) > 1 else name[:46]
-            print(f'{"":>4}- {f"{w:.0f}%" if bycpu else human(w)} {tag}')
+            print(f'{"":>4}- {human(w)} {tag}')
     if args.v:
         for pid, c in sorted(h['pids'].items(), key=lambda kv: -kv[1]):
             mark = COMM.get(pid, '?') if pid in live else '(exited)'

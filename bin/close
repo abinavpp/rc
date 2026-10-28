@@ -1,0 +1,10 @@
+#! /bin/bash
+
+# Close the focused window, and session N with it if it is titled tmux-N.
+
+wid=$(xdotool getactivewindow) || exit
+title=$(xdotool getwindowname "$wid")
+i3-msg -q "[id=$wid] kill"
+case $title in
+  tmux-*) tmux kill-session -t "=${title#tmux-}" ;;
+esac

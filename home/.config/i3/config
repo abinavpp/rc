@@ -1,4 +1,4 @@
-exec --no-startup-id handy --start-hidden
+exec --no-startup-id hndy --start-hidden
 exec --no-startup-id dunst
 
 set $m Mod1
@@ -34,6 +34,7 @@ client.urgent $red $black $white $black
 floating_modifier $m
 
 workspace_layout tabbed
+focus_on_window_activation urgent
 
 for_window [class="Swappy"] floating disable
 
@@ -67,10 +68,9 @@ bindsym $m+Shift+8 move container to workspace 8
 bindsym $m+Shift+9 move container to workspace 9
 bindsym $m+Shift+0 move container to workspace 10
 
-bindsym $m+a exec myxterm
-bindsym $m+g exec myxterm ask
+bindsym $m+a exec ws
 bindsym $m+t layout toggle splith splitv tabbed
-bindsym $m+x kill
+bindsym $m+x exec close
 bindsym $m+z exec --no-startup-id sh -c 'pactl list sinks | grep -q "Active Port: analog-output-headphones" && pactl set-sink-port @DEFAULT_SINK@ analog-output-speaker || pactl set-sink-port @DEFAULT_SINK@ analog-output-headphones'
 bindsym --release $m+m exec --no-startup-id xset dpms force off
 bindsym --release Mod4+p exec --no-startup-id xset dpms force off

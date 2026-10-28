@@ -1,6 +1,9 @@
 {
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "auto",
+    "additionalDirectories": [
+      "/home/abinavpp"
+    ]
   },
   "model": "opus",
   "hooks": {

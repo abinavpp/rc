@@ -1,0 +1,7 @@
+#! /bin/bash
+
+# Dictation is input, like keyboard and mouse: top CPU priority.
+
+sudo -n renice -n -20 -p $$ > /dev/null
+echo -20 | sudo -n tee /proc/$$/autogroup > /dev/null
+exec handy "$@"

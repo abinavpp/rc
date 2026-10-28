@@ -26,8 +26,8 @@ let fortran_free_source = 1
 let fortran_have_tabs = 1
 let fortran_more_precise = 1
 let fortran_do_enddo = 1
-let s:trailing_space_match_state = 1
 let g:color_theme = "dark"
+let g:gdiff_depth = 0
 let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0 } }
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],
   \ 'passive_filetypes': [] }
@@ -63,46 +63,6 @@ function! StatusLine()
   let l:s = l:c . " %{mode()} %<%F  %{get(w:, 'lsp_func', '')} %m %r"
   let l:s .= "%= %{v:servername} %y %v %l/%L"
   return l:s
-endfunction
-
-function! ToggleDiff()
-  if &diff == 0
-    exe 'windo difft'
-  else
-    exe 'windo diffo'
-  endif
-
-  exe 'wincmd p'
-endfunction
-
-function! DelCommentLines()
-  let l:expr = substitute(&commentstring, '%s', '.*', '')
-  exe 'g/^\ *' . l:expr .  '/d'
-endfunction
-
-function! TrailingSpaceMatch()
-  if s:trailing_space_match_state == 0
-    let s:trailing_space_match_state = 1
-    match trailingSpace /\s\+\%#\@<!$/
-    echo "Trailing-space-match on"
-  else
-    let s:trailing_space_match_state = 0
-    match none
-    echo "Trailing-space-match off"
-  endif
-endfunction
-
-function! FindAMDGPUReg(r)
-  let l:f = matchstr(a:r, '\v^[a-zA-Z]+')
-  let l:n = matchstr(a:r, '\v[0-9]+$')
-
-  let @/ = '\v<(' . a:r . '|' . l:f . '\[' . l:n . ':[0-9]+\]'
-    \. '|' . l:f . '\[[0-9]+:' . l:n . '\])'
-endfunction
-
-function! Vp(p)
-  let l:n = search(a:p, 'bn')
-  echo l:n . ': ' . getline(l:n)
 endfunction
 
 function! CSInv()
@@ -149,28 +109,28 @@ function! Lsp(cmd, fts)
   exe 'au FileType ' . join(a:fts, ',') . ' setlocal omnifunc=lsp#complete'
 endfunction
 
-" Names of the symbols in syms enclosing pos, outermost first.
+" The symbols in syms enclosing pos, as Class::method. vim-lsp turns off
+" hierarchical symbols, so enclosing scopes arrive as siblings.
 function! LspFuncFind(pos, syms)
-  let l:best = {}
-  let l:span = 0
+  let l:hits = []
   for l:s in a:syms
     let l:r = has_key(l:s, 'range') ? l:s.range : l:s.location.range
     if a:pos.line < l:r.start.line || a:pos.line > l:r.end.line
       continue
     endif
-    if empty(l:best) || l:r.end.line - l:r.start.line < l:span
-      let l:best = l:s
-      let l:span = l:r.end.line - l:r.start.line
-    endif
+    call add(l:hits, [l:r.end.line - l:r.start.line, l:s])
   endfor
 
-  if empty(l:best)
-    return []
+  if empty(l:hits)
+    return ''
   endif
-  return [l:best.name] + LspFuncFind(a:pos, get(l:best, 'children', []))
+  call sort(l:hits, {a, b -> b[0] - a[0]})
+  let l:names = map(copy(l:hits), 'v:val[1].name')
+  call add(l:names, LspFuncFind(a:pos, get(l:hits[-1][1], 'children', [])))
+  return join(filter(l:names, 'v:val !~# "^$\\|^(anonymous namespace)$"'), '::')
 endfunction
 
-" Cache a documentSymbol response for buf and refresh the statusline.
+" Cache buf's symbols from a documentSymbol reply and refresh the statusline.
 function! LspFuncStore(buf, data)
   let l:res = get(get(a:data, 'response', {}), 'result', v:null)
   if type(l:res) != v:t_list
@@ -183,10 +143,9 @@ function! LspFuncStore(buf, data)
   endif
 endfunction
 
-" Symbol chain enclosing the cursor from the cache, e.g. Class > method.
+" Show the symbols enclosing the cursor in the statusline, or in a popup.
 function! LspFuncUpdate(popup)
-  let w:lsp_func = join(LspFuncFind(lsp#get_position(),
-    \ get(b:, 'lsp_syms', [])), ' > ')
+  let w:lsp_func = LspFuncFind(lsp#get_position(), get(b:, 'lsp_syms', []))
   redrawstatus
   if a:popup && !empty(w:lsp_func)
     call popup_atcursor(w:lsp_func,
@@ -194,6 +153,7 @@ function! LspFuncUpdate(popup)
   endif
 endfunction
 
+" Request the buffer's symbols from its language server.
 function! LspFunc()
   let l:servers = filter(lsp#get_allowed_servers(),
     \ 'lsp#capabilities#has_document_symbol_provider(v:val)')
@@ -231,32 +191,25 @@ function! ToggleSet(s)
   exe 'set ' . a:s . '! | set ' . a:s . '?'
 endfunction
 
-function! GdiffClose()
-  for l:w in reverse(range(1, winnr('$')))
-    if bufname(winbufnr(l:w)) =~# '^fugitive://'
-      exe l:w . 'wincmd c'
-    endif
-  endfor
-  diffoff!
-
-  if exists('t:gdiff_spec')
-    unlet t:gdiff_spec
-  endif
-endfunction
-
-" Toggle a diff pane against rev a ('' = index); another rev replaces the open
-" one. The cursor stays put.
+" Toggle a diff pane against rev a; another rev replaces the open one. The
+" cursor stays put.
 function! Gdiff(a)
   " Unresolvable rev: fugitive opens it as a literal path instead of failing.
-  if a:a != "" && FugitiveExecute(['rev-parse', '--verify', '--quiet', a:a]).exit_status
+  if FugitiveExecute(['rev-parse', '--verify', '--quiet', a:a]).exit_status
     echohl ErrorMsg | echo 'No such rev: ' . a:a | echohl None
     return
   endif
 
   " Not &diff: a reloaded buffer can keep the flag without a diff pane.
   if exists('t:gdiff_spec')
+    for l:w in reverse(range(1, winnr('$')))
+      if bufname(winbufnr(l:w)) =~# '^fugitive://'
+        exe l:w . 'wincmd c'
+      endif
+    endfor
+    diffoff!
     let l:cur = t:gdiff_spec
-    call GdiffClose()
+    unlet t:gdiff_spec
     if l:cur ==# a:a
       return
     endif
@@ -264,112 +217,40 @@ function! Gdiff(a)
 
   let l:win = win_getid()
   exe 'Gdiffsplit ' . a:a
-  if a:a == ""
-    wincmd r
-  endif
   call win_gotoid(l:win)
 
   let t:gdiff_spec = a:a
 endfunction
 
-" Go to the next (step 1) or previous (step -1) entry, wrapping at the ends.
-" If a diff is open, it follows to the new file.
-function! ReviewGo(step)
-  " Closing the diff returns the cursor to the window that owns the list.
-  if exists('t:gdiff_spec')
-    let l:spec = t:gdiff_spec
-    call GdiffClose()
-  endif
-
-  let l:len = len(getloclist(0))
-  if l:len
-    let l:idx = getloclist(0, {'idx': 0}).idx
-    exe 'll ' . ((l:idx - 1 + a:step + l:len) % l:len + 1)
-  endif
-
-  if exists('l:spec')
-    call Gdiff(l:spec)
-  endif
-  call ReviewEcho()
-endfunction
-
-" Re-echo the current entry's "(n of N): text" line after a redraw wiped it.
-function! ReviewEcho()
-  let l:items = getloclist(0)
-  if empty(l:items) | return | endif
-
-  redraw
-  let l:cur = getloclist(0, {'idx': 0}).idx
-  echo printf('(%d of %d): %s', l:cur, len(l:items), l:items[l:cur - 1].text)
-endfunction
-
+" Set the depth <Leader>e diffs against: 0 for HEAD, N for HEAD~N.
 function! GdiffNum()
   let l:n = nr2char(getchar())
-  if l:n !~ '[1-9]'
+  if l:n !~ '[0-9]'
     return
   endif
 
-  call Gdiff('@~' . l:n)
+  let g:gdiff_depth = str2nr(l:n)
+  echo 'Diff depth: ' . l:n
 endfunction
 
-function! Glog(range, line1, line2)
-  if a:range == 0
-    execute '0Gllog!'
-  elseif a:range == 1
-    execute a:line1 . 'Gllog!'
-  else
-    execute a:line1 . ',' . a:line2 . 'Gllog!'
-  endif
+" Diff against the nearest ancestor that is a local branch tip, within 10
+" commits; past that, against where the branch leaves main.
+function! GdiffBranchPoint()
+  let l:tips = FugitiveExecute(['for-each-ref', '--format=%(objectname)',
+    \ 'refs/heads']).stdout
+  for l:sha in FugitiveExecute(['rev-list', '--first-parent', '--skip=1',
+    \ '--max-count=10', 'HEAD']).stdout
+    if index(l:tips, l:sha) >= 0
+      call Gdiff(l:sha)
+      return
+    endif
+  endfor
+  call Gdiff(FugitiveExecute(['merge-base', 'HEAD', 'main']).stdout[0])
+  echo 'No branch point within 10 commits, falling back to comparing with main'
 endfunction
 
-function! SetTab(l)
-  exe 'setlocal tabstop=' . a:l . ' shiftwidth=' . a:l . ' softtabstop=' . a:l
-endfunction
-
-" TODO: Infer this from clang-format
-function! Style(s)
-  if a:s == "d"
-    exe 'setlocal textwidth=80 expandtab'
-    call SetTab(2)
-  elseif a:s == "s"
-    exe 'setlocal textwidth=120 noexpandtab'
-    call SetTab(4)
-  endif
-endfunction
-
-function! FileCheck(range, line1, line2)
-  let l:comment_prefix = split(&commentstring, '%s')[0]
-  let l:cmd = 's/^/' . escape(comment_prefix, '/') . 'CHECK-NEXT: /g'
-
-  " TODO: Verify (Copied from the Glog function).
-  if a:range == 0
-    execute '0' . l:cmd . '!'
-  elseif a:range == 1
-    execute a:line1 . l:cmd
-  else
-    execute a:line1 . ',' . a:line2 . l:cmd
-  endif
-endfunction
-
-" A FileChangedShell autocmd suppresses the 'autoread' reload, so ask for it
-" back explicitly. 'conflict' means the buffer is dirty too: mine wins.
-function! DiskChanged()
-  if v:fcs_reason ==# 'changed'
-    let v:fcs_choice = 'reload'
-    return
-  endif
-  let v:fcs_choice = ''
-  if v:fcs_reason ==# 'conflict'
-    echohl WarningMsg
-    echomsg 'disk changed, buffer dirty, kept mine: ' . expand('<afile>')
-    echohl None
-  endif
-endfunction
-
-" Watch the dirs, not the files: inotify keys on the inode, so a
-" temp-file-plus-rename writer leaves a file watch on a dead inode. Respawn
-" when the dir set changes or the watcher died - a dead watcher has to degrade
-" to ReloadTick's poll, not silently stop reloading.
+" Keep one inotifywait job on the dirs of the listed buffers. Dirs, not files:
+" a write by rename leaves a file watch on a dead inode.
 function! ReloadWatch()
   let l:d = {}
   for l:b in getbufinfo({'buflisted': 1})
@@ -391,112 +272,31 @@ function! ReloadWatch()
     return
   endif
   let g:reload_job = job_start(['inotifywait', '-qm', '-e', 'close_write,moved_to',
-    \ '--format', '%w%f'] + l:dirs, {'out_cb': 'ReloadPush'})
+    \ '--format', '%w%f'] + l:dirs,
+    \ {'out_cb': {-> mode() =~# '^[icR]' ? 0 : execute('silent! checktime')}})
 endfunction
 
-" Reloading under insert/cmdline is left to the InsertLeave/CmdlineLeave
-" checktime below.
-function! ReloadPush(ch, msg)
-  if mode() =~# '^[icR]' | return | endif
-  silent! checktime
-endfunction
-
-function! ReloadTick(t)
-  call ReloadWatch()
-  if mode() =~# '^[icR]' | return | endif
-  silent! checktime
-endfunction
-
-" Load a titled location list of change sites and underline the changed lines.
-" qffile: file:line:col:text per line. linesfile: JSON {abs path: [line, ...]}.
-function! ReviewLoad(title, qffile, linesfile)
-  " Reloading the same title keeps the current entry.
-  let prev = {}
-  if getloclist(0, {'title': 1}).title ==# a:title
-    let idx = getloclist(0, {'idx': 0}).idx
-    let items = getloclist(0)
-    if idx > 0 && idx <= len(items) | let prev = items[idx - 1] | endif
-  endif
-
-  if exists('t:gdiff_spec')
-    let spec = t:gdiff_spec
-    call GdiffClose()
-  endif
-  " setloclist() from the list's own window overwrites it instead of pushing.
-  lclose
-
-  let g:review_lines = json_decode(join(readfile(a:linesfile), ''))
-  hi ReviewChange cterm=underline gui=underline
-  aug ReviewMatch | au! | au BufWinEnter * call ReviewMark() | aug END
-  for w in range(1, winnr('$'))
-    call win_execute(win_getid(w), 'call ReviewMark()')
-  endfor
-  " Location list, not quickfix: Enter opens in the list's own window, not one
-  " vim picks by layout (the diff pane).
-  call setloclist(0, [], ' ', {'title': a:title, 'efm': '%f:%l:%c:%m',
-    \ 'lines': readfile(a:qffile)})
-  " File-info message + (1 of N) line -> hit-enter prompt.
-  let sm = &shortmess
-  set shortmess+=F
-  lopen
-  exe 'll ' . max([ReviewSameEntry(prev), 1])
-  if exists('l:spec')
-    call Gdiff(spec)
-  endif
-  call ReviewEcho()
-  let &shortmess = sm
-endfunction
-
-" Index of the entry nearest prev's line: same file and text first, then same
-" file; 0 if none.
-function! ReviewSameEntry(prev)
-  if empty(a:prev) | return 0 | endif
-  for same_text in [1, 0]
-    let best = 0 | let dist = -1
-    for [i, e] in items(getloclist(0))
-      if e.bufnr != a:prev.bufnr || (same_text && e.text !=# a:prev.text)
-        continue
-      endif
-      let d = abs(e.lnum - a:prev.lnum)
-      if dist < 0 || d < dist | let best = i + 1 | let dist = d | endif
-    endfor
-    if best | return best | endif
-  endfor
-  return 0
-endfunction
-
-" Underline the current window's changed lines, replacing its old marks.
-function! ReviewMark()
-  for id in get(w:, 'review_ids', []) | silent! call matchdelete(id) | endfor
-  let w:review_ids = []
-  let lines = get(g:review_lines, expand('%:p'), [])
-  " matchaddpos() takes at most eight positions per call.
-  for i in range(0, len(lines) - 1, 8)
-    call add(w:review_ids, matchaddpos('ReviewChange', lines[i : i + 7]))
-  endfor
+" Jump from a +/- line of a review diff to that line of its file, pushed on the
+" tag stack like LspDefinition.
+function! ReviewJump()
+  let l:line = getline('.')
+  if l:line !~# '^[+-]' || l:line =~# '^\%(+++\|---\) ' | return | endif
+  let l:target = fugitive#Cfile()
+  call lsp#utils#tagstack#_update()
+  silent exe 'edit ' . l:target
 endfunction
 
 " Commands
 " ========
 com! Tidy :sil! exe '%s/\v\ +$//g' <bar> :sil! exe '%s/\v[^\x00-\x7F]+//g'
-com! -nargs=1 R :call FindAMDGPUReg("<args>")
-  \ <bar> :call feedkeys("\<Esc>\<Esc>n")
-com! Vs :call Vp('\*\*\* IR Dump ')
-com! Vl :call Vp('\v^\p+:$')
-com! Vd :call Vp(expand("<cword>") . '.*=')
 com! Fif :set foldmarker=#if,#endif foldmethod=marker
 com! Cdb :lcd %:p:h
 com! Gbl :Git blame
-com! -range Glg call Glog(<range>, <line1>, <line2>)
+com! -range Glg exe (<range> ? <line1> . ',' . <line2> : 0) . 'Gllog!'
 com! Gr :Gedit
 com! Csi :call CSInv()
-com! Dcl :call DelCommentLines()
-com! Df :call ToggleDiff()
 com! Sv :so $MYVIMRC
-com! -nargs=1 St :call SetTab("<args>")
-com! -nargs=1 S :call Style("<args>")
 com! Cl :%bd|e#|bd#
-com! -range Fc :call FileCheck(<range>, <line1>, <line2>)
 
 " Mappings
 " ========
@@ -523,11 +323,10 @@ nnoremap <Leader>f :Buffers<CR>
 nnoremap <Leader>x :bd<CR>
 nnoremap <Leader>k ma
 nnoremap <Leader>K `a
-nnoremap <silent><Leader>e :call Gdiff('')<CR>
-nnoremap <silent><Leader>r :call Gdiff('@~1')<CR>
+nnoremap <silent><Leader>e
+  \ :call Gdiff(g:gdiff_depth ? '@~' . g:gdiff_depth : '@')<CR>
+nnoremap <silent><Leader>r :call GdiffBranchPoint()<CR>
 nnoremap <silent><Leader>t :call GdiffNum()<CR>
-nnoremap <silent>[q :call ReviewGo(1)<CR>
-nnoremap <silent>]q :call ReviewGo(-1)<CR>
 nnoremap <silent><Leader>q :lopen<CR>
 nnoremap <Leader>ld :exe 'tag' expand('<cword>')<CR>
 nnoremap <Leader>le :SyntasticCheck<CR>
@@ -538,7 +337,6 @@ nnoremap <Leader>sl :call ToggleSet('list')<CR>
 nnoremap <Leader>ss :call ToggleSet('spell')<CR>
 nnoremap <Leader>sw :call ToggleSet('wrap')<CR>
 nnoremap <Leader>si :call ToggleSet('smartindent')<CR>
-nnoremap <Leader>st :call TrailingSpaceMatch()<CR>
 nnoremap <Leader>sx :set textwidth=
 inoremap <C-p> <C-x>
 inoremap { d{<Left><BS><Right>
@@ -563,6 +361,9 @@ set modelines=1 updatetime=300
 set clipboard^=unnamed,unnamedplus mouse=a termguicolors background=dark
 au FileType llvm setlocal commentstring=;\ %s | set textwidth=0
 au FileType mlir setlocal commentstring=//\ %s
+au FileType diff nnoremap <buffer><silent> <Leader>ld :call ReviewJump()<CR>
+au FileType diff nnoremap <buffer><silent> [q :call search('^###', 'w')<CR>
+au FileType diff nnoremap <buffer><silent> ]q :call search('^###', 'bw')<CR>
 au FileType mlir,tablegen setlocal matchpairs+=<:>
 au FileType cpp,tablegen setlocal commentstring=//\ %s | set comments^=:///
 set laststatus=2 statusline=%!StatusLine()
@@ -582,12 +383,8 @@ au User lsp_buffer_enabled silent! call LspFunc()
 " Force vim-lsp to resync the buffer on :e (workaround for stale didOpen).
 au BufReadPre * if &buftype ==# '' && expand('<afile>') !~# '^fugitive://'
   \ | silent! doautocmd <nomodeline> BufDelete | endif
-au FileChangedShell * call DiskChanged()
 au FocusGained,BufEnter,InsertLeave,CmdlineLeave * silent! checktime
 au BufReadPost,BufNewFile * call ReloadWatch()
-if !exists('s:reload_tick')
-  let s:reload_tick = timer_start(5000, 'ReloadTick', {'repeat': -1})
-endif
 syntax on
 colo CandyPaper2
 

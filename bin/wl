@@ -1,0 +1,12 @@
+#! /bin/bash
+
+# List git worktrees of the repo at cwd, or of the bare <dir>.git under a
+# project root like ~/pj/<proj>.
+
+if ! git rev-parse --git-dir &> /dev/null; then
+  bare=$PWD/${PWD##*/}.git
+  [[ -d $bare ]] || bare=$(ls -d "$PWD"/*.git 2> /dev/null | head -1)
+  [[ -d $bare ]] || { echo "wl: no git repo here" >&2; exit 1; }
+  cd "$bare" || exit 1
+fi
+git worktree list "$@"

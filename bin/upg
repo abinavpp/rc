@@ -6,7 +6,6 @@ yes | yay -Syu --answerdiff None --answerclean None --answerupgrade None
 orphans=$(pacman -Qdtq)
 [ "$orphans" ] && sudo pacman -Rns --noconfirm $orphans
 if [ "$DISPLAY" ]; then mykb x; fi
-# sudo find /etc -type f \( -name '*.pacnew' -o -name '*.pacsave' -o -name '*-' \) -exec rm -v {} \;
 
 # fwupdmgr refresh; fwupdmgr get-updates
 # fwupdmgr update
